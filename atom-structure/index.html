@@ -74,7 +74,6 @@ p{margin:0}
 .stage-tag{position:absolute;left:14px;top:12px;font:600 13px/1.4 var(--f-mono);letter-spacing:.08em;color:var(--dim);pointer-events:none}
 .stage-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:13px;color:var(--faint);pointer-events:none;white-space:nowrap}
 @media (max-width:900px){.cols,.cols.even{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:600px){.ptab button em{display:none}}
 
 /* ---------- buttons ---------- */
 .btn{appearance:none;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:.5em 1.05em;border-radius:999px;cursor:pointer;
@@ -187,49 +186,11 @@ td:first-child,th:first-child{text-align:left}
 .status{padding:10px 12px;border-radius:10px;font-size:.92em;border:1px solid var(--line);background:var(--panel2)}
 .status.ok{border-color:var(--ok);color:var(--ok)}
 .status.warn{border-color:var(--gold);color:var(--gold)}
+.ledger{font:700 clamp(18px,1.6vw,24px)/1.7 var(--f-mono)}
+.ledger .muted{font:400 .7em var(--f-body)}
 .task{border:1px dashed var(--gold);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .task .tt{font:900 1.15em var(--f-display)}
 .stars{font-family:var(--f-mono);letter-spacing:.2em;color:var(--gold)}
-
-/* ---------- schematic svg ---------- */
-.sch{width:100%;height:auto;display:block;overflow:visible}
-.sch .nuc{fill:rgba(255,93,119,.12);stroke:var(--proton);stroke-width:2.5}
-.sch .nz{fill:var(--ink);font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central}
-.sch .arc{fill:none;stroke:var(--electron);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .55s ease-out forwards;animation-delay:calc(var(--i)*.18s + .1s)}
-.sch .en{fill:var(--gold);font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--panel);stroke-width:7px;opacity:0;animation:pop .4s forwards;animation-delay:calc(var(--i)*.18s + .4s)}
-.sch .ann line,.sch .ann path{stroke:var(--dim);stroke-width:1.2;fill:none;stroke-dasharray:3 3}
-.sch .ann text{fill:var(--ink);font:500 15px var(--f-body)}
-.sch .ann circle{fill:var(--gold)}
-.sch .ann{animation:fadeup .5s both .5s}
-@keyframes draw{to{stroke-dashoffset:0}}
-@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
-.sch .en{transform-box:fill-box;transform-origin:center}
-
-/* ---------- shells ---------- */
-.ptab{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px}
-.ptab button{aspect-ratio:1;max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:2px;position:relative;transition:transform .15s,border-color .2s}
-.ptab button b{font:900 clamp(14px,1.4vw,22px) var(--f-display)}
-.ptab button small{font:600 10px var(--f-mono);color:var(--dim);position:absolute;left:4px;top:3px}
-.ptab button em{font:normal 600 10px var(--f-mono);color:var(--dim)}
-.ptab button:hover{transform:translateY(-2px);border-color:var(--gold)}
-.ptab button[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 16px rgba(255,196,87,.45);background:rgba(255,196,87,.12)}
-.ptab .sp{visibility:hidden}
-.colored .ptab button.metal{background:rgba(255,93,119,.16)}
-.colored .ptab button.non{background:rgba(63,216,255,.14)}
-.colored .ptab button.gas{background:rgba(255,196,87,.16)}
-.rules{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
-.rules li::marker{color:var(--gold);font-family:var(--f-mono)}
-.catline{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--dim)}
-.catline span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
-.catline .m::before{background:rgba(255,93,119,.55)}.catline .x::before{background:rgba(63,216,255,.5)}.catline .g::before{background:rgba(255,196,87,.6)}
-.bigsch{max-width:560px;margin-inline:auto;width:100%}
-
-/* ---------- outer ---------- */
-.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.trio .card{display:flex;flex-direction:column;gap:6px}
-.trio .sch{max-width:220px;margin:4px auto}
-.trio .tag{font:700 12px var(--f-mono);letter-spacing:.1em}
-@media (max-width:760px){.trio{grid-template-columns:minmax(0,1fr)}}
 
 /* ---------- mass ---------- */
 .tiny{font:700 clamp(15px,1.7vw,26px)/1.5 var(--f-mono);word-break:break-all;color:var(--electron);text-shadow:0 0 18px rgba(63,216,255,.4);min-height:3em}
@@ -296,7 +257,6 @@ td:first-child,th:first-child{text-align:left}
 .opts button.wrong i{background:var(--bad);color:var(--void)}
 .qexp{padding:12px 14px;border-radius:12px;background:var(--deep);border-left:4px solid var(--electron);color:var(--dim)}
 .qexp b{color:var(--ink)}
-.qdg{max-width:220px}
 .final{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;padding:24px}
 .final .big{font:900 clamp(34px,5vw,72px)/1.2 var(--f-display);color:var(--gold);text-shadow:0 0 30px rgba(255,196,87,.5)}
 @media (max-width:700px){.opts{grid-template-columns:minmax(0,1fr)}.qtop{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.qmeta{grid-column:1/-1;order:-1;flex-direction:row}}
@@ -318,7 +278,7 @@ td:first-child,th:first-child{text-align:left}
 
 @media (prefers-reduced-motion:reduce){
   .slide{transition:opacity .2s,visibility 0s linear .2s;transform:none!important;filter:none!important}
-  .cover h1 .ch,.sch .arc,.sch .en,.steps div,.mm.go .lk,.mm.go .nd{animation-duration:.01s!important;animation-delay:0s!important}
+  .cover h1 .ch,.steps div,.mm.go .lk,.mm.go .nd{animation-duration:.01s!important;animation-delay:0s!important}
 }
 </style>
 </head>
@@ -467,59 +427,7 @@ td:first-child,th:first-child{text-align:left}
       <div class="side">
         <div class="card elcard"><div class="elsym" id="bSym"><small id="bZ"></small><span id="bS">?</span></div><div><h3 id="bName">空空如也</h3><p class="muted" id="bMass">相对原子质量 ≈ 质子数 + 中子数</p></div></div>
         <div class="status" id="bStatus">先加入质子，看看会变成什么原子。</div>
-        <div class="card"><p class="eyebrow" style="margin-bottom:6px">原子结构示意图</p><div id="bSch" style="max-width:260px"></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 7 核外电子排布 -->
-<section class="slide" data-id="shells" data-title="核外电子排布">
-  <div class="wrap">
-    <header class="head"><p class="eyebrow">新知二 · 原子核外电子的排布</p><h2>电子也要“排队”：分层排布</h2></header>
-    <div class="cols even">
-      <div class="side">
-        <div class="card">
-          <ol class="rules">
-            <li>核外电子是<b class="hl">分层</b>运动的：离核近的电子能量低，离核远的电子能量高。</li>
-            <li>第一层最多容纳 <b class="hl">2</b> 个电子，第二层最多容纳 <b class="hl">8</b> 个电子。</li>
-            <li>最外层电子数不超过 <b class="hl">8</b> 个（只有一层的，不超过 2 个）。</li>
-            <li>电子先排满能量低的内层，再排外层。</li>
-          </ol>
-        </div>
-        <div class="card" id="ptWrap">
-          <div class="row" style="justify-content:space-between;margin-bottom:8px"><p class="eyebrow">1–18 号元素 · 点选查看</p><button class="btn sm" id="ptColor" aria-pressed="false">按类别上色</button></div>
-          <div class="ptab" id="ptab"></div>
-          <div class="catline" style="margin-top:8px"><span class="m">金属</span><span class="x">非金属</span><span class="g">稀有气体</span></div>
-        </div>
-      </div>
-      <div class="side">
-        <div class="card">
-          <div class="row" style="justify-content:space-between"><h3 id="shName">钠原子 Na</h3>
-            <div class="row"><button class="btn sm" id="shAnn" aria-pressed="false">认识示意图</button><button class="btn sm" id="shHide" aria-pressed="false">考考你</button></div></div>
-          <div class="bigsch" id="shBig"></div>
-          <p class="muted" id="shInfo"></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 8 最外层电子 -->
-<section class="slide" data-id="outer" data-title="最外层电子与化学性质">
-  <div class="wrap">
-    <header class="head"><p class="eyebrow">新知二 · 拓展</p><h2>最外层电子数，决定了原子的“脾气”</h2></header>
-    <div class="trio">
-      <div class="card"><span class="tag" style="color:var(--gold)">稀有气体原子 · 如 氖</span><div data-sch="10"></div><p>最外层 <b class="hl">8</b> 个电子（氦为 2 个），属于<b>相对稳定结构</b>，化学性质不活泼。</p></div>
-      <div class="card"><span class="tag" style="color:var(--proton)">金属原子 · 如 钠</span><div data-sch="11"></div><p>最外层电子数一般<b class="hl">少于 4</b> 个，在化学反应中<b>易失去</b>电子。</p></div>
-      <div class="card"><span class="tag" style="color:var(--electron)">非金属原子 · 如 氯</span><div data-sch="17"></div><p>最外层电子数一般<b class="hl">多于 4</b> 个，在化学反应中<b>易得到</b>电子。</p></div>
-    </div>
-    <div class="cols">
-      <div class="stage" style="min-height:clamp(260px,38vh,460px)"><canvas id="cvNaCl" aria-label="钠原子与氯原子之间电子转移的动画"></canvas></div>
-      <div class="side">
-        <div class="card"><h3>演示：钠与氯的“电子交易”</h3><p class="muted" id="naclTxt">钠原子最外层只有 1 个电子，氯原子最外层有 7 个电子。它们相遇时会发生什么？</p></div>
-        <div class="row"><button class="btn pri" id="naclGo">开始反应</button><button class="btn" id="naclReset">重置</button></div>
-        <p class="hint">拓展：带电的原子（或原子团）叫做离子。</p>
+        <div class="card"><p class="eyebrow" style="margin-bottom:6px">电荷账本</p><p class="ledger" id="bLed"></p></div>
       </div>
     </div>
   </div>
@@ -528,7 +436,7 @@ td:first-child,th:first-child{text-align:left}
 <!-- 9 原子的质量 -->
 <section class="slide" data-id="mass" data-title="原子的质量">
   <div class="wrap">
-    <header class="head"><p class="eyebrow">新知三 · 相对原子质量</p><h2>一个原子有多重？</h2></header>
+    <header class="head"><p class="eyebrow">新知二 · 相对原子质量</p><h2>一个原子有多重？</h2></header>
     <div class="cols even">
       <div class="side">
         <div class="card">
@@ -580,7 +488,7 @@ td:first-child,th:first-child{text-align:left}
 <!-- 11 计算 -->
 <section class="slide" data-id="calc" data-title="相对原子质量的计算">
   <div class="wrap">
-    <header class="head"><p class="eyebrow">新知三 · 计算</p><h2>相对原子质量怎么算？</h2></header>
+    <header class="head"><p class="eyebrow">新知二 · 计算</p><h2>相对原子质量怎么算？</h2></header>
     <div class="card bigf">
       <span>A<sub>r</sub> =</span>
       <span class="frac"><span>一个该原子的实际质量</span><span>一个碳 12 原子的实际质量 × <sup>1</sup>⁄<sub>12</sub></span></span>
@@ -650,7 +558,6 @@ td:first-child,th:first-child{text-align:left}
     <div class="row"><span class="muted">本题答题：</span><button class="btn sm" id="pickR" aria-pressed="true">红队</button><button class="btn sm" id="pickB" aria-pressed="false">蓝队</button><span class="hint">答对自动加 10 分，下一题自动轮换</span></div>
     <div class="card qcard" id="qCard">
       <p class="qtext" id="qText"></p>
-      <div class="qdg" id="qDg"></div>
       <div class="opts" id="qOpts"></div>
       <p class="qexp" id="qExp" hidden></p>
     </div>
@@ -663,7 +570,7 @@ td:first-child,th:first-child{text-align:left}
   <div class="wrap">
     <header class="head"><p class="eyebrow">课堂小结 · 点击任一知识点可跳回对应页面</p><h2>今天，我们走进了原子内部</h2></header>
     <div class="mapwrap"><svg class="mm" id="mm" viewBox="0 0 1400 640" role="img" aria-label="本课知识结构图"></svg></div>
-    <p class="muted">课后挑战：画出 1–18 号元素的原子结构示意图，并按最外层电子数给它们分组；查阅资料，了解原子模型最新的研究进展。</p>
+    <p class="muted">下节预告：核外电子是怎样“排队”的？原子得到或失去电子后会变成什么？——原子结构示意图与离子。</p>
   </div>
 </section>
 
@@ -672,7 +579,7 @@ td:first-child,th:first-child{text-align:left}
 <nav class="dock" aria-label="翻页">
   <button class="ic" id="btnPrev" aria-label="上一页">‹</button>
   <div class="dots" id="dots"></div>
-  <span class="pg" id="pg">1 / 14</span>
+  <span class="pg" id="pg">1 / 12</span>
   <button class="ic" id="btnNext" aria-label="下一页">›</button>
   <button class="tx" id="btnMenu">目录</button>
   <button class="tx opt" id="btnSnd" aria-pressed="true">音效：开</button>
@@ -739,31 +646,6 @@ const EL=[['H','氢',1,0],['He','氦',4,2],['Li','锂',7,4],['Be','铍',9,5],['B
  ['Na','钠',23,12],['Mg','镁',24,12],['Al','铝',27,14],['Si','硅',28,14],['P','磷',31,16],['S','硫',32,16],['Cl','氯',35.5,18],['Ar','氩',40,22],['K','钾',39,20],['Ca','钙',40,20]]
  .map((d,i)=>({z:i+1,s:d[0],n:d[1],ar:d[2],nn:d[3]}));
 const shellsOf=e=>{const caps=[2,8,8,2],o=[];let r=e;for(const c of caps){if(r<=0)break;const k=Math.min(c,r);o.push(k);r-=k;}return o;};
-const METAL=[3,4,11,12,13,19,20],GAS=[2,10,18];
-const catOf=z=>GAS.includes(z)?'gas':METAL.includes(z)?'metal':'non';
-
-/* 原子结构示意图 SVG */
-function schematic(p,shells,{annot=false,hide=false}={}){
-  const r=26,g=24,ang=40*Math.PI/180,n=shells.length,maxR=r+g*Math.max(n,1);
-  const padT=annot?64:8,padB=annot?84:8,padL=annot?168:6,padR=annot?150:16;
-  const ext=Math.max(r,maxR*Math.sin(ang))+6,cx=padL+r+2,cy=padT+ext,W=cx+maxR+padR,H=cy+ext+padB;
-  let s=`<svg class="sch" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="质子数${p}，电子排布 ${shells.join('、')}">`;
-  s+=`<circle class="nuc" cx="${cx}" cy="${cy}" r="${r}"/><text class="nz" x="${cx}" y="${cy}">+${p}</text>`;
-  shells.forEach((k,i)=>{const R=r+g*(i+1),x1=cx+R*Math.cos(ang),y1=cy-R*Math.sin(ang),y2=cy+R*Math.sin(ang);
-    s+=`<path class="arc" style="--i:${i}" pathLength="1" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}"/>`;
-    s+=`<text class="en" style="--i:${i}" x="${cx+R}" y="${cy}">${hide?'?':k}</text>`;});
-  if(annot&&n){
-    const Rn=r+g*n,xo=cx+Rn*Math.cos(ang),yo=cy-Rn*Math.sin(ang),L=padL-14;
-    s+=`<g class="ann">`;
-    s+=`<circle cx="${cx-r*.72}" cy="${cy+r*.72}" r="3"/><path d="M${cx-r*.72} ${cy+r*.72} L${L+6} ${cy+r+30}"/><text x="${L}" y="${cy+r+30}" text-anchor="end" dominant-baseline="central">圆圈：原子核</text>`;
-    s+=`<circle cx="${cx-10}" cy="${cy}" r="3"/><path d="M${cx-10} ${cy} L${L+6} ${cy}"/><text x="${L}" y="${cy}" text-anchor="end" dominant-baseline="central">“+”：带正电</text>`;
-    s+=`<circle cx="${cx+8}" cy="${cy-6}" r="3"/><path d="M${cx+8} ${cy-6} L${L+6} ${cy-r-30}"/><text x="${L}" y="${cy-r-30}" text-anchor="end" dominant-baseline="central">数字：质子数</text>`;
-    s+=`<circle cx="${xo}" cy="${yo}" r="3"/><path d="M${xo} ${yo} L${xo+18} ${padT-26}"/><text x="${xo+22}" y="${padT-30}" dominant-baseline="central">弧线：电子层</text>`;
-    s+=`<circle cx="${cx+Rn+9}" cy="${cy+9}" r="3"/><path d="M${cx+Rn+9} ${cy+9} L${cx+Rn+24} ${H-48}"/><text x="${cx+Rn+28}" y="${H-44}" dominant-baseline="central">弧线上的数字：</text><text x="${cx+Rn+28}" y="${H-22}" dominant-baseline="central">该层电子数</text>`;
-    s+=`</g>`;
-  }
-  return s+'</svg>';
-}
 
 /* ================= 音效 ================= */
 const SND={on:true,ctx:null};
@@ -936,7 +818,7 @@ S.models=(()=>{
     {y:'1803',who:'道尔顿',name:'实心球模型',d:'原子是构成物质的最小粒子，是坚实的、不可再分的实心球。',s:'提出了近代原子论，奠定了近代化学的基础。'},
     {y:'1904',who:'汤姆孙',name:'“葡萄干布丁”模型',d:'1897 年汤姆孙发现了电子。他认为原子是一个平均分布着正电荷的球体，带负电的电子像葡萄干一样镶嵌其中。',s:'发现电子，第一次证明原子是可以再分的。'},
     {y:'1911',who:'卢瑟福',name:'核式结构模型',d:'原子中心有一个很小的原子核，原子的全部正电荷和几乎全部质量都集中在原子核里，带负电的电子在核外空间绕核运动。',s:'依据是著名的 α 粒子散射实验，下一页我们就来重现它。'},
-    {y:'1913',who:'玻尔',name:'分层模型',d:'电子在原子核外一定的轨道上绕核运动，不同轨道上的电子能量不同，离核越远能量越高。',s:'这就是“核外电子分层排布”的由来。'},
+    {y:'1913',who:'玻尔',name:'分层模型',d:'电子在原子核外一定的轨道上绕核运动，不同轨道上的电子能量不同，离核越远能量越高。',s:'核外电子究竟怎样分层排布？我们下节课再来研究。'},
     {y:'1920s',who:'薛定谔 等',name:'电子云模型',d:'现代量子力学认为，电子在核外没有确定的轨道，只能用“电子云”描述它在核外某处出现机会的大小。',s:'人类对原子结构的认识，仍在不断深入。'}];
   const tl=$('#tl');
   M.forEach((m,i)=>{const b=document.createElement('button');b.setAttribute('aria-pressed',String(i===0));b.innerHTML=`<i>${m.y}</i><span>${m.who}</span>`;b.onclick=()=>show(i);tl.appendChild(b);});
@@ -1127,15 +1009,15 @@ S.build=(()=>{
     const p=P.p.length,n=P.n.length,e=P.e.length,el=EL[p-1];
     $('#cP').textContent=p;$('#cN').textContent=n;$('#cE').textContent=e;
     $('#bZ').textContent=p||'';$('#bS').textContent=el?el.s:'?';
-    $('#bName').textContent=el?(p===e?`${el.n}原子`:`${el.n}的离子`):(n||e?'还不是原子':'空空如也');
+    $('#bName').textContent=el?(p===e?`${el.n}原子`:'带电的粒子'):(n||e?'还不是原子':'空空如也');
     $('#bMass').innerHTML=p||n?`质子数 + 中子数 = <b class="hl mono">${p+n}</b>${el?`（${el.n}的相对原子质量约为 ${el.ar}）`:''}`:'相对原子质量 ≈ 质子数 + 中子数';
     const st=$('#bStatus');let cls='',msg='';
     if(!p){msg=n||e?'没有质子就不是原子。质子数决定了是哪种原子，先加质子吧！':'先加入质子，看看会变成什么原子。';cls='warn';}
-    else if(p!==e){const q=p-e,sup=(Math.abs(q)>1?Math.abs(q):'')+(q>0?'⁺':'⁻');
-      msg=`质子数 ≠ 电子数，粒子带 ${Math.abs(q)} 个单位${q>0?'正':'负'}电荷，这是离子 ${el.s}${sup.replace(/\d/g,c=>SUP[c])}（拓展）。想要原子，调成质子数 = 电子数。`;cls='warn';}
+    else if(p!==e){const q=p-e;
+      msg=`质子数 ≠ 电子数，整个粒子带 ${Math.abs(q)} 个单位${q>0?'正':'负'}电荷，已经不是原子了。（这种带电的粒子是什么？下节课揭晓！）把电子数调成和质子数相等试试。`;cls='warn';}
     else{msg=`质子数 = 核外电子数 = ${p}，整体不显电性，是一个${el.n}原子。`;cls='ok';if(n!==el.nn)msg+=` 常见的${el.n}原子核内有 ${el.nn} 个中子。`;}
     st.className='status '+cls;st.textContent=msg;
-    $('#bSch').innerHTML=p&&e?schematic(p,shellsOf(e)):'<p class="muted">加入质子和电子后显示</p>';
+    const q=p-e;$('#bLed').innerHTML=p||e?`<span class="cp">(+${p})</span> + <span class="ce">(−${e})</span> = <b class="${q?'hl':''}">${q>0?'+':q<0?'−':''}${Math.abs(q)}</b><br><span class="muted">${q===0?'正负电荷相等，整体不显电性':q>0?'正电荷多，粒子带正电':'负电荷多，粒子带负电'}</span>`:'<span class="muted">加入质子和电子后显示</span>';
     const k=TASKS[taskI];
     if(!celebrated&&p===k.p&&n===k.n&&e===k.e){celebrated=true;done.add(taskI);$('#taskNext').hidden=false;$('#taskTip').textContent='闯关成功！';$('#taskStars').textContent=TASKS.map((_,i)=>done.has(i)?'★':'☆').join('');
       sfx('win');FX.confetti();}
@@ -1153,90 +1035,6 @@ S.build=(()=>{
     let ei=0;sh.forEach((n,k)=>{for(let i=0;i<n;i++){const o=P.e[ei++],a=t*(1.3-k*.28)+i/n*TAU+k*.6,R=R1+gp*k;o.x=lerp(o.x,cx+Math.cos(a)*R,.1);o.y=lerp(o.y,cy+Math.sin(a)*R,.1);elec(ctx,o.x,o.y,m*.016);}});
     dying=dying.filter(d=>{d.vy+=.25;d.x+=d.vx;d.y+=d.vy;d.l-=dt*1.6;if(d.k==='e')elec(ctx,d.x,d.y,m*.016,Math.max(0,d.l));else ball(ctx,d.x,d.y,br,d.k==='p'?C.p:C.n,Math.max(0,d.l));return d.l>0;});
     if(!N&&!P.e.length)label(ctx,'用左边的 + 按钮加入粒子',cx,cy,{size:16,col:C.faint});
-  }
-  return{tick};
-})();
-
-/* ================= 7 核外电子排布 ================= */
-S.shells=(()=>{
-  let cur=11,annot=false,hide=false;const pt=$('#ptab');
-  const pos=z=>z===1?[0,0]:z===2?[0,7]:z<=10?[1,z-3]:[2,z-11];
-  for(let r=0;r<3;r++)for(let c=0;c<8;c++){
-    const el=EL.find(e=>{const[pr,pc]=pos(e.z);return e.z<=18&&pr===r&&pc===c;});
-    const b=document.createElement('button');
-    if(!el){b.className='sp';b.tabIndex=-1;b.setAttribute('aria-hidden','true');pt.appendChild(b);continue;}
-    const sh=shellsOf(el.z);b.className={metal:'metal',non:'non',gas:'gas'}[catOf(el.z)];b.dataset.z=el.z;
-    b.innerHTML=`<small>${el.z}</small><b>${el.s}</b><em>${el.n}·最外层${sh[sh.length-1]}</em>`;b.setAttribute('aria-pressed',String(el.z===cur));
-    b.onclick=()=>{cur=el.z;render();sfx('click');};pt.appendChild(b);
-  }
-  $('#ptColor').onclick=e=>{const on=$('#ptWrap').classList.toggle('colored');e.currentTarget.setAttribute('aria-pressed',String(on));};
-  $('#shAnn').onclick=e=>{annot=!annot;e.currentTarget.setAttribute('aria-pressed',String(annot));render();};
-  $('#shHide').onclick=e=>{hide=!hide;e.currentTarget.setAttribute('aria-pressed',String(hide));render();};
-  $('#shBig').onclick=()=>{if(hide){hide=false;$('#shHide').setAttribute('aria-pressed','false');render();sfx('ok');}};
-  function render(){
-    const el=EL[cur-1],sh=shellsOf(cur),last=sh[sh.length-1],cat=catOf(cur);
-    $('#shName').textContent=`${el.n}原子 ${el.s}`;
-    $('#shBig').innerHTML=schematic(cur,sh,{annot,hide});
-    $$('#ptab button[data-z]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.z===cur)));
-    let tip;
-    if(hide)tip='说一说：每一层上各有几个电子？点击示意图揭晓答案。';
-    else if(cat==='gas')tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子，属于相对稳定结构（稀有气体）。`;
-    else if(cat==='metal')tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子（少于 4 个），金属原子，化学反应中易失去电子。`;
-    else tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子，非金属原子${last>4?'，化学反应中易得到电子':''}。`;
-    $('#shInfo').textContent=tip;
-  }
-  render();
-  $$('[data-sch]').forEach(d=>{const z=+d.dataset.sch;d.innerHTML=schematic(z,shellsOf(z));});
-  return{};
-})();
-
-/* ================= 8 钠与氯 ================= */
-S.outer=(()=>{
-  const cv=$('#cvNaCl');let t=0,u=0,run=false,stage=0;
-  const txt=['钠原子最外层只有 1 个电子，氯原子最外层有 7 个电子。它们相遇时会发生什么？',
-    '钠原子失去最外层的 1 个电子，氯原子得到这个电子……',
-    '钠原子变成带 1 个单位正电荷的钠离子 Na⁺（2、8），氯原子变成带 1 个单位负电荷的氯离子 Cl⁻（2、8、8），两者都达到了相对稳定结构。',
-    '带相反电荷的 Na⁺ 和 Cl⁻ 相互作用，形成了氯化钠（NaCl）——就是我们吃的食盐！'];
-  $('#naclGo').onclick=()=>{if(run||u>0)return;run=true;sfx('whoosh');};
-  $('#naclReset').onclick=()=>{run=false;u=0;stage=-1;};
-  const ntP=mixPN(11,12),ntC=mixPN(17,18);
-  function tick(dt){
-    t+=dt;if(run){u=Math.min(1,u+dt/4.2);if(u>=1)run=false;}
-    const ns=u<=0?0:u<.45?1:u<.75?2:3;if(ns!==stage){stage=ns;$('#naclTxt').textContent=txt[ns];if(ns===2)sfx('ok');if(ns===3){sfx('win');const r=cv.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height/2,50);}}
-    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
-    const sc=Math.min(w*.17,h*.4),close=ease(smooth(.75,1,u))*w*.06;
-    const nx=w*.27+close,cx2=w*.73-close,y=h/2;
-    // 钠：2,8 + 外层 1 个（转移中）
-    const br=sc*.045,r0N=nucRadius(23,br),gap=sc*.15,r0C=nucRadius(35,br);
-    glow(ctx,nx,y,r0N*2,C.p,.2);drawNucleus(ctx,nx,y,ntP,br,t,.04);
-    glow(ctx,cx2,y,r0C*2,C.p,.2);drawNucleus(ctx,cx2,y,ntC,br,t,.04);
-    const ring=(x,R,n,k,a,off=0)=>{ctx.globalAlpha=a;ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-      for(let i=0;i<n;i++){const a2=t*(1.1-k*.25)+i/n*TAU+k+off;elec(ctx,x+Math.cos(a2)*R,y+Math.sin(a2)*R,sc*.03,a);}};
-    ring(nx,r0N+gap,2,0,1);ring(nx,r0N+gap*2,8,1,1);
-    ring(cx2,r0C+gap,2,0,1);ring(cx2,r0C+gap*2,8,1,1);
-    const RN3=r0N+gap*3,RC3=r0C+gap*3,fadeN=1-smooth(.3,.5,u);
-    // 氯外层：7 → 8
-    const k8=smooth(.4,.5,u);const nC=7;
-    ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(cx2,y,RC3,0,TAU);ctx.stroke();ctx.setLineDash([]);
-    if(fadeN>0){ctx.globalAlpha=fadeN;ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(nx,y,RN3,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
-    const baseC=t*.6+2;
-    for(let i=0;i<nC;i++){const a2=baseC+i/lerp(7,8,k8)*TAU;elec(ctx,cx2+Math.cos(a2)*RC3,y+Math.sin(a2)*RC3,sc*.03);}
-    // 转移的电子
-    const a0=t*.6,sx=nx+Math.cos(a0)*RN3,sy=y+Math.sin(a0)*RN3;const ae=baseC+7/8*TAU,exx=cx2+Math.cos(ae)*RC3,eyy=y+Math.sin(ae)*RC3;
-    const mv=smooth(.12,.45,u);
-    if(u<=.12)elec(ctx,sx,sy,sc*.03);
-    else{const mx=(sx+exx)/2,my=y-sc*1.0;const q=1-mv;const ex=q*q*sx+2*q*mv*mx+mv*mv*exx,ey=q*q*sy+2*q*mv*my+mv*mv*eyy;
-      if(mv<1){ctx.globalCompositeOperation='lighter';glow(ctx,ex,ey,sc*.2,C.e,.5);ctx.globalCompositeOperation='source-over';
-        ctx.strokeStyle=rgba(C.e,.35);ctx.setLineDash([2,6]);ctx.beginPath();ctx.moveTo(sx,sy);ctx.quadraticCurveTo(mx,my,exx,eyy);ctx.stroke();ctx.setLineDash([]);}
-      elec(ctx,ex,ey,sc*.032);}
-    // 标签
-    const ion=smooth(.45,.6,u);
-    label(ctx,ion>.5?'钠离子 Na⁺':'钠原子 Na',nx,y+sc*.98,{size:16,weight:700,col:ion>.5?C.p:C.ink});
-    label(ctx,ion>.5?'氯离子 Cl⁻':'氯原子 Cl',cx2,y+sc*.98,{size:16,weight:700,col:ion>.5?C.e:C.ink});
-    if(ion>0){label(ctx,'+',nx+sc*.62,y-sc*.62,{size:34,weight:900,col:C.p,a:ion,font:MONO});label(ctx,'−',cx2+sc*.62,y-sc*.62,{size:34,weight:900,col:C.e,a:ion,font:MONO});}
-    const bond=smooth(.8,1,u);
-    if(bond>0){ctx.globalAlpha=bond*(.6+.4*Math.sin(t*6));ctx.strokeStyle=C.g;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.moveTo(nx+sc*.5,y);ctx.lineTo(cx2-sc*.5,y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-      label(ctx,'NaCl',w/2,y-sc*.16,{size:26,weight:900,col:C.g,a:bond,font:MONO});}
   }
   return{tick};
 })();
@@ -1367,9 +1165,9 @@ S.quiz=(()=>{
     {q:'相对原子质量的标准是',o:['一个碳 12 原子的质量','一个碳 12 原子质量的 1/12','一个氢原子的质量','一个氧原子质量的 1/16'],a:1,x:'以<b>碳 12 原子质量的 1/12</b> 为标准。'},
     {q:'已知一个碳 12 原子的质量为 a kg，一个 X 原子的质量为 b kg，则 X 的相对原子质量为',o:['b/a','12b/a','a/(12b)','12a/b'],a:1,x:'A<sub>r</sub> = b ÷ (a × 1/12) = <b>12b/a</b>。'},
     {q:'下列说法正确的是',o:['相对原子质量就是原子的实际质量','原子的质量主要集中在原子核上','原子不显电性是因为原子中没有带电粒子','所有原子核内质子数都等于中子数'],a:1,x:'电子质量很小，原子的质量<b>主要集中在原子核上</b>。'},
-    {q:'核外电子排布中，第二层最多容纳的电子数是',o:['2','8','18','32'],a:1,x:'第一层最多 2 个，<b>第二层最多 8 个</b>。'},
-    {q:'某原子的结构示意图如下，下列说法错误的是',dg:[12,[2,8,2]],o:['核电荷数为 12','核外有 3 个电子层','最外层有 2 个电子','化学反应中易得到电子'],a:3,x:'这是镁原子，最外层 2 个电子（少于 4 个），化学反应中<b>易失去</b>电子。'},
-    {q:'与元素的化学性质关系最密切的是原子的',o:['质子数','中子数','最外层电子数','电子层数'],a:2,x:'<b>最外层电子数</b>决定原子在化学反应中是易得还是易失电子。'},
+    {q:'卢瑟福根据 α 粒子散射实验提出的原子模型是',o:['实心球模型','“葡萄干布丁”模型','核式结构模型','电子云模型'],a:2,x:'卢瑟福在 1911 年提出了<b>核式结构模型</b>。'},
+    {q:'某原子的相对原子质量为 23，核内有 11 个质子，则核内中子数为',o:['11','12','23','34'],a:1,x:'中子数 ≈ 相对原子质量 − 质子数 = 23 − 11 = <b>12</b>。'},
+    {q:'关于原子的结构，下列说法正确的是',o:['原子是不可再分的实心球','原子核由质子和电子构成','原子核体积很小，核外有相对很大的空间','原子核带负电'],a:2,x:'原子核的半径约为原子半径的十万分之一，<b>原子内部有很大的空间</b>。'},
     {q:'主持测定了铟、铱等元素相对原子质量新值的我国科学家是',o:['侯德榜','张青莲','屠呦呦','钱学森'],a:1,x:'<b>张青莲</b>院士测定的新值被国际原子量委员会采用为国际新标准。'}];
   let qi=0,ans=false,team='r',sc={r:0,b:0},left=30,tickAcc=0,over=false;
   $('#qTot').textContent=Q.length;
@@ -1379,7 +1177,7 @@ S.quiz=(()=>{
   $$('[data-t]').forEach(b=>b.onclick=()=>{score(b.dataset.t,+b.dataset.v);sfx(+b.dataset.v>0?'ok':'click');});
   function render(){
     over=false;ans=false;left=30;const d=Q[qi];$('#qNo').textContent=qi+1;$('#qText').textContent=d.q+'（  ）';
-    $('#qDg').innerHTML=d.dg?schematic(d.dg[0],d.dg[1]):'';$('#qExp').hidden=true;$('#qNext').textContent=qi===Q.length-1?'查看结果':'下一题 →';
+    $('#qExp').hidden=true;$('#qNext').textContent=qi===Q.length-1?'查看结果':'下一题 →';
     const box=$('#qOpts');box.innerHTML='';
     d.o.forEach((o,i)=>{const b=document.createElement('button');b.innerHTML=`<i>${'ABCD'[i]}</i><span>${o}</span>`;b.onclick=()=>pick(i,b);box.appendChild(b);});
     $('#qCard').querySelectorAll('.final').forEach(n=>n.remove());$('#qText').hidden=false;
@@ -1392,7 +1190,7 @@ S.quiz=(()=>{
   $('#qNext').onclick=()=>{if(qi<Q.length-1){qi++;setTeam(team==='r'?'b':'r');render();sfx('click');}else finish();};
   $('#qRestart').onclick=()=>{qi=0;sc={r:0,b:0};$('#scR').textContent=0;$('#scB').textContent=0;setTeam('r');render();};
   function finish(){
-    over=true;ans=true;$('#qText').hidden=true;$('#qOpts').innerHTML='';$('#qDg').innerHTML='';$('#qExp').hidden=true;
+    over=true;ans=true;$('#qText').hidden=true;$('#qOpts').innerHTML='';$('#qExp').hidden=true;
     const w=sc.r===sc.b?'平局！两队都是原子小达人':sc.r>sc.b?'红队获胜！':'蓝队获胜！';
     const f=document.createElement('div');f.className='final';f.innerHTML=`<p class="eyebrow">闯关结束</p><p class="big">${w}</p><p class="mono" style="font-size:1.4em"><span class="cp">红队 ${sc.r}</span> : <span class="ce">${sc.b} 蓝队</span></p>`;
     $('#qCard').appendChild(f);sfx('win');FX.confetti();
@@ -1411,8 +1209,8 @@ S.summary=(()=>{
   const svg=$('#mm');const ns='http://www.w3.org/2000/svg';
   const go=id=>()=>goTo(slides.findIndex(s=>s.dataset.id===id));
   const B=[{x:520,y:150,t:'原子的构成',c:C.p,L:[['原子核：质子(+) + 中子','parts'],['核外电子(−)，质量很小','parts'],['核电荷数 = 质子数 = 电子数','build']],side:-1},
-    {x:520,y:490,t:'核外电子排布',c:C.e,L:[['分层排布：2、8、8…','shells'],['原子结构示意图','shells'],['最外层电子数决定化学性质','outer']],side:-1},
-    {x:880,y:150,t:'原子模型与实验',c:C.n,L:[['道尔顿→汤姆孙→卢瑟福→玻尔','models'],['α 粒子散射实验','ruth'],['原子核：小、重、带正电','zoom']],side:1},
+    {x:520,y:490,t:'原子的特点',c:C.e,L:[['原子核很小，原子内空间很大','zoom'],['质量主要集中在原子核上','parts'],['整个原子不显电性','parts']],side:-1},
+    {x:880,y:150,t:'原子模型与实验',c:C.n,L:[['道尔顿→汤姆孙→卢瑟福→玻尔','models'],['α 粒子散射实验','ruth'],['原子核：小、重、带正电','ruth']],side:1},
     {x:880,y:490,t:'相对原子质量',c:C.g,L:[['标准：碳 12 质量的 1/12','mass'],['是比值，单位为“1”','calc'],['Aᵣ ≈ 质子数 + 中子数','table']],side:1}];
   const el=(n,a,p=svg)=>{const e=document.createElementNS(ns,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;};
   let d=.1;
@@ -1471,7 +1269,7 @@ addEventListener('keydown',e=>{
 let tx0=null,ty0=null;
 addEventListener('touchstart',e=>{const t=e.touches[0];tx0=t.clientX;ty0=t.clientY;},{passive:true});
 addEventListener('touchend',e=>{if(tx0===null)return;const t=e.changedTouches[0],dx=t.clientX-tx0,dy=t.clientY-ty0;tx0=null;
-  if(e.target.closest('canvas,input,.ptab'))return;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)goTo(idx+(dx<0?1:-1));},{passive:true});
+  if(e.target.closest('canvas,input'))return;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)goTo(idx+(dx<0?1:-1));},{passive:true});
 
 const m=/^#p(\d+)$/.exec(location.hash||'');goTo(m?(+m[1]-1):0);
 
