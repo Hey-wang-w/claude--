@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>原子结构与相对原子质量</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="gf" rel="stylesheet" media="print" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* 布局：全屏“幻灯片舞台”，每页一张实验台。粒子颜色即语义：质子红、中子灰、电子青，金色标记金箔与重点。 */
+:root{
+  color-scheme: dark;
+  --void:#080c1c;
+  --deep:#0d1430;
+  --panel:#111938;
+  --panel2:#18224a;
+  --line:#2a3768;
+  --glass:rgba(12,18,44,.82);
+  --ink:#ecf0ff;
+  --dim:#a2acd8;
+  --faint:#606c9e;
+  --proton:#ff5d77;
+  --neutron:#b3bdd9;
+  --electron:#3fd8ff;
+  --gold:#ffc457;
+  --ok:#47e0a0;
+  --bad:#ff6a6a;
+  --f-display:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Heiti SC",sans-serif;
+  --f-mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --r:14px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--void);color:var(--ink);font:400 clamp(15px,1.12vw,20px)/1.65 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(1100px 700px at 80% 12%,rgba(63,216,255,.10),transparent 60%),radial-gradient(900px 640px at 6% 96%,rgba(255,93,119,.09),transparent 60%)}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+#deck{position:fixed;inset:0;z-index:1}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--electron);outline-offset:2px}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:calc(env(safe-area-inset-top,0px) + clamp(18px,4vh,44px)) clamp(16px,4vw,64px) calc(env(safe-area-inset-bottom,0px) + 96px);
+  opacity:0;visibility:hidden;transform:translateX(3%) scale(.985);filter:blur(6px);
+  transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1),filter .55s ease,visibility 0s linear .7s}
+.slide.past{transform:translateX(-3%) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;transition-delay:0s}
+.wrap{max-width:1320px;margin-inline:auto;min-height:100%;display:flex;flex-direction:column;gap:clamp(12px,2vh,22px)}
+.head{display:flex;flex-direction:column;gap:4px}
+.eyebrow{margin:0;font:600 13px/1.4 var(--f-mono);letter-spacing:.16em;color:var(--gold)}
+h1,h2,h3{font-family:var(--f-display);font-weight:900;margin:0;text-wrap:balance;line-height:1.2}
+h2{font-size:clamp(26px,3.2vw,46px)}
+h3{font-size:clamp(19px,1.6vw,26px)}
+p{margin:0}
+.lede{color:var(--dim);max-width:62ch}
+.cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(14px,2vw,28px);align-items:start}
+.cols.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stage{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-height:clamp(320px,58vh,660px);
+  background:radial-gradient(ellipse at 50% 45%,var(--deep),var(--void) 75%)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:clamp(14px,1.5vw,22px);min-width:0}
+.card h3{margin-bottom:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--dim)}
+.mono{font-family:var(--f-mono)}
+.hl{color:var(--gold);font-weight:700}
+.cp{color:var(--proton);font-weight:700}.cn{color:var(--neutron);font-weight:700}.ce{color:var(--electron);font-weight:700}
+.stage-tag{position:absolute;left:14px;top:12px;font:600 13px/1.4 var(--f-mono);letter-spacing:.08em;color:var(--dim);pointer-events:none}
+.stage-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:13px;color:var(--faint);pointer-events:none;white-space:nowrap}
+@media (max-width:900px){.cols,.cols.even{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.ptab button em{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:.5em 1.05em;border-radius:999px;cursor:pointer;
+  font-weight:500;font-size:.92em;line-height:1.4;transition:transform .15s,border-color .2s,background .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:.4em;white-space:nowrap}
+.btn:hover{border-color:var(--gold);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.97)}
+.btn.pri{background:var(--gold);color:var(--void);border-color:transparent;font-weight:700;box-shadow:0 0 26px rgba(255,196,87,.32)}
+.btn[aria-pressed="true"]{border-color:var(--electron);background:rgba(63,216,255,.16);box-shadow:0 0 18px rgba(63,216,255,.2)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.sm{font-size:.82em;padding:.35em .8em}
+
+/* ---------- dock ---------- */
+.prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:45;background:linear-gradient(90deg,var(--proton),var(--gold),var(--electron));transition:width .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px var(--gold)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:45;display:flex;align-items:center;gap:4px;padding:5px;
+  background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:999px;max-width:calc(100% - 24px)}
+.dock .ic{width:40px;height:40px;border-radius:50%;border:0;background:transparent;cursor:pointer;font-size:22px;line-height:1;display:grid;place-items:center;color:var(--ink)}
+.dock .ic:hover{background:var(--panel2)}
+.dock .tx{border:0;background:transparent;cursor:pointer;padding:8px 12px;border-radius:999px;font-size:14px;color:var(--dim);white-space:nowrap}
+.dock .tx:hover{background:var(--panel2);color:var(--ink)}
+.dots{display:flex;gap:6px;padding-inline:6px}
+.dot{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--line);cursor:pointer;transition:all .3s}
+.dot.on{background:var(--gold);width:22px;border-radius:5px;box-shadow:0 0 10px var(--gold)}
+.pg{font:600 13px var(--f-mono);color:var(--dim);min-width:4.2em;text-align:center;font-variant-numeric:tabular-nums}
+@media (max-width:820px){.dots{display:none}}
+@media (max-width:480px){.dock .tx.opt{display:none}}
+
+.menu{position:fixed;inset:0;z-index:55;background:rgba(5,8,20,.72);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.menu .card{width:min(720px,100%);max-height:80vh;overflow:auto}
+.menu ol{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.menu li button{width:100%;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.menu li button:hover{border-color:var(--gold)}
+.menu li button b{font:700 13px var(--f-mono);color:var(--gold);min-width:2em}
+
+/* ---------- cover ---------- */
+.cover{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center}
+.cover h1{font-size:clamp(56px,9vw,148px);letter-spacing:.04em;line-height:1.05;margin-top:10px}
+.cover h1 .ch{display:inline-block;animation:rise 1s cubic-bezier(.2,.8,.2,1) both;text-shadow:0 0 40px rgba(255,196,87,.35)}
+.cover h1 .ch:nth-child(2){animation-delay:.08s;color:var(--gold)}
+.cover h1 .ch:nth-child(3){animation-delay:.16s}.cover h1 .ch:nth-child(4){animation-delay:.24s}
+.cover .sub{font:900 clamp(24px,3vw,44px)/1.3 var(--f-display);color:var(--dim);margin:6px 0 18px}
+.cover .sub b{color:var(--ink)}
+.cover-text{display:flex;flex-direction:column;gap:14px;min-width:0}
+.cover .stage{min-height:clamp(320px,70vh,720px);border:0;background:transparent}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--dim)}
+.lg::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.lg.p::before{background:var(--proton);box-shadow:0 0 10px var(--proton)}.lg.n::before{background:var(--neutron)}.lg.e::before{background:var(--electron);box-shadow:0 0 10px var(--electron)}
+.hint{font-size:13px;color:var(--faint)}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.9);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@media (max-width:900px){.cover{grid-template-columns:minmax(0,1fr)}.cover .stage{min-height:340px}}
+
+/* ---------- zoom ---------- */
+.scale-tag{position:absolute;right:14px;top:12px;font:700 clamp(16px,1.6vw,24px) var(--f-mono);color:var(--gold);text-shadow:0 0 14px rgba(255,196,87,.5);pointer-events:none}
+.scale-bar{position:absolute;right:16px;top:48px;width:110px;height:3px;background:var(--gold);opacity:.6;pointer-events:none}
+#zoomInfo h3{color:var(--electron)}
+#zoomInfo p{animation:fadeup .5s both}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- timeline ---------- */
+.tl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;position:relative}
+.tl::before{content:"";position:absolute;left:4%;right:4%;top:23px;height:2px;background:linear-gradient(90deg,var(--line),var(--gold),var(--line))}
+.tl button{position:relative;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px;color:var(--dim)}
+.tl button i{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:var(--panel);display:grid;place-items:center;font:700 12px var(--f-mono);font-style:normal;transition:all .3s;color:var(--dim)}
+.tl button span{font-size:.9em;text-align:center}
+.tl button[aria-pressed="true"] i{border-color:var(--gold);color:var(--void);background:var(--gold);box-shadow:0 0 24px rgba(255,196,87,.6);transform:scale(1.12)}
+.tl button[aria-pressed="true"]{color:var(--ink)}
+#modelInfo .yr{font:700 14px var(--f-mono);color:var(--gold)}
+#modelInfo .sig{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);color:var(--dim)}
+
+/* ---------- rutherford ---------- */
+.meter{display:flex;flex-direction:column;gap:4px}
+.meter .mt{display:flex;justify-content:space-between;gap:10px;font-size:.92em}
+.meter .mt b{font:700 1.05em var(--f-mono);font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:5px;background:var(--panel2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:5px;transition:width .3s}
+.flip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.flip button{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;font-size:.9em;line-height:1.5;min-height:3.4em;transition:all .3s}
+.flip button.obs{cursor:default;background:transparent}
+.flip button.inf{color:var(--faint)}
+.flip button.inf.open{color:var(--ink);border-color:var(--gold);background:rgba(255,196,87,.1)}
+.flip .lab{display:block;font:700 11px var(--f-mono);letter-spacing:.1em;color:var(--gold);margin-bottom:2px}
+
+/* ---------- tables ---------- */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:.5em .7em;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{font-weight:700;color:var(--dim);font-size:.9em}
+td:first-child,th:first-child{text-align:left}
+.formula-bar{font:900 clamp(18px,2vw,30px)/1.4 var(--f-display);text-align:center;padding:14px;border-radius:var(--r);
+  background:linear-gradient(90deg,rgba(255,93,119,.14),rgba(255,196,87,.14),rgba(63,216,255,.14));border:1px solid var(--line)}
+.qa{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qa button{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-size:.92em;line-height:1.55;transition:all .3s}
+.qa button .a{display:block;color:var(--faint);margin-top:6px;font-size:.95em}
+.qa button.open{border-color:var(--electron)}
+.qa button.open .a{color:var(--ink)}
+@media (max-width:600px){.qa,.flip{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- builder ---------- */
+.builder{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr) minmax(0,300px);gap:clamp(12px,1.6vw,22px);align-items:start}
+@media (max-width:1100px){.builder{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.builder .stage{grid-column:1/-1;order:-1}}
+@media (max-width:640px){.builder{grid-template-columns:minmax(0,1fr)}}
+.ctl{display:flex;flex-direction:column;gap:10px}
+.ctl .pc{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+.ctl .pc .sw{width:16px;height:16px;border-radius:50%}
+.ctl .pc b{font:700 1.3em var(--f-mono);min-width:1.6em;text-align:right;font-variant-numeric:tabular-nums}
+.ctl .pc button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);cursor:pointer;font-size:20px;line-height:1}
+.ctl .pc button:hover{border-color:var(--gold)}
+.elcard{display:flex;gap:14px;align-items:center}
+.elsym{width:84px;height:84px;flex:none;border-radius:14px;border:2px solid var(--gold);display:grid;place-items:center;position:relative;font:900 38px var(--f-display);background:rgba(255,196,87,.08);box-shadow:0 0 30px rgba(255,196,87,.18)}
+.elsym small{position:absolute;left:6px;top:2px;font:700 13px var(--f-mono);color:var(--gold)}
+.status{padding:10px 12px;border-radius:10px;font-size:.92em;border:1px solid var(--line);background:var(--panel2)}
+.status.ok{border-color:var(--ok);color:var(--ok)}
+.status.warn{border-color:var(--gold);color:var(--gold)}
+.task{border:1px dashed var(--gold);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.task .tt{font:900 1.15em var(--f-display)}
+.stars{font-family:var(--f-mono);letter-spacing:.2em;color:var(--gold)}
+
+/* ---------- schematic svg ---------- */
+.sch{width:100%;height:auto;display:block;overflow:visible}
+.sch .nuc{fill:rgba(255,93,119,.12);stroke:var(--proton);stroke-width:2.5}
+.sch .nz{fill:var(--ink);font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central}
+.sch .arc{fill:none;stroke:var(--electron);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .55s ease-out forwards;animation-delay:calc(var(--i)*.18s + .1s)}
+.sch .en{fill:var(--gold);font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--panel);stroke-width:7px;opacity:0;animation:pop .4s forwards;animation-delay:calc(var(--i)*.18s + .4s)}
+.sch .ann line,.sch .ann path{stroke:var(--dim);stroke-width:1.2;fill:none;stroke-dasharray:3 3}
+.sch .ann text{fill:var(--ink);font:500 15px var(--f-body)}
+.sch .ann circle{fill:var(--gold)}
+.sch .ann{animation:fadeup .5s both .5s}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+.sch .en{transform-box:fill-box;transform-origin:center}
+
+/* ---------- shells ---------- */
+.ptab{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px}
+.ptab button{aspect-ratio:1;max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:2px;position:relative;transition:transform .15s,border-color .2s}
+.ptab button b{font:900 clamp(14px,1.4vw,22px) var(--f-display)}
+.ptab button small{font:600 10px var(--f-mono);color:var(--dim);position:absolute;left:4px;top:3px}
+.ptab button em{font:normal 600 10px var(--f-mono);color:var(--dim)}
+.ptab button:hover{transform:translateY(-2px);border-color:var(--gold)}
+.ptab button[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 16px rgba(255,196,87,.45);background:rgba(255,196,87,.12)}
+.ptab .sp{visibility:hidden}
+.colored .ptab button.metal{background:rgba(255,93,119,.16)}
+.colored .ptab button.non{background:rgba(63,216,255,.14)}
+.colored .ptab button.gas{background:rgba(255,196,87,.16)}
+.rules{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.rules li::marker{color:var(--gold);font-family:var(--f-mono)}
+.catline{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--dim)}
+.catline span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.catline .m::before{background:rgba(255,93,119,.55)}.catline .x::before{background:rgba(63,216,255,.5)}.catline .g::before{background:rgba(255,196,87,.6)}
+.bigsch{max-width:560px;margin-inline:auto;width:100%}
+
+/* ---------- outer ---------- */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.trio .card{display:flex;flex-direction:column;gap:6px}
+.trio .sch{max-width:220px;margin:4px auto}
+.trio .tag{font:700 12px var(--f-mono);letter-spacing:.1em}
+@media (max-width:760px){.trio{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- mass ---------- */
+.tiny{font:700 clamp(15px,1.7vw,26px)/1.5 var(--f-mono);word-break:break-all;color:var(--electron);text-shadow:0 0 18px rgba(63,216,255,.4);min-height:3em}
+.tiny .cur{display:inline-block;width:.6em;background:var(--electron);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.masslist{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-variant-numeric:tabular-nums}
+.masslist dt{color:var(--dim)}
+.masslist dd{margin:0;font-family:var(--f-mono)}
+.def{font-size:1.08em;line-height:1.8}
+.def mark{background:linear-gradient(transparent 55%,rgba(255,196,87,.42) 55%);color:inherit;padding:0 2px}
+.reveal{transition:opacity .6s,transform .6s}
+.reveal.hide{opacity:0;transform:translateY(12px);pointer-events:none}
+
+/* ---------- calc ---------- */
+.frac{display:inline-grid;grid-template-rows:auto auto;text-align:center;vertical-align:middle;margin:0 .3em}
+.frac span:first-child{border-bottom:2px solid currentColor;padding:0 .4em .1em}
+.frac span:last-child{padding:.1em .4em 0}
+.bigf{font:900 clamp(18px,2.1vw,32px)/1.4 var(--f-display);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.2em;text-align:center}
+.steps{display:flex;flex-direction:column;gap:8px;font:600 clamp(15px,1.35vw,21px)/1.5 var(--f-mono);min-height:9em}
+.steps div{opacity:0;animation:fadeup .5s forwards}
+.steps .res{color:var(--gold);font-size:1.3em}
+.notes{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.notes li::marker{color:var(--electron)}
+.person{display:flex;gap:14px;align-items:flex-start}
+.person .av{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font:900 26px var(--f-display);background:radial-gradient(circle at 35% 30%,var(--gold),#b07b1c);color:var(--void)}
+
+/* ---------- fill table ---------- */
+.fill input{width:4.2em;font:700 1em var(--f-mono);text-align:center;padding:.25em;border-radius:8px;border:1.5px dashed var(--gold);background:var(--deep);color:var(--ink)}
+.fill input.right{border:1.5px solid var(--ok);color:var(--ok)}
+.fill input.wrong{border:1.5px solid var(--bad);color:var(--bad);animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.massbars{display:flex;flex-direction:column;gap:8px}
+.mb{display:grid;grid-template-columns:4em 1fr 4.6em;gap:10px;align-items:center;font-size:.92em}
+.mb .tr{height:14px;border-radius:7px;background:var(--panel2);overflow:hidden}
+.mb .tr i{display:block;height:100%;border-radius:7px}
+.mb b{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---------- quiz ---------- */
+.qtop{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}
+.team{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel);transition:box-shadow .3s,border-color .3s}
+.team.r{border-left:4px solid var(--proton)}.team.b{border-left:4px solid var(--electron);justify-content:flex-end}
+.team.on.r{box-shadow:0 0 28px rgba(255,93,119,.35);border-color:var(--proton)}
+.team.on.b{box-shadow:0 0 28px rgba(63,216,255,.35);border-color:var(--electron)}
+.team .nm{font:900 1.1em var(--f-display);white-space:nowrap}
+.team .sc{font:700 clamp(26px,3vw,44px) var(--f-mono);font-variant-numeric:tabular-nums;min-width:2.2em;text-align:center}
+.team.r .sc{color:var(--proton)}.team.b .sc{color:var(--electron)}
+.qmeta{display:flex;flex-direction:column;align-items:center;gap:4px;font:600 14px var(--f-mono);color:var(--dim)}
+.timer{width:64px;height:64px;position:relative}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:6}
+.timer .bgc{stroke:var(--panel2)}
+.timer .fgc{stroke:var(--gold);stroke-linecap:round;transition:stroke .3s}
+.timer b{position:absolute;inset:0;display:grid;place-items:center;font:700 18px var(--f-mono);color:var(--ink)}
+.qcard{display:flex;flex-direction:column;gap:14px}
+.qtext{font:700 clamp(19px,1.9vw,30px)/1.5 var(--f-body)}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opts button{border:1.5px solid var(--line);background:var(--panel2);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer;font-size:clamp(16px,1.4vw,22px);display:flex;gap:12px;align-items:center;transition:all .25s}
+.opts button i{font:normal 700 1em var(--f-mono);width:1.9em;height:1.9em;border-radius:50%;display:grid;place-items:center;background:var(--deep);flex:none;color:var(--gold)}
+.opts button:hover:not(:disabled){border-color:var(--gold);transform:translateY(-2px)}
+.opts button:disabled{cursor:default}
+.opts button.right{border-color:var(--ok);background:rgba(71,224,160,.16)}
+.opts button.right i{background:var(--ok);color:var(--void)}
+.opts button.wrong{border-color:var(--bad);background:rgba(255,106,106,.14);animation:shake .4s}
+.opts button.wrong i{background:var(--bad);color:var(--void)}
+.qexp{padding:12px 14px;border-radius:12px;background:var(--deep);border-left:4px solid var(--electron);color:var(--dim)}
+.qexp b{color:var(--ink)}
+.qdg{max-width:220px}
+.final{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;padding:24px}
+.final .big{font:900 clamp(34px,5vw,72px)/1.2 var(--f-display);color:var(--gold);text-shadow:0 0 30px rgba(255,196,87,.5)}
+@media (max-width:700px){.opts{grid-template-columns:minmax(0,1fr)}.qtop{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.qmeta{grid-column:1/-1;order:-1;flex-direction:row}}
+
+/* ---------- mind map ---------- */
+.mapwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:radial-gradient(ellipse at center,var(--deep),var(--void) 80%)}
+.mm{display:block;width:100%;min-width:760px;height:auto}
+.mm .lk{fill:none;stroke-width:2.2;stroke-dasharray:1;stroke-dashoffset:1}
+.mm.go .lk{animation:draw .8s ease-out forwards;animation-delay:var(--d)}
+.mm .nd{opacity:0}
+.mm.go .nd{animation:fadeup .5s forwards;animation-delay:var(--d)}
+.mm .nd text{font:500 19px var(--f-body);fill:var(--ink);dominant-baseline:central}
+.mm .nd.br text{font:900 24px var(--f-display)}
+.mm .nd.ct text{font:900 40px var(--f-display);fill:var(--void)}
+.mm .leaf{cursor:pointer}
+.mm .leaf:hover text{fill:var(--gold)}
+.mm .leaf rect{fill:var(--panel);stroke:var(--line)}
+.mm .leaf:hover rect{stroke:var(--gold)}
+
+@media (prefers-reduced-motion:reduce){
+  .slide{transition:opacity .2s,visibility 0s linear .2s;transform:none!important;filter:none!important}
+  .cover h1 .ch,.sch .arc,.sch .en,.steps div,.mm.go .lk,.mm.go .nd{animation-duration:.01s!important;animation-delay:0s!important}
+}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="prog" id="prog"></div>
+
+<main id="deck">
+
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面">
+  <div class="wrap cover">
+    <div class="cover-text">
+      <p class="eyebrow">人教版 · 九年级化学上册 · 第三单元 物质构成的奥秘</p>
+      <h1><span class="ch">原</span><span class="ch">子</span><span class="ch">结</span><span class="ch">构</span></h1>
+      <p class="sub">与 <b>相对原子质量</b></p>
+      <p class="lede">原子是化学变化中的最小粒子。可它真的是一个“不可再分”的实心小球吗？这节课，我们化身微观侦探，钻进原子内部一探究竟。</p>
+      <div class="legend"><span class="lg p">质子</span><span class="lg n">中子</span><span class="lg e">电子</span></div>
+      <div class="row"><button class="btn pri" data-go="next">开始探索 →</button><span class="hint">点一点右边的原子 · 键盘 ← → 或空格翻页</span></div>
+    </div>
+    <div class="stage"><canvas id="cvCover" aria-label="旋转的碳原子模型动画，可点击"></canvas></div>
+  </div>
+</section>
+
+<!-- 2 微观之旅 -->
+<section class="slide" data-id="zoom" data-title="原子有多小">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">情境导入 · 微观之旅</p><h2>一滴水里，藏着多少秘密？</h2></header>
+    <div class="cols">
+      <div class="stage"><canvas id="cvZoom" aria-label="从水滴逐级放大到原子核的动画，点击放大"></canvas>
+        <div class="scale-tag" id="zoomScale">约 10⁻³ m</div><div class="stage-hint">点击画面，继续放大</div></div>
+      <div class="side">
+        <div class="row" id="zoomChips">
+          <button class="btn sm" aria-pressed="true" data-k="0">一滴水</button>
+          <button class="btn sm" aria-pressed="false" data-k="1">水分子</button>
+          <button class="btn sm" aria-pressed="false" data-k="2">氧原子</button>
+          <button class="btn sm" aria-pressed="false" data-k="3">原子核</button>
+        </div>
+        <div class="card" id="zoomInfo"><h3>一滴水</h3><p></p></div>
+        <div class="row"><button class="btn" id="zoomOut">⊖ 缩小</button><button class="btn pri" id="zoomIn">放大 ⊕</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 原子模型演变 -->
+<section class="slide" data-id="models" data-title="原子模型的演变">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">科学史 · 一百多年的探索</p><h2>原子长什么样？科学家们“看”了一百多年</h2></header>
+    <div class="tl" id="tl"></div>
+    <div class="cols">
+      <div class="stage" style="min-height:clamp(300px,46vh,560px)"><canvas id="cvModel" aria-label="原子模型动画"></canvas><div class="stage-tag" id="modelTag"></div></div>
+      <div class="card" id="modelInfo"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 α粒子散射 -->
+<section class="slide" data-id="ruth" data-title="α粒子散射实验">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">虚拟实验室 · 1911 卢瑟福</p><h2>用 α 粒子“轰击”金箔，会发生什么？</h2></header>
+    <div class="cols">
+      <div class="stage"><canvas id="cvRuth" aria-label="α粒子散射实验模拟"></canvas><div class="stage-tag" id="ruthTag">模型：卢瑟福核式结构</div><div class="stage-hint">α 粒子带正电，质量约为氢原子的 4 倍</div></div>
+      <div class="side">
+        <div class="row">
+          <button class="btn sm" id="mR" aria-pressed="true">真实情况（核式结构）</button>
+          <button class="btn sm" id="mT" aria-pressed="false">若汤姆孙模型正确</button>
+        </div>
+        <div class="row">
+          <button class="btn pri" id="fire1">发射 1 个</button>
+          <button class="btn" id="fireAuto" aria-pressed="false">连续发射</button>
+          <button class="btn" id="fireClr">清空</button>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;gap:10px">
+          <div class="meter"><div class="mt"><span>穿过金箔，方向几乎不变</span><b id="ra">0</b></div><div class="bar"><i id="rab" style="background:var(--electron)"></i></div></div>
+          <div class="meter"><div class="mt"><span>发生较大角度的偏转</span><b id="rb">0</b></div><div class="bar"><i id="rbb" style="background:var(--gold)"></i></div></div>
+          <div class="meter"><div class="mt"><span>被反弹回来（偏转超过 90°）</span><b id="rc">0</b></div><div class="bar"><i id="rcb" style="background:var(--proton)"></i></div></div>
+        </div>
+        <div class="flip" id="ruthFlip">
+          <button class="obs"><span class="lab">现象 1</span>绝大多数 α 粒子穿过金箔，方向不变</button><button class="inf" data-a="原子内部有<b>很大的空间</b>，原子核很小"><span class="lab">推论 · 点击揭晓</span>？</button>
+          <button class="obs"><span class="lab">现象 2</span>一小部分 α 粒子改变了原来的方向</button><button class="inf" data-a="原子内有<b>带正电</b>的微粒（同种电荷相互排斥）"><span class="lab">推论 · 点击揭晓</span>？</button>
+          <button class="obs"><span class="lab">现象 3</span>极少数 α 粒子被弹了回来</button><button class="inf" data-a="原子核<b>体积很小，但质量很大</b>"><span class="lab">推论 · 点击揭晓</span>？</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 原子的构成 -->
+<section class="slide" data-id="parts" data-title="原子的构成">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">新知一 · 原子的构成</p><h2>把原子“拆开”看一看</h2></header>
+    <div class="cols">
+      <div class="side">
+        <div class="stage" style="min-height:clamp(300px,48vh,560px)"><canvas id="cvParts" aria-label="原子拆解动画"></canvas><div class="stage-tag" id="partsTag">碳原子</div></div>
+        <div class="row" id="partsChips">
+          <button class="btn sm" data-a="0" aria-pressed="false">氢 H</button>
+          <button class="btn sm" data-a="1" aria-pressed="true">碳 C</button>
+          <button class="btn sm" data-a="2" aria-pressed="false">氧 O</button>
+          <button class="btn sm" data-a="3" aria-pressed="false">钠 Na</button>
+          <button class="btn pri" id="partsGo">拆开原子</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="card tbl-wrap">
+          <table>
+            <thead><tr><th>粒子</th><th>电性</th><th>质量 / kg</th><th>相对质量</th></tr></thead>
+            <tbody>
+              <tr><td class="cp">质子</td><td>1 个单位正电荷</td><td class="mono">1.6726×10<sup>−27</sup></td><td class="mono">≈ 1</td></tr>
+              <tr><td class="cn">中子</td><td>不带电</td><td class="mono">1.6749×10<sup>−27</sup></td><td class="mono">≈ 1</td></tr>
+              <tr><td class="ce">电子</td><td>1 个单位负电荷</td><td>质子质量的 1/1836</td><td class="mono">≈ 0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-bar">核电荷数 = 质子数 = 核外电子数</div>
+        <div class="qa" id="partsQA">
+          <button><b>原子里有带电的粒子，为什么原子不显电性？</b><span class="a">点击查看答案</span></button>
+          <button><b>所有原子都含有中子吗？</b><span class="a">点击查看答案</span></button>
+          <button><b>质子数一定等于中子数吗？</b><span class="a">点击查看答案</span></button>
+          <button><b>原子的质量主要集中在哪里？</b><span class="a">点击查看答案</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 原子工坊 -->
+<section class="slide" data-id="build" data-title="原子工坊">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">互动游戏 · 原子工坊</p><h2>亲手造一个原子</h2></header>
+    <div class="builder">
+      <div class="ctl">
+        <div class="pc"><span class="sw" style="background:var(--proton)"></span><span>质子</span><b id="cP">0</b><span class="row" style="gap:4px;flex-wrap:nowrap"><button data-k="p" data-d="-1" aria-label="减少质子">−</button><button data-k="p" data-d="1" aria-label="增加质子">+</button></span></div>
+        <div class="pc"><span class="sw" style="background:var(--neutron)"></span><span>中子</span><b id="cN">0</b><span class="row" style="gap:4px;flex-wrap:nowrap"><button data-k="n" data-d="-1" aria-label="减少中子">−</button><button data-k="n" data-d="1" aria-label="增加中子">+</button></span></div>
+        <div class="pc"><span class="sw" style="background:var(--electron)"></span><span>电子</span><b id="cE">0</b><span class="row" style="gap:4px;flex-wrap:nowrap"><button data-k="e" data-d="-1" aria-label="减少电子">−</button><button data-k="e" data-d="1" aria-label="增加电子">+</button></span></div>
+        <div class="row"><button class="btn sm" id="bClear">清空</button><button class="btn sm" id="bRand">随机原子</button></div>
+        <div class="task" id="task">
+          <span class="eyebrow">闯关任务</span>
+          <span class="tt" id="taskT"></span>
+          <span class="muted" id="taskTip" style="font-size:.9em"></span>
+          <div class="row"><button class="btn sm" id="taskHint">提示</button><button class="btn sm pri" id="taskNext" hidden>下一关 →</button></div>
+          <span class="stars" id="taskStars"></span>
+        </div>
+      </div>
+      <div class="stage"><canvas id="cvBuild" aria-label="原子模型，随粒子数变化"></canvas><div class="stage-hint">质子数决定原子的种类</div></div>
+      <div class="side">
+        <div class="card elcard"><div class="elsym" id="bSym"><small id="bZ"></small><span id="bS">?</span></div><div><h3 id="bName">空空如也</h3><p class="muted" id="bMass">相对原子质量 ≈ 质子数 + 中子数</p></div></div>
+        <div class="status" id="bStatus">先加入质子，看看会变成什么原子。</div>
+        <div class="card"><p class="eyebrow" style="margin-bottom:6px">原子结构示意图</p><div id="bSch" style="max-width:260px"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 核外电子排布 -->
+<section class="slide" data-id="shells" data-title="核外电子排布">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">新知二 · 原子核外电子的排布</p><h2>电子也要“排队”：分层排布</h2></header>
+    <div class="cols even">
+      <div class="side">
+        <div class="card">
+          <ol class="rules">
+            <li>核外电子是<b class="hl">分层</b>运动的：离核近的电子能量低，离核远的电子能量高。</li>
+            <li>第一层最多容纳 <b class="hl">2</b> 个电子，第二层最多容纳 <b class="hl">8</b> 个电子。</li>
+            <li>最外层电子数不超过 <b class="hl">8</b> 个（只有一层的，不超过 2 个）。</li>
+            <li>电子先排满能量低的内层，再排外层。</li>
+          </ol>
+        </div>
+        <div class="card" id="ptWrap">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px"><p class="eyebrow">1–18 号元素 · 点选查看</p><button class="btn sm" id="ptColor" aria-pressed="false">按类别上色</button></div>
+          <div class="ptab" id="ptab"></div>
+          <div class="catline" style="margin-top:8px"><span class="m">金属</span><span class="x">非金属</span><span class="g">稀有气体</span></div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="card">
+          <div class="row" style="justify-content:space-between"><h3 id="shName">钠原子 Na</h3>
+            <div class="row"><button class="btn sm" id="shAnn" aria-pressed="false">认识示意图</button><button class="btn sm" id="shHide" aria-pressed="false">考考你</button></div></div>
+          <div class="bigsch" id="shBig"></div>
+          <p class="muted" id="shInfo"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 最外层电子 -->
+<section class="slide" data-id="outer" data-title="最外层电子与化学性质">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">新知二 · 拓展</p><h2>最外层电子数，决定了原子的“脾气”</h2></header>
+    <div class="trio">
+      <div class="card"><span class="tag" style="color:var(--gold)">稀有气体原子 · 如 氖</span><div data-sch="10"></div><p>最外层 <b class="hl">8</b> 个电子（氦为 2 个），属于<b>相对稳定结构</b>，化学性质不活泼。</p></div>
+      <div class="card"><span class="tag" style="color:var(--proton)">金属原子 · 如 钠</span><div data-sch="11"></div><p>最外层电子数一般<b class="hl">少于 4</b> 个，在化学反应中<b>易失去</b>电子。</p></div>
+      <div class="card"><span class="tag" style="color:var(--electron)">非金属原子 · 如 氯</span><div data-sch="17"></div><p>最外层电子数一般<b class="hl">多于 4</b> 个，在化学反应中<b>易得到</b>电子。</p></div>
+    </div>
+    <div class="cols">
+      <div class="stage" style="min-height:clamp(260px,38vh,460px)"><canvas id="cvNaCl" aria-label="钠原子与氯原子之间电子转移的动画"></canvas></div>
+      <div class="side">
+        <div class="card"><h3>演示：钠与氯的“电子交易”</h3><p class="muted" id="naclTxt">钠原子最外层只有 1 个电子，氯原子最外层有 7 个电子。它们相遇时会发生什么？</p></div>
+        <div class="row"><button class="btn pri" id="naclGo">开始反应</button><button class="btn" id="naclReset">重置</button></div>
+        <p class="hint">拓展：带电的原子（或原子团）叫做离子。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 原子的质量 -->
+<section class="slide" data-id="mass" data-title="原子的质量">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">新知三 · 相对原子质量</p><h2>一个原子有多重？</h2></header>
+    <div class="cols even">
+      <div class="side">
+        <div class="card">
+          <p class="muted">一个碳 12 原子的质量是</p>
+          <p class="tiny" id="tiny"></p>
+        </div>
+        <div class="card">
+          <dl class="masslist">
+            <dt>1 个氢原子</dt><dd>1.674×10<sup>−27</sup> kg</dd>
+            <dt>1 个碳 12 原子</dt><dd>1.993×10<sup>−26</sup> kg</dd>
+            <dt>1 个氧原子</dt><dd>2.657×10<sup>−26</sup> kg</dd>
+            <dt>1 个铁原子</dt><dd>9.288×10<sup>−26</sup> kg</dd>
+          </dl>
+          <p class="muted" style="margin-top:8px">这样的数字，书写和计算都很不方便。怎么办？</p>
+        </div>
+        <button class="btn pri" id="massGo" style="align-self:flex-start">给原子定一个“标准” →</button>
+      </div>
+      <div class="side">
+        <div class="stage" style="min-height:clamp(240px,34vh,400px)"><canvas id="cvC12" aria-label="碳12原子分成12等份的动画"></canvas><div class="stage-tag">碳 12 原子：6 个质子 + 6 个中子</div></div>
+        <div class="card def reveal hide" id="massDef">
+          以一种碳原子（<b>碳 12</b>，核内有 6 个质子和 6 个中子）质量的 <mark>1/12</mark> 为标准，其他原子的质量跟它相比较所得到的<mark>比</mark>，作为这种原子的<b class="hl">相对原子质量</b>（符号为 <b class="mono">A<sub>r</sub></b>）。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 原子天平 -->
+<section class="slide" data-id="balance" data-title="原子天平">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">互动游戏 · 原子天平</p><h2>用“标准砝码”称一称原子</h2>
+      <p class="lede">右盘每个金色小砝码 = 碳 12 原子质量的 1/12（约 1.661×10<sup>−27</sup> kg）。加几个砝码能让天平平衡，相对原子质量就约是几。</p></header>
+    <div class="cols">
+      <div class="stage"><canvas id="cvBal" aria-label="原子天平，点击右盘可加砝码"></canvas><div class="stage-hint">点击右盘也能加砝码</div></div>
+      <div class="side">
+        <div class="row" id="balChips"></div>
+        <div class="row">
+          <button class="btn pri" data-w="1">+1 个砝码</button>
+          <button class="btn" data-w="10">+10</button>
+          <button class="btn" data-w="-1">−1</button>
+          <button class="btn" data-w="0">清空</button>
+        </div>
+        <div class="card" id="balInfo"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 计算 -->
+<section class="slide" data-id="calc" data-title="相对原子质量的计算">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">新知三 · 计算</p><h2>相对原子质量怎么算？</h2></header>
+    <div class="card bigf">
+      <span>A<sub>r</sub> =</span>
+      <span class="frac"><span>一个该原子的实际质量</span><span>一个碳 12 原子的实际质量 × <sup>1</sup>⁄<sub>12</sub></span></span>
+    </div>
+    <div class="cols">
+      <div class="card">
+        <div class="row" id="calcChips" style="margin-bottom:12px"></div>
+        <div class="steps" id="steps"></div>
+      </div>
+      <div class="side">
+        <div class="card">
+          <h3>注意</h3>
+          <ul class="notes">
+            <li>相对原子质量是一个<b class="hl">比值</b>，单位是“1”，一般不读出也不写出。</li>
+            <li>它<b>不是</b>原子的实际质量，但能反映原子实际质量的相对大小。</li>
+            <li>原子的实际质量越大，它的相对原子质量也越大。</li>
+            <li>计算时常取近似值，如 A<sub>r</sub>(O) ≈ 16，A<sub>r</sub>(Fe) ≈ 56。</li>
+          </ul>
+        </div>
+        <div class="card person">
+          <div class="av">张</div>
+          <div><h3>张青莲 院士</h3><p class="muted">我国科学院院士张青莲教授为相对原子质量的测定作出了卓越贡献。他主持测定了铟、铱、锑、铕、铈、铒、锗、锌、镝几种元素的相对原子质量新值，被国际原子量委员会采用为国际新标准。</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 发现规律 -->
+<section class="slide" data-id="table" data-title="发现规律">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">探究 · 填表找规律</p><h2>质子、中子、电子和相对原子质量之间，藏着什么规律？</h2></header>
+    <div class="cols">
+      <div class="card tbl-wrap fill">
+        <table>
+          <thead><tr><th>原子</th><th>质子数</th><th>中子数</th><th>核外电子数</th><th>相对原子质量</th></tr></thead>
+          <tbody id="fillBody"></tbody>
+        </table>
+        <div class="row" style="margin-top:12px"><button class="btn pri" id="fillCheck">检查答案</button><button class="btn" id="fillShow">显示答案</button><button class="btn" id="fillReset">重做</button><span class="muted" id="fillMsg"></span></div>
+      </div>
+      <div class="side">
+        <button class="btn pri" id="lawGo" style="align-self:flex-start">我发现了规律！</button>
+        <div class="card reveal hide" id="law">
+          <div class="formula-bar" style="margin-bottom:12px">相对原子质量 ≈ 质子数 + 中子数</div>
+          <p class="muted" style="margin-bottom:10px">各粒子的相对质量（以碳 12 原子质量的 1/12 为标准）：</p>
+          <div class="massbars">
+            <div class="mb"><span class="cp">质子</span><span class="tr"><i style="width:99.3%;background:var(--proton)"></i></span><b>1.007</b></div>
+            <div class="mb"><span class="cn">中子</span><span class="tr"><i style="width:100%;background:var(--neutron)"></i></span><b>1.009</b></div>
+            <div class="mb"><span class="ce">电子</span><span class="tr"><i style="width:.6%;min-width:3px;background:var(--electron)"></i></span><b>0.0005</b></div>
+          </div>
+          <p style="margin-top:12px">质子和中子的相对质量都约等于 1，电子的质量很小可以忽略，所以原子的质量主要集中在原子核上。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 闯关 -->
+<section class="slide" data-id="quiz" data-title="知识闯关">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">课堂竞赛 · 红蓝对抗</p><h2>原子知识大闯关</h2></header>
+    <div class="qtop">
+      <div class="team r" id="tR"><span class="nm">红队</span><span class="sc" id="scR">0</span><span class="row" style="gap:4px"><button class="btn sm" data-t="r" data-v="10">+10</button><button class="btn sm" data-t="r" data-v="-10">−10</button></span></div>
+      <div class="qmeta"><span>第 <b id="qNo">1</b> / <span id="qTot">12</span> 题</span><div class="timer"><svg viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="28"/><circle class="fgc" id="tmC" cx="32" cy="32" r="28" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg><b id="tmT">30</b></div></div>
+      <div class="team b" id="tB"><span class="row" style="gap:4px"><button class="btn sm" data-t="b" data-v="10">+10</button><button class="btn sm" data-t="b" data-v="-10">−10</button></span><span class="sc" id="scB">0</span><span class="nm">蓝队</span></div>
+    </div>
+    <div class="row"><span class="muted">本题答题：</span><button class="btn sm" id="pickR" aria-pressed="true">红队</button><button class="btn sm" id="pickB" aria-pressed="false">蓝队</button><span class="hint">答对自动加 10 分，下一题自动轮换</span></div>
+    <div class="card qcard" id="qCard">
+      <p class="qtext" id="qText"></p>
+      <div class="qdg" id="qDg"></div>
+      <div class="opts" id="qOpts"></div>
+      <p class="qexp" id="qExp" hidden></p>
+    </div>
+    <div class="row"><button class="btn pri" id="qNext">下一题 →</button><button class="btn" id="qRestart">重新开始</button></div>
+  </div>
+</section>
+
+<!-- 14 小结 -->
+<section class="slide" data-id="summary" data-title="课堂小结">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">课堂小结 · 点击任一知识点可跳回对应页面</p><h2>今天，我们走进了原子内部</h2></header>
+    <div class="mapwrap"><svg class="mm" id="mm" viewBox="0 0 1400 640" role="img" aria-label="本课知识结构图"></svg></div>
+    <p class="muted">课后挑战：画出 1–18 号元素的原子结构示意图，并按最外层电子数给它们分组；查阅资料，了解原子模型最新的研究进展。</p>
+  </div>
+</section>
+
+</main>
+
+<nav class="dock" aria-label="翻页">
+  <button class="ic" id="btnPrev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="pg" id="pg">1 / 14</span>
+  <button class="ic" id="btnNext" aria-label="下一页">›</button>
+  <button class="tx" id="btnMenu">目录</button>
+  <button class="tx opt" id="btnSnd" aria-pressed="true">音效：开</button>
+  <button class="tx opt" id="btnFs">全屏</button>
+</nav>
+<div class="menu" id="menu" hidden><div class="card"><div class="row" style="justify-content:space-between"><h3>课件目录</h3><button class="btn sm" id="menuX">关闭</button></div><ol id="menuList"></ol></div></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+(()=>{
+'use strict';
+/* ================= 基础工具 ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={p:css('--proton')||'#ff5d77',n:css('--neutron')||'#b3bdd9',e:css('--electron')||'#3fd8ff',g:css('--gold')||'#ffc457',ink:css('--ink')||'#ecf0ff',dim:css('--dim')||'#a2acd8',faint:css('--faint')||'#606c9e',line:css('--line')||'#2a3768',ok:css('--ok')||'#47e0a0',bad:css('--bad')||'#ff6a6a',void:css('--void')||'#080c1c',panel:css('--panel')||'#111938'};
+const MONO='"JetBrains Mono",Consolas,monospace', BODY='"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif';
+const rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgba=(h,a)=>{const[r,g,b]=rgb(h);return`rgba(${r},${g},${b},${a})`;};
+const shade=(h,k)=>{const[r,g,b]=rgb(h);const f=v=>Math.round(k<0?v*(1+k):v+(255-v)*k);return`rgb(${f(r)},${f(g)},${f(b)})`;};
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci=(x,d=3)=>{const e=Math.floor(Math.log10(x));const m=x/Math.pow(10,e);return m.toFixed(d)+'×10'+String(e).split('').map(c=>SUP[c]).join('');};
+const gf=$('#gf'); if(gf) gf.media='all';
+
+function fit(cv){
+  const dpr=Math.min(2,window.devicePixelRatio||1);const r=cv.getBoundingClientRect();
+  const w=Math.max(1,r.width),h=Math.max(1,r.height);const W=Math.round(w*dpr),H=Math.round(h*dpr);
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return{ctx,w,h,dpr};
+}
+function ball(ctx,x,y,r,col,a=1){
+  if(r<=.2)return;const g=ctx.createRadialGradient(x-r*.38,y-r*.42,r*.08,x,y,r);
+  g.addColorStop(0,shade(col,.75));g.addColorStop(.38,col);g.addColorStop(1,shade(col,-.55));
+  ctx.globalAlpha=a;ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.globalAlpha=1;
+}
+function glow(ctx,x,y,r,col,a=1){
+  if(r<=.5)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+}
+function elec(ctx,x,y,r,a=1){
+  ctx.globalCompositeOperation='lighter';glow(ctx,x,y,r*3.4,C.e,.5*a);ctx.globalCompositeOperation='source-over';ball(ctx,x,y,r,C.e,a);
+}
+function label(ctx,txt,x,y,{size=14,col=C.ink,align='center',weight=500,font=BODY,a=1,base='middle'}={}){
+  ctx.globalAlpha=a;ctx.fillStyle=col;ctx.font=`${weight} ${size}px ${font}`;ctx.textAlign=align;ctx.textBaseline=base;ctx.fillText(txt,x,y);ctx.globalAlpha=1;
+}
+// 质子、中子交错排列
+function mixPN(p,n){const o=[];let a=0,b=0;for(let i=0;i<p+n;i++){if(b>=n||(a<p&&a/(p||1)<=b/(n||1))){o.push('p');a++;}else{o.push('n');b++;}}return o;}
+// 原子核内粒子的位置（向日葵排布）
+function nucPos(i,br){if(i===0)return[0,0];const r=br*1.12*Math.sqrt(i+.3),a=i*2.39996;return[Math.cos(a)*r,Math.sin(a)*r];}
+function nucRadius(N,br){return N<=1?br:br*1.12*Math.sqrt(N-.7)+br;}
+function drawNucleus(ctx,x,y,types,br,t=0,jit=.06){
+  for(let i=types.length-1;i>=0;i--){const[px,py]=nucPos(i,br);const j=br*jit;
+    ball(ctx,x+px+Math.sin(t*9+i*1.7)*j,y+py+Math.cos(t*8+i*2.3)*j,br,types[i]==='p'?C.p:C.n);}
+}
+
+/* ================= 元素数据 ================= */
+const EL=[['H','氢',1,0],['He','氦',4,2],['Li','锂',7,4],['Be','铍',9,5],['B','硼',11,6],['C','碳',12,6],['N','氮',14,7],['O','氧',16,8],['F','氟',19,10],['Ne','氖',20,10],
+ ['Na','钠',23,12],['Mg','镁',24,12],['Al','铝',27,14],['Si','硅',28,14],['P','磷',31,16],['S','硫',32,16],['Cl','氯',35.5,18],['Ar','氩',40,22],['K','钾',39,20],['Ca','钙',40,20]]
+ .map((d,i)=>({z:i+1,s:d[0],n:d[1],ar:d[2],nn:d[3]}));
+const shellsOf=e=>{const caps=[2,8,8,2],o=[];let r=e;for(const c of caps){if(r<=0)break;const k=Math.min(c,r);o.push(k);r-=k;}return o;};
+const METAL=[3,4,11,12,13,19,20],GAS=[2,10,18];
+const catOf=z=>GAS.includes(z)?'gas':METAL.includes(z)?'metal':'non';
+
+/* 原子结构示意图 SVG */
+function schematic(p,shells,{annot=false,hide=false}={}){
+  const r=26,g=24,ang=40*Math.PI/180,n=shells.length,maxR=r+g*Math.max(n,1);
+  const padT=annot?64:8,padB=annot?84:8,padL=annot?168:6,padR=annot?150:16;
+  const ext=Math.max(r,maxR*Math.sin(ang))+6,cx=padL+r+2,cy=padT+ext,W=cx+maxR+padR,H=cy+ext+padB;
+  let s=`<svg class="sch" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="质子数${p}，电子排布 ${shells.join('、')}">`;
+  s+=`<circle class="nuc" cx="${cx}" cy="${cy}" r="${r}"/><text class="nz" x="${cx}" y="${cy}">+${p}</text>`;
+  shells.forEach((k,i)=>{const R=r+g*(i+1),x1=cx+R*Math.cos(ang),y1=cy-R*Math.sin(ang),y2=cy+R*Math.sin(ang);
+    s+=`<path class="arc" style="--i:${i}" pathLength="1" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}"/>`;
+    s+=`<text class="en" style="--i:${i}" x="${cx+R}" y="${cy}">${hide?'?':k}</text>`;});
+  if(annot&&n){
+    const Rn=r+g*n,xo=cx+Rn*Math.cos(ang),yo=cy-Rn*Math.sin(ang),L=padL-14;
+    s+=`<g class="ann">`;
+    s+=`<circle cx="${cx-r*.72}" cy="${cy+r*.72}" r="3"/><path d="M${cx-r*.72} ${cy+r*.72} L${L+6} ${cy+r+30}"/><text x="${L}" y="${cy+r+30}" text-anchor="end" dominant-baseline="central">圆圈：原子核</text>`;
+    s+=`<circle cx="${cx-10}" cy="${cy}" r="3"/><path d="M${cx-10} ${cy} L${L+6} ${cy}"/><text x="${L}" y="${cy}" text-anchor="end" dominant-baseline="central">“+”：带正电</text>`;
+    s+=`<circle cx="${cx+8}" cy="${cy-6}" r="3"/><path d="M${cx+8} ${cy-6} L${L+6} ${cy-r-30}"/><text x="${L}" y="${cy-r-30}" text-anchor="end" dominant-baseline="central">数字：质子数</text>`;
+    s+=`<circle cx="${xo}" cy="${yo}" r="3"/><path d="M${xo} ${yo} L${xo+18} ${padT-26}"/><text x="${xo+22}" y="${padT-30}" dominant-baseline="central">弧线：电子层</text>`;
+    s+=`<circle cx="${cx+Rn+9}" cy="${cy+9}" r="3"/><path d="M${cx+Rn+9} ${cy+9} L${cx+Rn+24} ${H-48}"/><text x="${cx+Rn+28}" y="${H-44}" dominant-baseline="central">弧线上的数字：</text><text x="${cx+Rn+28}" y="${H-22}" dominant-baseline="central">该层电子数</text>`;
+    s+=`</g>`;
+  }
+  return s+'</svg>';
+}
+
+/* ================= 音效 ================= */
+const SND={on:true,ctx:null};
+function sfx(type){
+  if(!SND.on)return;
+  try{
+    SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx,t=a.currentTime;
+    const tone=(f,d,typ='sine',v=.1,dl=0,f2)=>{const o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.setValueAtTime(f,t+dl);
+      if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dl+d);g.gain.setValueAtTime(0,t+dl);g.gain.linearRampToValueAtTime(v,t+dl+.012);
+      g.gain.exponentialRampToValueAtTime(.0001,t+dl+d);o.connect(g).connect(a.destination);o.start(t+dl);o.stop(t+dl+d+.03);};
+    ({click:()=>tone(700,.07,'triangle',.05),
+      pop:()=>tone(380,.14,'sine',.09,0,900),
+      drop:()=>tone(900,.12,'sine',.07,0,300),
+      ok:()=>{tone(660,.14,'triangle',.09);tone(990,.22,'triangle',.09,.1);},
+      bad:()=>tone(230,.28,'sawtooth',.05,0,130),
+      win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.3,'triangle',.08,i*.1)),
+      ding:()=>tone(1500,.25,'sine',.05),
+      whoosh:()=>tone(160,.45,'sine',.06,0,700),
+      tick:()=>tone(1200,.04,'square',.025)})[type]?.();
+  }catch(e){}
+}
+
+/* ================= 特效层 ================= */
+const FX=(()=>{
+  const cv=$('#fx');let ps=[],dirty=false;
+  function burst(x,y,n=26,cols=[C.g,C.e,C.p],spd=6){
+    for(let i=0;i<n;i++){const a=Math.random()*TAU,s=spd*(.3+Math.random());
+      ps.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,dec:.016+Math.random()*.02,r:1.5+Math.random()*3,c:cols[i%cols.length],g:.1,sh:0});}
+  }
+  function confetti(){
+    const w=innerWidth,cols=[C.g,C.e,C.p,C.ok,C.n];
+    for(let i=0;i<(reduce?40:170);i++)ps.push({x:Math.random()*w,y:-20-Math.random()*240,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,life:1,dec:.0035+Math.random()*.004,
+      r:4+Math.random()*4,c:cols[i%5],g:.04,sh:1,rot:Math.random()*TAU,vr:(Math.random()-.5)*.3});
+  }
+  function tick(dt){
+    if(!ps.length){if(dirty){const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);dirty=false;}return;}
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const k=dt*60;dirty=true;
+    ps=ps.filter(p=>{p.vy+=p.g*k;p.vx*=.99;p.x+=p.vx*k;p.y+=p.vy*k;p.life-=p.dec*k;
+      ctx.globalAlpha=clamp(p.life,0,1);
+      if(p.sh){p.rot+=p.vr*k;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r*.4,p.r*2,p.r*.8);ctx.restore();}
+      else{ctx.globalCompositeOperation='lighter';glow(ctx,p.x,p.y,p.r*3,p.c,.9);ctx.globalCompositeOperation='source-over';}
+      return p.life>0&&p.y<h+40;});
+    ctx.globalAlpha=1;
+  }
+  return{burst,confetti,tick};
+})();
+const burstAt=(el,n,cols)=>{const r=el.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height/2,n,cols);};
+
+/* ================= 背景粒子 ================= */
+const BG=(()=>{
+  const cv=$('#bg'),N=reduce?24:64,cols=[C.p,C.n,C.e];
+  const ps=Array.from({length:N},(_,i)=>({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0003,vy:(Math.random()-.5)*.0003,r:Math.random()*1.7+.4,c:cols[i%3]}));
+  let mx=.5,my=.5;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight;});
+  function tick(dt){
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    for(const p of ps){p.x=(p.x+p.vx*dt*60+1)%1;p.y=(p.y+p.vy*dt*60+1)%1;
+      const x=p.x*w-(mx-.5)*p.r*16,y=p.y*h-(my-.5)*p.r*16;ctx.fillStyle=rgba(p.c,.5);ctx.beginPath();ctx.arc(x,y,p.r,0,TAU);ctx.fill();}
+  }
+  return{tick};
+})();
+
+const S={};
+
+/* ================= 1 封面：3D 原子 ================= */
+S.cover=(()=>{
+  const cv=$('#cvCover');let t=0,rx=-.35,ry=0,auto=0,mxr=0,myr=0,boost=0;
+  const nuc=Array.from({length:12},(_,i)=>{const y=1-(i+.5)/12*2,rr=Math.sqrt(1-y*y),th=i*2.39996;return{x:Math.cos(th)*rr,y,z:Math.sin(th)*rr,p:i%2===0};});
+  const orbits=[{ax:1.15,az:.25,sp:1.3,ph:0},{ax:1.15,az:2.35,sp:1.05,ph:1},{ax:.15,az:-.9,sp:.85,ph:2}];
+  let trails=orbits.map(()=>[[],[]]);
+  const rot=(p,ax,ay)=>{let{x,y,z}=p;let c=Math.cos(ax),s=Math.sin(ax);[y,z]=[y*c-z*s,y*s+z*c];c=Math.cos(ay);s=Math.sin(ay);[x,z]=[x*c+z*s,-x*s+z*c];return{x,y,z};};
+  const rotZ=(p,a)=>{const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c-p.y*s,y:p.x*s+p.y*c,z:p.z};};
+  cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();mxr=((e.clientX-r.left)/r.width-.5)*1.4;myr=((e.clientY-r.top)/r.height-.5)*1.1;});
+  cv.addEventListener('click',e=>{boost=1;FX.burst(e.clientX,e.clientY,46);sfx('pop');});
+  function tick(dt){
+    t+=dt*(1+boost*5);boost=Math.max(0,boost-dt*.7);auto+=dt*.25;
+    rx=lerp(rx,-.35+myr,.06);ry=lerp(ry,auto+mxr,.06);
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    const cx=w/2,cy=h/2,S0=Math.min(w,h)*.3,f=3.4;
+    const proj=p=>{const s=f/(f+p.z);return{x:cx+p.x*S0*s,y:cy+p.y*S0*s,s,z:p.z};};
+    glow(ctx,cx,cy,S0*.7,C.g,.14+boost*.2);
+    const items=[];ctx.lineWidth=1.2;
+    orbits.forEach((o,k)=>{
+      const R=1+k*.17;ctx.beginPath();
+      for(let i=0;i<=120;i++){const a=i/120*TAU;let p=rotZ(rot({x:Math.cos(a)*R,y:Math.sin(a)*R,z:0},o.ax,0),o.az);const q=proj(rot(p,rx,ry));i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y);}
+      ctx.strokeStyle=rgba(C.e,.26);ctx.stroke();
+      for(let j=0;j<2;j++){const a=t*o.sp*2+j*Math.PI+o.ph;let p=rotZ(rot({x:Math.cos(a)*R,y:Math.sin(a)*R,z:0},o.ax,0),o.az);items.push({ty:'e',q:proj(rot(p,rx,ry)),k,j});}
+    });
+    nuc.forEach((n,i)=>{const j=.012*Math.sin(t*9+i);const p=rot({x:n.x*.2+j,y:n.y*.2,z:n.z*.2},rx,ry);items.push({ty:n.p?'p':'n',q:proj(p)});});
+    items.sort((a,b)=>b.q.z-a.q.z);
+    for(const it of items){
+      if(it.ty==='e'){const tr=trails[it.k][it.j];tr.push([it.q.x,it.q.y]);if(tr.length>22)tr.shift();
+        ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
+        for(let i=1;i<tr.length;i++){ctx.strokeStyle=rgba(C.e,i/tr.length*.55);ctx.lineWidth=i/tr.length*5*it.q.s;ctx.beginPath();ctx.moveTo(tr[i-1][0],tr[i-1][1]);ctx.lineTo(tr[i][0],tr[i][1]);ctx.stroke();}
+        ctx.globalCompositeOperation='source-over';elec(ctx,it.q.x,it.q.y,S0*.042*it.q.s);
+      }else ball(ctx,it.q.x,it.q.y,S0*.078*it.q.s,it.ty==='p'?C.p:C.n);
+    }
+  }
+  return{tick,enter(){trails=orbits.map(()=>[[],[]]);}};
+})();
+
+/* ================= 2 微观之旅：逐级放大 ================= */
+S.zoom=(()=>{
+  const cv=$('#cvZoom');let t=0,from=0,target=0,anim=1,time=0;
+  const Z=[50,2.5,80];
+  const INFO=[
+    {h:'一滴水',sc:'约 10⁻³ m',p:'一滴水（约 0.05 mL）中大约有 <b class="hl">1.67×10²¹</b> 个水分子。如果 10 亿人来数，每人每分钟数 100 个，日夜不停，要数 3 万多年！'},
+    {h:'水分子',sc:'约 10⁻¹⁰ m',p:'每个水分子由 <b>2 个氢原子</b>和 <b>1 个氧原子</b>构成。在化学变化中，分子可以分成原子，原子又重新组合。那原子还能再分吗？'},
+    {h:'氧原子',sc:'直径约 10⁻¹⁰ m',p:'原子并不是实心小球！它的中心有一个带正电的<b class="cp">原子核</b>，<b class="ce">8 个电子</b>在核外很大的空间里作高速运动。你能找到原子核吗？'},
+    {h:'原子核',sc:'直径约 10⁻¹⁵ m',p:'原子核的半径大约只有原子半径的<b class="hl">十万分之一</b>。如果把原子比作一座体育场，原子核只相当于场中央的一只蚂蚁；可原子的质量几乎全部集中在原子核上。氧原子核由 <b class="cp">8 个质子</b>和 <b class="cn">8 个中子</b>构成。'}];
+  const dots=Array.from({length:150},()=>({a:Math.random()*TAU,r:Math.sqrt(Math.random())*.72}));
+  const nb=Array.from({length:7},(_,i)=>({a:i/7*TAU+.4,d:1.35+Math.random()*.25,rot:Math.random()*TAU}));
+  const ntypes=mixPN(8,8);
+  function info(k){const d=INFO[k];$('#zoomInfo').innerHTML=`<h3>${d.h}</h3><p>${d.p}</p>`;$('#zoomScale').textContent=d.sc;
+    $$('#zoomChips button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.k===k)));
+    $('#zoomOut').disabled=k===0;$('#zoomIn').disabled=k===3;}
+  function set(k){k=clamp(k,0,3);if(k===target)return;from=t;target=k;anim=0;sfx('whoosh');info(k);}
+  function drop(ctx,R){
+    ctx.beginPath();ctx.moveTo(0,-1.3*R);ctx.bezierCurveTo(.35*R,-.85*R,.82*R,-.35*R,.8*R,.05*R);ctx.arc(0,.05*R,.8*R,0,Math.PI,false);
+    ctx.bezierCurveTo(-.82*R,-.35*R,-.35*R,-.85*R,0,-1.3*R);
+    const g=ctx.createRadialGradient(-.25*R,-.25*R,R*.05,0,0,R*1.1);g.addColorStop(0,'#bff3ff');g.addColorStop(.45,'#3aa8e6');g.addColorStop(1,'#123a8a');
+    ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='rgba(191,243,255,.6)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.18)';for(const d of dots){ctx.beginPath();ctx.arc(Math.cos(d.a)*d.r*R,.05*R+Math.sin(d.a)*d.r*R,Math.max(.6,R*.006),0,TAU);ctx.fill();}
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(-.32*R,-.22*R,.12*R,.22*R,.5,0,TAU);ctx.fill();
+    ball(ctx,0,0,R*.018,'#f0705a');
+  }
+  function mol(ctx,R,tm,simple){
+    const draw=(x,y,s,rt,a)=>{ctx.globalAlpha=a;const hx=Math.sin(.91)*.62*s,hy=Math.cos(.91)*.62*s;
+      const c=Math.cos(rt),sn=Math.sin(rt),P=(px,py)=>[x+px*c-py*sn,y+px*sn+py*c];
+      const[h1x,h1y]=P(-hx,hy),[h2x,h2y]=P(hx,hy);ball(ctx,h1x,h1y,s*.27,'#e6ecff',a);ball(ctx,h2x,h2y,s*.27,'#e6ecff',a);ball(ctx,x,y,s*.4,'#f0705a',a);ctx.globalAlpha=1;};
+    if(!simple)for(const n of nb)draw(Math.cos(n.a)*n.d*R,Math.sin(n.a)*n.d*R,R*.9,n.rot+tm*.2,.25);
+    glow(ctx,0,0,R*.9,'#f0705a',.15);draw(0,0,R,Math.sin(tm*.6)*.08,1);
+    if(R>60){label(ctx,'O',0,0,{size:R*.16,weight:700,font:MONO,col:'#fff'});
+      const hx=Math.sin(.91)*.62*R,hy=Math.cos(.91)*.62*R;label(ctx,'H',-hx,hy,{size:R*.12,weight:700,font:MONO,col:'#334'});label(ctx,'H',hx,hy,{size:R*.12,weight:700,font:MONO,col:'#334'});}
+  }
+  function atom(ctx,R,tm,hint){
+    const g=ctx.createRadialGradient(0,0,0,0,0,R);g.addColorStop(0,'rgba(63,216,255,.16)');g.addColorStop(.6,'rgba(63,216,255,.07)');g.addColorStop(1,'rgba(63,216,255,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,R,0,TAU);ctx.fill();
+    ctx.setLineDash([4,7]);ctx.lineWidth=1.2;ctx.strokeStyle=rgba(C.e,.3);[.42,.88].forEach(k=>{ctx.beginPath();ctx.arc(0,0,R*k,0,TAU);ctx.stroke();});ctx.setLineDash([]);
+    for(let i=0;i<2;i++){const a=tm*1.6+i*Math.PI;elec(ctx,Math.cos(a)*R*.42,Math.sin(a)*R*.42,Math.max(2,R*.028));}
+    for(let i=0;i<6;i++){const a=-tm*1.0+i/6*TAU;elec(ctx,Math.cos(a)*R*.88,Math.sin(a)*R*.88,Math.max(2,R*.028));}
+    glow(ctx,0,0,Math.max(6,R*.06),C.g,.9);ball(ctx,0,0,Math.max(1.4,R*.0125),C.p);
+    if(hint){const pr=R*.08+Math.sin(tm*4)*R*.015;ctx.strokeStyle=rgba(C.g,.9);ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,pr,0,TAU);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(pr*.75,-pr*.75);ctx.lineTo(R*.3,-R*.3);ctx.stroke();label(ctx,'原子核在这里！',R*.32,-R*.34,{size:15,col:C.g,align:'left',weight:700});}
+  }
+  function nucl(ctx,R,tm){
+    const br=R*.12;glow(ctx,0,0,R*.9,C.p,.18);drawNucleus(ctx,0,0,ntypes,br,tm,.05);
+    if(R>80){label(ctx,'8 个质子 + 8 个中子',0,R*.78,{size:16,col:C.dim});}
+  }
+  const STG=[(c,R,tm)=>drop(c,R),(c,R,tm)=>mol(c,R,tm),(c,R,tm)=>atom(c,R,tm,target===2&&anim>=1),(c,R,tm)=>nucl(c,R,tm)];
+  cv.addEventListener('click',()=>set(target<3?target+1:0));
+  $('#zoomIn').onclick=()=>set(target+1);$('#zoomOut').onclick=()=>set(target-1);
+  $$('#zoomChips button').forEach(b=>b.onclick=()=>set(+b.dataset.k));
+  info(0);
+  function tick(dt){
+    time+=dt;if(anim<1){anim=Math.min(1,anim+dt/1.7);t=from+(target-from)*ease(anim);}
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const R=Math.min(w,h)*.36;
+    let k=Math.min(Math.floor(t+1e-6),3),f=t-k;if(k===3)f=0;
+    ctx.save();ctx.translate(w/2,h/2);
+    const a1=1-smooth(.55,1,f);if(a1>0){ctx.globalAlpha=a1;STG[k](ctx,R*Math.pow(Z[Math.min(k,2)],f),time);}
+    if(f>0&&k<3){const a2=smooth(.3,.92,f);ctx.globalAlpha=a2;STG[k+1](ctx,R*Math.pow(Z[k],f-1),time);}
+    ctx.restore();ctx.globalAlpha=1;
+  }
+  return{tick};
+})();
+
+/* ================= 3 原子模型演变 ================= */
+S.models=(()=>{
+  const cv=$('#cvModel');let cur=0,t=0,fade=1;
+  const M=[
+    {y:'1803',who:'道尔顿',name:'实心球模型',d:'原子是构成物质的最小粒子，是坚实的、不可再分的实心球。',s:'提出了近代原子论，奠定了近代化学的基础。'},
+    {y:'1904',who:'汤姆孙',name:'“葡萄干布丁”模型',d:'1897 年汤姆孙发现了电子。他认为原子是一个平均分布着正电荷的球体，带负电的电子像葡萄干一样镶嵌其中。',s:'发现电子，第一次证明原子是可以再分的。'},
+    {y:'1911',who:'卢瑟福',name:'核式结构模型',d:'原子中心有一个很小的原子核，原子的全部正电荷和几乎全部质量都集中在原子核里，带负电的电子在核外空间绕核运动。',s:'依据是著名的 α 粒子散射实验，下一页我们就来重现它。'},
+    {y:'1913',who:'玻尔',name:'分层模型',d:'电子在原子核外一定的轨道上绕核运动，不同轨道上的电子能量不同，离核越远能量越高。',s:'这就是“核外电子分层排布”的由来。'},
+    {y:'1920s',who:'薛定谔 等',name:'电子云模型',d:'现代量子力学认为，电子在核外没有确定的轨道，只能用“电子云”描述它在核外某处出现机会的大小。',s:'人类对原子结构的认识，仍在不断深入。'}];
+  const tl=$('#tl');
+  M.forEach((m,i)=>{const b=document.createElement('button');b.setAttribute('aria-pressed',String(i===0));b.innerHTML=`<i>${m.y}</i><span>${m.who}</span>`;b.onclick=()=>show(i);tl.appendChild(b);});
+  const th=Array.from({length:9},(_,i)=>({a:i*2.4,r:Math.sqrt((i+.5)/9)*.72}));
+  const ru=Array.from({length:6},(_,i)=>({tilt:i/6*Math.PI,ecc:.35+.15*(i%3),sp:.8+i*.17,ph:i}));
+  function show(i){cur=i;fade=0;sfx('click');$$('#tl button').forEach((b,k)=>b.setAttribute('aria-pressed',String(k===i)));
+    const m=M[i];$('#modelInfo').innerHTML=`<p class="yr">${m.y} · ${m.who}</p><h3>${m.name}</h3><p>${m.d}</p><p class="sig">${m.s}</p>`;$('#modelTag').textContent=m.name;}
+  show(0);
+  function tick(dt){
+    t+=dt;fade=Math.min(1,fade+dt*2);
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,R=Math.min(w,h)*.36*(.85+.15*ease(fade));
+    ctx.globalAlpha=ease(fade);
+    if(cur===0){glow(ctx,cx,cy,R*1.4,C.n,.12);ball(ctx,cx,cy,R*.8,'#8c97b8');}
+    else if(cur===1){
+      const g=ctx.createRadialGradient(cx-R*.3,cy-R*.3,R*.1,cx,cy,R*.85);g.addColorStop(0,'rgba(255,170,185,.75)');g.addColorStop(1,'rgba(255,93,119,.35)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*.85,0,TAU);ctx.fill();
+      for(let i=0;i<14;i++){const a=i*2.1,r=Math.sqrt((i+.5)/14)*.75*R;label(ctx,'+',cx+Math.cos(a)*r,cy+Math.sin(a)*r,{size:R*.09,weight:700,col:'rgba(255,255,255,.55)',font:MONO});}
+      for(const p of th){const x=cx+Math.cos(p.a)*p.r*R+Math.sin(t*6+p.a)*2,y=cy+Math.sin(p.a)*p.r*R+Math.cos(t*5+p.a)*2;elec(ctx,x,y,R*.055,ctx.globalAlpha);}
+    }else if(cur===2){
+      ctx.lineWidth=1;
+      for(const o of ru){ctx.save();ctx.translate(cx,cy);ctx.rotate(o.tilt);ctx.strokeStyle=rgba(C.e,.22);ctx.beginPath();ctx.ellipse(0,0,R*.95,R*.95*o.ecc,0,0,TAU);ctx.stroke();
+        const a=t*o.sp*2+o.ph;elec(ctx,Math.cos(a)*R*.95,Math.sin(a)*R*.95*o.ecc,R*.04,ctx.globalAlpha);ctx.restore();}
+      glow(ctx,cx,cy,R*.22,C.g,.8);ball(ctx,cx,cy,R*.05,C.p);
+      label(ctx,'原子核：很小，带正电，集中了几乎全部质量',cx,cy+R*1.08,{size:14,col:C.dim});
+    }else if(cur===3){
+      [2,8,1].forEach((n,k)=>{const r=R*(.32+k*.3);ctx.strokeStyle=rgba(C.e,.35);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);ctx.stroke();
+        label(ctx,`第${k+1}层`,cx+r*.71+6,cy-r*.71-6,{size:12,col:C.dim,align:'left'});
+        for(let i=0;i<n;i++){const a=t*(1.5-k*.4)+i/n*TAU;elec(ctx,cx+Math.cos(a)*r,cy+Math.sin(a)*r,R*.035,ctx.globalAlpha);}});
+      glow(ctx,cx,cy,R*.3,C.p,.35);ball(ctx,cx,cy,R*.12,C.p);label(ctx,'+11',cx,cy,{size:R*.09,weight:700,font:MONO,col:'#fff'});
+    }else{
+      ctx.globalCompositeOperation='lighter';
+      for(let i=0;i<(reduce?500:1400);i++){const u=Math.random(),r=-Math.log(1-u*.98)*R*.22,a=Math.random()*TAU;ctx.fillStyle=rgba(C.e,.35);ctx.fillRect(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.6,1.6);}
+      ctx.globalCompositeOperation='source-over';ball(ctx,cx,cy,R*.03,C.p);
+      label(ctx,'点越密的地方，电子出现的机会越大',cx,cy+R*1.08,{size:14,col:C.dim});
+    }
+    ctx.globalAlpha=1;
+  }
+  return{tick};
+})();
+
+/* ================= 4 α 粒子散射实验 ================= */
+S.ruth=(()=>{
+  const cv=$('#cvRuth');const tr=document.createElement('canvas');let tctx=tr.getContext('2d');
+  let W=0,H=0,cx=0,cy=0,R=0,sp=36,foilH=0,nuclei=[],parts=[],flashes=[],model='r',auto=false,acc=0,t=0;
+  const cnt={a:0,b:0,c:0};const D=.28,SPEED=4.4;
+  function layout(w,h,dpr){
+    W=w;H=h;cx=w*.53;cy=h/2;R=Math.min(w*.46,h*.46);sp=clamp(R/7.2,26,46);foilH=R*.6;nuclei=[];
+    for(let c=0;c<2;c++)for(let y=-foilH;y<=foilH+.1;y+=sp)nuclei.push({x:cx+(c-.5)*sp*.86,y:cy+y+(c?sp/2:0)-sp/4});
+    tr.width=Math.round(w*dpr);tr.height=Math.round(h*dpr);tctx=tr.getContext('2d');tctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function upd(){const tot=cnt.a+cnt.b+cnt.c||1;
+    $('#ra').textContent=cnt.a;$('#rb').textContent=cnt.b;$('#rc').textContent=cnt.c;
+    $('#rab').style.width=cnt.a/tot*100+'%';$('#rbb').style.width=Math.max(cnt.b?2:0,cnt.b/tot*100)+'%';$('#rcb').style.width=Math.max(cnt.c?2:0,cnt.c/tot*100)+'%';}
+  function clear(){parts=[];flashes=[];cnt.a=cnt.b=cnt.c=0;tctx.clearRect(0,0,W,H);upd();}
+  function fire(){if(!R)return;parts.push({x:cx-R*.8,y:cy+(Math.random()*2-1)*foilH*.95,dx:1,dy:0,hit:false,tail:[]});}
+  function setModel(m){model=m;$('#mR').setAttribute('aria-pressed',String(m==='r'));$('#mT').setAttribute('aria-pressed',String(m==='t'));
+    $('#ruthTag').textContent=m==='r'?'模型：卢瑟福核式结构':'假设：汤姆孙“葡萄干布丁”模型';clear();sfx('click');}
+  $('#mR').onclick=()=>setModel('r');$('#mT').onclick=()=>setModel('t');
+  $('#fire1').onclick=()=>{fire();sfx('tick');};
+  $('#fireAuto').onclick=e=>{auto=!auto;e.currentTarget.setAttribute('aria-pressed',String(auto));e.currentTarget.textContent=auto?'停止发射':'连续发射';};
+  $('#fireClr').onclick=clear;
+  $$('#ruthFlip .inf').forEach(b=>b.onclick=()=>{if(b.classList.contains('open'))return;b.classList.add('open');b.innerHTML=`<span class="lab">推论</span>${b.dataset.a}`;burstAt(b,18);sfx('ok');});
+  function step(p,d){
+    const px=p.x,py=p.y;p.x+=p.dx*d;p.y+=p.dy*d;
+    for(const n of nuclei){
+      const rx=p.x-n.x,ry=p.y-n.y;if(rx*rx+ry*ry>sp*sp*.36)continue;
+      const s0=(px-n.x)*p.dx+(py-n.y)*p.dy,s1=rx*p.dx+ry*p.dy;
+      if(s0<0&&s1>=0){
+        const cr=p.dx*ry-p.dy*rx,b=Math.abs(cr);let th;
+        if(model==='r')th=2*Math.atan(D/(2*Math.max(b,.004)));else th=(.004+Math.random()*.01);
+        const sg=cr>=0?1:-1,a=th*sg,c=Math.cos(a),s=Math.sin(a);
+        [p.dx,p.dy]=[p.dx*c-p.dy*s,p.dx*s+p.dy*c];if(th>.17)p.hit=true;
+      }
+    }
+    tctx.strokeStyle=p.hit?rgba(C.g,.55):rgba(C.e,.045);tctx.lineWidth=p.hit?1.3:1;tctx.beginPath();tctx.moveTo(px,py);tctx.lineTo(p.x,p.y);tctx.stroke();
+  }
+  function tick(dt){
+    t+=dt;const{ctx,w,h,dpr}=fit(cv);if(w!==W||h!==H){layout(w,h,dpr);clear();}
+    if(auto){acc+=dt*14;while(acc>=1){fire();acc--;}}
+    const k=dt*60,sub=4;
+    parts=parts.filter(p=>{
+      for(let i=0;i<sub;i++)step(p,SPEED*k/sub);
+      p.tail.push([p.x,p.y]);if(p.tail.length>10)p.tail.shift();
+      const ddx=p.x-cx,ddy=p.y-cy;
+      if(ddx*ddx+ddy*ddy>R*R){const ang=Math.abs(Math.atan2(p.dy,p.dx))*180/Math.PI;
+        if(ang<10)cnt.a++;else if(ang<=90)cnt.b++;else{cnt.c++;sfx('ding');}
+        const m=Math.hypot(ddx,ddy);flashes.push({x:cx+ddx/m*R,y:cy+ddy/m*R,l:1,c:ang<10?C.e:ang<=90?C.g:C.p});upd();return false;}
+      return true;});
+    ctx.clearRect(0,0,w,h);
+    // 荧光屏
+    ctx.lineWidth=10;ctx.strokeStyle=rgba(C.ok,.08);ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();
+    ctx.lineWidth=1.2;ctx.strokeStyle=rgba(C.ok,.35);ctx.setLineDash([3,6]);ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();ctx.setLineDash([]);
+    label(ctx,'荧光屏',cx+R*.72,cy-R*.72-12,{size:13,col:C.ok,align:'left'});
+    // 金箔
+    ctx.fillStyle=rgba(C.g,.1);ctx.fillRect(cx-sp*.95,cy-foilH-sp*.5,sp*1.9,foilH*2+sp);
+    label(ctx,'金箔（放大示意）',cx,cy-foilH-sp*.5-14,{size:13,col:C.g});
+    for(const n of nuclei){
+      if(model==='r'){ctx.strokeStyle=rgba(C.e,.12);ctx.lineWidth=1;ctx.beginPath();ctx.arc(n.x,n.y,sp*.48,0,TAU);ctx.stroke();glow(ctx,n.x,n.y,6,C.g,.8);ctx.fillStyle=C.p;ctx.beginPath();ctx.arc(n.x,n.y,1.6,0,TAU);ctx.fill();}
+      else{glow(ctx,n.x,n.y,sp*.5,C.p,.28);for(let i=0;i<3;i++){const a=i*2.1+n.y;ctx.fillStyle=rgba(C.e,.8);ctx.beginPath();ctx.arc(n.x+Math.cos(a)*sp*.25,n.y+Math.sin(a)*sp*.25,1.4,0,TAU);ctx.fill();}}
+    }
+    // 粒子源
+    const sx=cx-R*.86;ctx.fillStyle=C.panel;ctx.strokeStyle=C.line;ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect?ctx.roundRect(sx-30,cy-foilH-8,26,foilH*2+16,6):ctx.rect(sx-30,cy-foilH-8,26,foilH*2+16);ctx.fill();ctx.stroke();
+    glow(ctx,sx-17,cy,26,C.p,.35+.15*Math.sin(t*5));
+    ctx.save();ctx.translate(sx-17,cy);ctx.rotate(-Math.PI/2);label(ctx,'α 粒子源',0,0,{size:12,col:C.dim});ctx.restore();
+    // 轨迹 + 粒子
+    ctx.drawImage(tr,0,0,w,h);
+    ctx.globalCompositeOperation='lighter';
+    for(const p of parts){
+      for(let i=1;i<p.tail.length;i++){ctx.strokeStyle=rgba(p.hit?C.g:C.e,i/p.tail.length*.8);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.tail[i-1][0],p.tail[i-1][1]);ctx.lineTo(p.tail[i][0],p.tail[i][1]);ctx.stroke();}
+      glow(ctx,p.x,p.y,8,p.hit?C.g:'#ffe6a8',.9);
+    }
+    flashes=flashes.filter(f=>{f.l-=dt*.8;glow(ctx,f.x,f.y,16*(1.2-f.l*.2),f.c,Math.max(0,f.l));return f.l>0;});
+    ctx.globalCompositeOperation='source-over';
+  }
+  return{tick,leave(){auto=false;const b=$('#fireAuto');b.setAttribute('aria-pressed','false');b.textContent='连续发射';}};
+})();
+
+/* ================= 5 原子的构成：拆解 ================= */
+S.parts=(()=>{
+  const cv=$('#cvParts');const AT=[{nm:'氢原子',p:1,n:0,e:1},{nm:'碳原子',p:6,n:6,e:6},{nm:'氧原子',p:8,n:8,e:8},{nm:'钠原子',p:11,n:12,e:11}];
+  let at=AT[1],u=0,ut=0,t=0,types=[];
+  function setAtom(i){at=AT[i];types=mixPN(at.p,at.n);$('#partsTag').textContent=at.nm;$$('#partsChips [data-a]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.a===i)));}
+  setAtom(1);
+  $$('#partsChips [data-a]').forEach(b=>b.onclick=()=>{setAtom(+b.dataset.a);sfx('click');});
+  $('#partsGo').onclick=e=>{ut=ut?0:1;e.currentTarget.textContent=ut?'组装原子':'拆开原子';sfx(ut?'whoosh':'pop');};
+  const ANS=['原子核所带的正电荷数（核电荷数）与核外电子所带的负电荷数<b>相等</b>，电性<b>相反</b>，所以整个原子不显电性。',
+    '<b>不是。</b>普通氢原子的原子核里只有 1 个质子，没有中子。','<b>不一定。</b>例如钠原子核内有 11 个质子、12 个中子。','集中在<b>原子核</b>上。电子的质量只有质子质量的 1/1836，可以忽略不计。'];
+  $$('#partsQA button').forEach((b,i)=>b.onclick=()=>{if(b.classList.contains('open'))return;b.classList.add('open');b.querySelector('.a').innerHTML=ANS[i];sfx('ok');});
+  function grid(n,ox,oy,gap){const cols=Math.max(1,Math.ceil(Math.sqrt(n*1.6))),rows=Math.ceil(n/cols);return i=>[ox+((i%cols)-(cols-1)/2)*gap,oy+(Math.floor(i/cols)-(rows-1)/2)*gap];}
+  function tick(dt){
+    t+=dt;u+=clamp(ut-u,-dt/1.3,dt/1.3);
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const m=Math.min(w,h),cx=w/2,cy=h/2;
+    const N=types.length,br=m*.034*Math.min(1,Math.sqrt(10/Math.max(N,1))),bE=m*.045;
+    const sh=shellsOf(at.e),R1=Math.max(nucRadius(N,br)+m*.06,m*.15),gp=m*.11;
+    const gP=grid(at.p,w*.2,h*.28,br*2.5),gN=grid(at.n,w*.2,h*.72,br*2.5),gE=grid(at.e,w*.8,h*.5,bE*2.2);
+    const la=smooth(.75,1,u);
+    if(u<1){ctx.globalAlpha=1-u;sh.forEach((_,k)=>{ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(cx,cy,R1+gp*k,0,TAU);ctx.stroke();});ctx.setLineDash([]);
+      glow(ctx,cx,cy,R1*.9,C.p,.25);ctx.globalAlpha=1;}
+    // 标签
+    if(la>0){
+      label(ctx,`质子 × ${at.p}`,w*.2,h*.28-Math.ceil(at.p/Math.ceil(Math.sqrt(at.p*1.6)))*br*1.3-22,{size:17,weight:700,col:C.p,a:la});
+      label(ctx,'每个带 1 个单位正电荷',w*.2,h*.28+Math.ceil(at.p/Math.ceil(Math.sqrt(at.p*1.6)))*br*1.3+16,{size:13,col:C.dim,a:la});
+      label(ctx,at.n?`中子 × ${at.n}`:'中子 × 0（没有中子！）',w*.2,h*.72-Math.max(1,Math.ceil(at.n/Math.ceil(Math.sqrt(Math.max(at.n,1)*1.6))))*br*1.3-22,{size:17,weight:700,col:C.n,a:la});
+      if(at.n)label(ctx,'不带电',w*.2,h*.72+Math.ceil(at.n/Math.ceil(Math.sqrt(at.n*1.6)))*br*1.3+16,{size:13,col:C.dim,a:la});
+      const er=Math.ceil(at.e/Math.ceil(Math.sqrt(at.e*1.6)));
+      label(ctx,`电子 × ${at.e}`,w*.8,h*.5-er*bE*1.1-24,{size:17,weight:700,col:C.e,a:la});
+      label(ctx,'每个带 1 个单位负电荷',w*.8,h*.5+er*bE*1.1+18,{size:13,col:C.dim,a:la});
+      label(ctx,`原子核`,w*.2,h*.5,{size:14,col:C.g,a:la*.9});
+      ctx.globalAlpha=la*.5;ctx.strokeStyle=C.g;ctx.setLineDash([5,5]);ctx.strokeRect(w*.04,h*.08,w*.32,h*.84);ctx.setLineDash([]);ctx.globalAlpha=1;
+      label(ctx,`(+${at.p}) + (−${at.e}) = 0  →  原子不显电性`,w*.58,h*.94,{size:15,weight:700,col:C.g,a:la});
+    }
+    let pi=0,ni=0;
+    types.forEach((ty,i)=>{const[ax,ay]=nucPos(i,br);const d=i/Math.max(N,1)*.25,lu=ease(clamp((u*1.3-d),0,1));
+      const[ex,ey]=ty==='p'?gP(pi++):gN(ni++);const j=br*.06*(1-u);
+      ball(ctx,lerp(cx+ax,ex,lu)+Math.sin(t*9+i)*j,lerp(cy+ay,ey,lu)+Math.cos(t*8+i)*j,br,ty==='p'?C.p:C.n);});
+    let ei=0;sh.forEach((n,k)=>{for(let i=0;i<n;i++){const a=t*(1.4-k*.35)+i/n*TAU+k,R=R1+gp*k;const[ex,ey]=gE(ei);const d=.25+ei/Math.max(at.e,1)*.25,lu=ease(clamp(u*1.3-d+.25,0,1));
+      elec(ctx,lerp(cx+Math.cos(a)*R,ex,lu),lerp(cy+Math.sin(a)*R,ey,lu),m*.016);ei++;}});
+    if(u<.02)label(ctx,`核电荷数 ${at.p}`,cx,cy+R1+gp*(sh.length-1)+28,{size:14,col:C.dim});
+  }
+  return{tick};
+})();
+
+/* ================= 6 原子工坊 ================= */
+S.build=(()=>{
+  const cv=$('#cvBuild');const P={p:[],n:[],e:[]};let dying=[],t=0,W=300,H=300,taskI=0,done=new Set(),celebrated=false;
+  const LIM={p:20,n:24,e:20};
+  const TASKS=[{t:'造一个氢原子',tip:'最简单的原子。',p:1,n:0,e:1,hint:'1 个质子、0 个中子、1 个电子。氢原子是唯一没有中子的原子。'},
+    {t:'造一个氦原子',tip:'气球里充的就是它。',p:2,n:2,e:2,hint:'2 个质子、2 个中子、2 个电子。'},
+    {t:'造一个碳原子（碳 12）',tip:'相对原子质量的“标准”就来自它。',p:6,n:6,e:6,hint:'6 个质子、6 个中子、6 个电子。'},
+    {t:'造一个氧原子',tip:'我们呼吸离不开它。',p:8,n:8,e:8,hint:'8 个质子、8 个中子、8 个电子。'},
+    {t:'造一个钠原子',tip:'小心：它的质子数和中子数不相等！',p:11,n:12,e:11,hint:'11 个质子、12 个中子、11 个电子。'},
+    {t:'造一个氯原子（氯 35）',tip:'食盐里的另一种元素。',p:17,n:18,e:17,hint:'17 个质子、18 个中子、17 个电子。'}];
+  function spawn(k){const side=k==='e'?Math.random()<.5?0:W:-20;return{x:k==='e'?side:Math.random()*W,y:k==='e'?Math.random()*H:H+20};}
+  function change(k,d){
+    if(d>0){if(P[k].length>=LIM[k]){sfx('bad');return;}const s=spawn(k);P[k].push({x:s.x,y:s.y});sfx(k==='e'?'drop':'pop');}
+    else{if(!P[k].length)return;const o=P[k].pop();dying.push({...o,k,vx:(Math.random()-.5)*8,vy:-4-Math.random()*4,l:1});sfx('click');}
+    celebrated=false;info();
+  }
+  $$('.ctl .pc button').forEach(b=>b.onclick=()=>change(b.dataset.k,+b.dataset.d));
+  $('#bClear').onclick=()=>{['p','n','e'].forEach(k=>{while(P[k].length)change(k,-1);});};
+  $('#bRand').onclick=()=>{const el=EL[Math.floor(Math.random()*18)];['p','n','e'].forEach(k=>{P[k]=[];});
+    for(let i=0;i<el.z;i++){P.p.push(spawn('p'));P.e.push(spawn('e'));}for(let i=0;i<el.nn;i++)P.n.push(spawn('n'));sfx('whoosh');celebrated=false;info();};
+  $('#taskHint').onclick=()=>{$('#taskTip').textContent=TASKS[taskI].hint;};
+  $('#taskNext').onclick=()=>{taskI=(taskI+1)%TASKS.length;showTask();sfx('click');};
+  function showTask(){const k=TASKS[taskI];$('#taskT').textContent=`第 ${taskI+1} 关：${k.t}`;$('#taskTip').textContent=k.tip;$('#taskNext').hidden=true;
+    $('#taskStars').textContent=TASKS.map((_,i)=>done.has(i)?'★':'☆').join('');}
+  function info(){
+    const p=P.p.length,n=P.n.length,e=P.e.length,el=EL[p-1];
+    $('#cP').textContent=p;$('#cN').textContent=n;$('#cE').textContent=e;
+    $('#bZ').textContent=p||'';$('#bS').textContent=el?el.s:'?';
+    $('#bName').textContent=el?(p===e?`${el.n}原子`:`${el.n}的离子`):(n||e?'还不是原子':'空空如也');
+    $('#bMass').innerHTML=p||n?`质子数 + 中子数 = <b class="hl mono">${p+n}</b>${el?`（${el.n}的相对原子质量约为 ${el.ar}）`:''}`:'相对原子质量 ≈ 质子数 + 中子数';
+    const st=$('#bStatus');let cls='',msg='';
+    if(!p){msg=n||e?'没有质子就不是原子。质子数决定了是哪种原子，先加质子吧！':'先加入质子，看看会变成什么原子。';cls='warn';}
+    else if(p!==e){const q=p-e,sup=(Math.abs(q)>1?Math.abs(q):'')+(q>0?'⁺':'⁻');
+      msg=`质子数 ≠ 电子数，粒子带 ${Math.abs(q)} 个单位${q>0?'正':'负'}电荷，这是离子 ${el.s}${sup.replace(/\d/g,c=>SUP[c])}（拓展）。想要原子，调成质子数 = 电子数。`;cls='warn';}
+    else{msg=`质子数 = 核外电子数 = ${p}，整体不显电性，是一个${el.n}原子。`;cls='ok';if(n!==el.nn)msg+=` 常见的${el.n}原子核内有 ${el.nn} 个中子。`;}
+    st.className='status '+cls;st.textContent=msg;
+    $('#bSch').innerHTML=p&&e?schematic(p,shellsOf(e)):'<p class="muted">加入质子和电子后显示</p>';
+    const k=TASKS[taskI];
+    if(!celebrated&&p===k.p&&n===k.n&&e===k.e){celebrated=true;done.add(taskI);$('#taskNext').hidden=false;$('#taskTip').textContent='闯关成功！';$('#taskStars').textContent=TASKS.map((_,i)=>done.has(i)?'★':'☆').join('');
+      sfx('win');FX.confetti();}
+  }
+  showTask();info();
+  function tick(dt){
+    t+=dt;const{ctx,w,h}=fit(cv);W=w;H=h;ctx.clearRect(0,0,w,h);const m=Math.min(w,h),cx=w/2,cy=h/2;
+    const types=mixPN(P.p.length,P.n.length),N=types.length,br=m*.032*Math.min(1,Math.sqrt(10/Math.max(N,1)));
+    const R1=Math.max(nucRadius(N,br)+m*.05,m*.15),gp=m*.095;const sh=shellsOf(P.e.length);
+    sh.forEach((_,k)=>{ctx.strokeStyle=rgba(C.e,.22);ctx.setLineDash([4,7]);ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(cx,cy,R1+gp*k,0,TAU);ctx.stroke();});ctx.setLineDash([]);
+    if(N)glow(ctx,cx,cy,nucRadius(N,br)*2.2,C.p,.22);
+    let pi=0,ni=0;const draws=[];
+    types.forEach((ty,i)=>{const[ax,ay]=nucPos(i,br);const o=ty==='p'?P.p[pi++]:P.n[ni++];o.x=lerp(o.x,cx+ax,.12);o.y=lerp(o.y,cy+ay,.12);draws.push([i,o,ty]);});
+    draws.reverse().forEach(([i,o,ty])=>ball(ctx,o.x+Math.sin(t*9+i)*br*.05,o.y+Math.cos(t*8+i)*br*.05,br,ty==='p'?C.p:C.n));
+    let ei=0;sh.forEach((n,k)=>{for(let i=0;i<n;i++){const o=P.e[ei++],a=t*(1.3-k*.28)+i/n*TAU+k*.6,R=R1+gp*k;o.x=lerp(o.x,cx+Math.cos(a)*R,.1);o.y=lerp(o.y,cy+Math.sin(a)*R,.1);elec(ctx,o.x,o.y,m*.016);}});
+    dying=dying.filter(d=>{d.vy+=.25;d.x+=d.vx;d.y+=d.vy;d.l-=dt*1.6;if(d.k==='e')elec(ctx,d.x,d.y,m*.016,Math.max(0,d.l));else ball(ctx,d.x,d.y,br,d.k==='p'?C.p:C.n,Math.max(0,d.l));return d.l>0;});
+    if(!N&&!P.e.length)label(ctx,'用左边的 + 按钮加入粒子',cx,cy,{size:16,col:C.faint});
+  }
+  return{tick};
+})();
+
+/* ================= 7 核外电子排布 ================= */
+S.shells=(()=>{
+  let cur=11,annot=false,hide=false;const pt=$('#ptab');
+  const pos=z=>z===1?[0,0]:z===2?[0,7]:z<=10?[1,z-3]:[2,z-11];
+  for(let r=0;r<3;r++)for(let c=0;c<8;c++){
+    const el=EL.find(e=>{const[pr,pc]=pos(e.z);return e.z<=18&&pr===r&&pc===c;});
+    const b=document.createElement('button');
+    if(!el){b.className='sp';b.tabIndex=-1;b.setAttribute('aria-hidden','true');pt.appendChild(b);continue;}
+    const sh=shellsOf(el.z);b.className={metal:'metal',non:'non',gas:'gas'}[catOf(el.z)];b.dataset.z=el.z;
+    b.innerHTML=`<small>${el.z}</small><b>${el.s}</b><em>${el.n}·最外层${sh[sh.length-1]}</em>`;b.setAttribute('aria-pressed',String(el.z===cur));
+    b.onclick=()=>{cur=el.z;render();sfx('click');};pt.appendChild(b);
+  }
+  $('#ptColor').onclick=e=>{const on=$('#ptWrap').classList.toggle('colored');e.currentTarget.setAttribute('aria-pressed',String(on));};
+  $('#shAnn').onclick=e=>{annot=!annot;e.currentTarget.setAttribute('aria-pressed',String(annot));render();};
+  $('#shHide').onclick=e=>{hide=!hide;e.currentTarget.setAttribute('aria-pressed',String(hide));render();};
+  $('#shBig').onclick=()=>{if(hide){hide=false;$('#shHide').setAttribute('aria-pressed','false');render();sfx('ok');}};
+  function render(){
+    const el=EL[cur-1],sh=shellsOf(cur),last=sh[sh.length-1],cat=catOf(cur);
+    $('#shName').textContent=`${el.n}原子 ${el.s}`;
+    $('#shBig').innerHTML=schematic(cur,sh,{annot,hide});
+    $$('#ptab button[data-z]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.z===cur)));
+    let tip;
+    if(hide)tip='说一说：每一层上各有几个电子？点击示意图揭晓答案。';
+    else if(cat==='gas')tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子，属于相对稳定结构（稀有气体）。`;
+    else if(cat==='metal')tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子（少于 4 个），金属原子，化学反应中易失去电子。`;
+    else tip=`核电荷数 ${cur}，${sh.length} 个电子层，排布为 ${sh.join('、')}。最外层 ${last} 个电子，非金属原子${last>4?'，化学反应中易得到电子':''}。`;
+    $('#shInfo').textContent=tip;
+  }
+  render();
+  $$('[data-sch]').forEach(d=>{const z=+d.dataset.sch;d.innerHTML=schematic(z,shellsOf(z));});
+  return{};
+})();
+
+/* ================= 8 钠与氯 ================= */
+S.outer=(()=>{
+  const cv=$('#cvNaCl');let t=0,u=0,run=false,stage=0;
+  const txt=['钠原子最外层只有 1 个电子，氯原子最外层有 7 个电子。它们相遇时会发生什么？',
+    '钠原子失去最外层的 1 个电子，氯原子得到这个电子……',
+    '钠原子变成带 1 个单位正电荷的钠离子 Na⁺（2、8），氯原子变成带 1 个单位负电荷的氯离子 Cl⁻（2、8、8），两者都达到了相对稳定结构。',
+    '带相反电荷的 Na⁺ 和 Cl⁻ 相互作用，形成了氯化钠（NaCl）——就是我们吃的食盐！'];
+  $('#naclGo').onclick=()=>{if(run||u>0)return;run=true;sfx('whoosh');};
+  $('#naclReset').onclick=()=>{run=false;u=0;stage=-1;};
+  const ntP=mixPN(11,12),ntC=mixPN(17,18);
+  function tick(dt){
+    t+=dt;if(run){u=Math.min(1,u+dt/4.2);if(u>=1)run=false;}
+    const ns=u<=0?0:u<.45?1:u<.75?2:3;if(ns!==stage){stage=ns;$('#naclTxt').textContent=txt[ns];if(ns===2)sfx('ok');if(ns===3){sfx('win');const r=cv.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height/2,50);}}
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    const sc=Math.min(w*.17,h*.4),close=ease(smooth(.75,1,u))*w*.06;
+    const nx=w*.27+close,cx2=w*.73-close,y=h/2;
+    // 钠：2,8 + 外层 1 个（转移中）
+    const br=sc*.045,r0N=nucRadius(23,br),gap=sc*.15,r0C=nucRadius(35,br);
+    glow(ctx,nx,y,r0N*2,C.p,.2);drawNucleus(ctx,nx,y,ntP,br,t,.04);
+    glow(ctx,cx2,y,r0C*2,C.p,.2);drawNucleus(ctx,cx2,y,ntC,br,t,.04);
+    const ring=(x,R,n,k,a,off=0)=>{ctx.globalAlpha=a;ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+      for(let i=0;i<n;i++){const a2=t*(1.1-k*.25)+i/n*TAU+k+off;elec(ctx,x+Math.cos(a2)*R,y+Math.sin(a2)*R,sc*.03,a);}};
+    ring(nx,r0N+gap,2,0,1);ring(nx,r0N+gap*2,8,1,1);
+    ring(cx2,r0C+gap,2,0,1);ring(cx2,r0C+gap*2,8,1,1);
+    const RN3=r0N+gap*3,RC3=r0C+gap*3,fadeN=1-smooth(.3,.5,u);
+    // 氯外层：7 → 8
+    const k8=smooth(.4,.5,u);const nC=7;
+    ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(cx2,y,RC3,0,TAU);ctx.stroke();ctx.setLineDash([]);
+    if(fadeN>0){ctx.globalAlpha=fadeN;ctx.strokeStyle=rgba(C.e,.25);ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(nx,y,RN3,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
+    const baseC=t*.6+2;
+    for(let i=0;i<nC;i++){const a2=baseC+i/lerp(7,8,k8)*TAU;elec(ctx,cx2+Math.cos(a2)*RC3,y+Math.sin(a2)*RC3,sc*.03);}
+    // 转移的电子
+    const a0=t*.6,sx=nx+Math.cos(a0)*RN3,sy=y+Math.sin(a0)*RN3;const ae=baseC+7/8*TAU,exx=cx2+Math.cos(ae)*RC3,eyy=y+Math.sin(ae)*RC3;
+    const mv=smooth(.12,.45,u);
+    if(u<=.12)elec(ctx,sx,sy,sc*.03);
+    else{const mx=(sx+exx)/2,my=y-sc*1.0;const q=1-mv;const ex=q*q*sx+2*q*mv*mx+mv*mv*exx,ey=q*q*sy+2*q*mv*my+mv*mv*eyy;
+      if(mv<1){ctx.globalCompositeOperation='lighter';glow(ctx,ex,ey,sc*.2,C.e,.5);ctx.globalCompositeOperation='source-over';
+        ctx.strokeStyle=rgba(C.e,.35);ctx.setLineDash([2,6]);ctx.beginPath();ctx.moveTo(sx,sy);ctx.quadraticCurveTo(mx,my,exx,eyy);ctx.stroke();ctx.setLineDash([]);}
+      elec(ctx,ex,ey,sc*.032);}
+    // 标签
+    const ion=smooth(.45,.6,u);
+    label(ctx,ion>.5?'钠离子 Na⁺':'钠原子 Na',nx,y+sc*.98,{size:16,weight:700,col:ion>.5?C.p:C.ink});
+    label(ctx,ion>.5?'氯离子 Cl⁻':'氯原子 Cl',cx2,y+sc*.98,{size:16,weight:700,col:ion>.5?C.e:C.ink});
+    if(ion>0){label(ctx,'+',nx+sc*.62,y-sc*.62,{size:34,weight:900,col:C.p,a:ion,font:MONO});label(ctx,'−',cx2+sc*.62,y-sc*.62,{size:34,weight:900,col:C.e,a:ion,font:MONO});}
+    const bond=smooth(.8,1,u);
+    if(bond>0){ctx.globalAlpha=bond*(.6+.4*Math.sin(t*6));ctx.strokeStyle=C.g;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.moveTo(nx+sc*.5,y);ctx.lineTo(cx2-sc*.5,y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+      label(ctx,'NaCl',w/2,y-sc*.16,{size:26,weight:900,col:C.g,a:bond,font:MONO});}
+  }
+  return{tick};
+})();
+
+/* ================= 9 原子的质量 ================= */
+S.mass=(()=>{
+  const cv=$('#cvC12');let t=0,u=0,run=false,typed=0,tt=0;
+  const full='0.'+'0'.repeat(25)+'1993';
+  const grp=s=>{const[a,b]=s.split('.');return a+'.'+b.replace(/(\d{3})(?=\d)/g,'$1 ');};
+  const types=mixPN(6,6);
+  $('#massGo').onclick=()=>{if(run||u>0)return;run=true;sfx('whoosh');};
+  function tick(dt){
+    t+=dt;tt+=dt;
+    if(typed<full.length&&tt>.05){tt=0;typed++;if(typed%3===0)sfx('tick');}
+    $('#tiny').innerHTML=grp(full.slice(0,Math.max(typed,2)))+(typed<full.length?'<span class="cur">&nbsp;</span>':' kg');
+    if(run){u=Math.min(1,u+dt/3);if(u>=1){run=false;}}
+    if(u>.85)$('#massDef').classList.remove('hide');
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h*.47,m=Math.min(w,h);const br=m*.05;
+    const sp=Math.min(w*.072,m*.15),piece=ease(smooth(.15,.75,u));
+    glow(ctx,cx,cy,m*.3*(1-piece),C.g,.25);
+    types.forEach((ty,i)=>{const[ax,ay]=nucPos(i,br);const tx=cx+(i-5.5)*sp,ty2=cy;
+      const x=lerp(cx+ax,tx,piece),y=lerp(cy+ay,ty2,piece)+Math.sin(t*3+i)*piece*3;
+      if(piece<.98)ball(ctx,x,y,br,ty==='p'?C.p:C.n,1-smooth(.8,.98,piece));
+      if(piece>.6){const a=smooth(.6,1,piece),s=sp*.7;ctx.globalAlpha=a;glow(ctx,x,y,s*1.1,C.g,.35);ctx.fillStyle=C.g;
+        ctx.beginPath();ctx.roundRect?ctx.roundRect(x-s/2,y-s/2,s,s,4):ctx.rect(x-s/2,y-s/2,s,s);ctx.fill();ctx.globalAlpha=1;
+        label(ctx,String(i+1),x,y,{size:Math.max(10,s*.42),weight:700,col:C.void,font:MONO,a});}
+    });
+    if(piece>.8){const a=smooth(.8,1,piece);
+      ctx.globalAlpha=a;ctx.strokeStyle=C.g;ctx.lineWidth=1.5;const x0=cx-5.5*sp-sp*.35;
+      ctx.beginPath();ctx.moveTo(x0,cy+sp*.6);ctx.lineTo(x0,cy+sp*.8);ctx.lineTo(x0+sp*.7,cy+sp*.8);ctx.lineTo(x0+sp*.7,cy+sp*.6);ctx.stroke();ctx.globalAlpha=1;
+      label(ctx,'1 份 = 碳 12 原子质量的 1/12 ≈ 1.661×10⁻²⁷ kg',cx,cy+sp*1.4,{size:clamp(m*.045,12,17),weight:700,col:C.g,a});}
+    else if(u===0)label(ctx,'点击左侧按钮，把碳 12 原子“切”成 12 等份',cx,h*.88,{size:14,col:C.faint});
+  }
+  return{tick,enter(){typed=0;}};
+})();
+
+/* ================= 10 原子天平 ================= */
+S.balance=(()=>{
+  const cv=$('#cvBal');
+  const A=[['H','氢',1,1.674e-27],['C','碳',12,1.993e-26],['N','氮',14,2.325e-26],['O','氧',16,2.657e-26],['Na','钠',23,3.817e-26],['Mg','镁',24,4.037e-26],['Al','铝',27,4.480e-26],['S','硫',32,5.324e-26],['Fe','铁',56,9.288e-26]]
+    .map(a=>({s:a[0],n:a[1],ar:a[2],m:a[3]}));
+  let cur=A[3],n=0,ang=0,vel=0,t=0,won=false,box=null;const UNIT=1.993e-26/12;
+  const chips=$('#balChips');
+  A.forEach((a,i)=>{const b=document.createElement('button');b.className='btn sm';b.textContent=`${a.n} ${a.s}`;b.setAttribute('aria-pressed',String(a===cur));b.onclick=()=>{cur=a;n=0;won=false;sfx('click');$$('#balChips button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));info();};chips.appendChild(b);});
+  function add(d){if(d===0)n=0;else n=clamp(n+d,0,80);won=false;sfx(d>0?'drop':'click');info();}
+  $$('[data-w]').forEach(b=>b.onclick=()=>add(+b.dataset.w));
+  cv.addEventListener('click',e=>{if(!box)return;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(x>box[0]&&x<box[2]&&y>box[1]&&y<box[3])add(1);});
+  function info(){
+    const ok=n===Math.round(cur.ar);
+    $('#balInfo').innerHTML=`<p><b>左盘：</b>1 个${cur.n}原子，质量 <span class="mono">${sci(cur.m)} kg</span></p>
+      <p><b>右盘：</b><span class="mono hl">${n}</span> 个砝码，质量 <span class="mono">${n?sci(n*UNIT):'0'} kg</span></p>
+      <p style="margin-top:8px" class="${ok?'':'muted'}">${ok?`平衡了！所以 <b class="hl">A<sub>r</sub>(${cur.s}) ≈ ${Math.round(cur.ar)}</b>，计算：${sci(cur.m)} ÷ ${sci(UNIT)} ≈ ${(cur.m/UNIT).toFixed(2)}`:n<cur.ar?'左边更重，继续加砝码……':'右边更重了，减掉一些砝码。'}</p>`;
+    if(ok&&!won){won=true;sfx('win');const r=cv.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height*.3,60);}
+  }
+  info();
+  function tick(dt){
+    t+=dt;const k=dt*60;const target=clamp((cur.ar-n)*.035,-.3,.3);
+    vel+=(target-ang)*.02*k;vel*=Math.pow(.88,k);ang+=vel*k;
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    const px=w/2,py=h*.3,L=Math.min(w*.36,h*.62),bw=6;
+    // 支柱 + 底座
+    ctx.fillStyle=C.line;ctx.fillRect(px-5,py,10,h*.6);ctx.fillRect(px-L*.45,h*.9,L*.9,10);
+    glow(ctx,px,py,20,C.g,.6);
+    const lx=px-Math.cos(ang)*L,ly=py+Math.sin(ang)*L,rx=px+Math.cos(ang)*L,ry=py-Math.sin(ang)*L;
+    ctx.strokeStyle=won?C.g:C.n;ctx.lineWidth=bw;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(rx,ry);ctx.stroke();
+    // 指针
+    ctx.save();ctx.translate(px,py);ctx.rotate(-ang);ctx.strokeStyle=won?C.g:C.e;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,h*.28);ctx.stroke();ctx.restore();
+    ctx.fillStyle=C.dim;ctx.fillRect(px-1,py+h*.28,2,10);
+    ball(ctx,px,py,9,C.g);
+    const chain=h*.3,pw=L*.62;
+    const pan=(x,y)=>{ctx.strokeStyle=C.faint;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-pw/2,y+chain);ctx.moveTo(x,y);ctx.lineTo(x+pw/2,y+chain);ctx.stroke();
+      ctx.fillStyle=C.panel;ctx.strokeStyle=C.dim;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y+chain,pw/2,10,0,0,Math.PI);ctx.closePath();ctx.fill();ctx.stroke();return y+chain;};
+    const lb=pan(lx,ly),rb=pan(rx,ry);
+    // 左盘：原子
+    const ar=clamp(14+5*Math.cbrt(cur.ar),16,46);glow(ctx,lx,lb-ar,ar*2,C.e,.25);ball(ctx,lx,lb-ar,ar,'#7a8cff');
+    label(ctx,cur.s,lx,lb-ar,{size:ar*.75,weight:900,col:'#fff'});
+    // 右盘：砝码
+    const s=clamp(pw/10,7,15),per=Math.floor(pw*.8/s);
+    for(let i=0;i<n;i++){const row=Math.floor(i/per),col=i%per,cnt=Math.min(per,n-row*per);const x=rx+(col-(cnt-1)/2)*s,y=rb-s/2-row*s-2;
+      ctx.fillStyle=C.g;ctx.fillRect(x-s/2+1,y-s/2+1,s-2,s-2);}
+    box=[rx-pw/2-10,rb-Math.max(60,Math.ceil(n/per)*s+20),rx+pw/2+10,rb+14];
+    label(ctx,`${n} 个砝码`,rx,rb+30,{size:15,weight:700,col:C.g,font:MONO});
+    label(ctx,`1 个${cur.n}原子`,lx,lb+30,{size:15,weight:700,col:C.ink});
+    if(won)label(ctx,`平衡！Ar(${cur.s}) ≈ ${Math.round(cur.ar)}`,px,h*.12,{size:clamp(w*.035,18,30),weight:900,col:C.g});
+  }
+  return{tick};
+})();
+
+/* ================= 11 计算 ================= */
+S.calc=(()=>{
+  const A=[['H','氢',1.674e-27],['C','碳 12',1.993e-26],['O','氧',2.657e-26],['Na','钠',3.817e-26],['Fe','铁',9.288e-26]];
+  const box=$('#calcChips');let cur=2;
+  A.forEach((a,i)=>{const b=document.createElement('button');b.className='btn sm';b.textContent=`${a[1]}原子`;b.setAttribute('aria-pressed',String(i===cur));b.onclick=()=>{cur=i;sfx('click');render();};box.appendChild(b);});
+  function render(){
+    $$('#calcChips button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===cur)));
+    const[s,nm,m]=A[cur],u=1.993e-26/12,v=m/u;
+    const L=[`A<sub>r</sub>(${s}) = 一个${nm}原子的质量 ÷ (一个碳 12 原子的质量 × 1/12)`,
+      `= ${sci(m)} kg ÷ (1.993×10⁻²⁶ kg × 1/12)`,`= ${sci(m)} kg ÷ ${sci(u)} kg`,
+      `<span class="res">≈ ${v.toFixed(2)} ≈ ${Math.round(v)}</span>`];
+    $('#steps').innerHTML=L.map((l,i)=>`<div style="animation-delay:${i*.45}s">${l}</div>`).join('');
+  }
+  render();
+  return{enter:render};
+})();
+
+/* ================= 12 填表 ================= */
+S.table=(()=>{
+  const R=[['氢',[1,0,1,1],[1]],['碳',[6,6,6,12],[2]],['氧',[8,8,8,16],[0]],['钠',[11,12,11,23],[1]],['镁',[12,12,12,24],[3]],['铁',[26,30,26,56],[2,3]]];
+  const body=$('#fillBody');
+  function build(){body.innerHTML=R.map(([nm,v,bl],r)=>`<tr><td><b>${nm}</b></td>${v.map((x,c)=>bl.includes(c)?`<td><input id="f${r}_${c}" inputmode="numeric" aria-label="${nm}的第${c+1}项" data-v="${x}"></td>`:`<td class="mono">${x}</td>`).join('')}</tr>`).join('');$('#fillMsg').textContent='';}
+  build();
+  $('#fillCheck').onclick=()=>{let ok=0,all=0;$$('#fillBody input').forEach(i=>{all++;const r=i.value.trim()===i.dataset.v;i.classList.toggle('right',r);i.classList.toggle('wrong',!r);if(r)ok++;});
+    $('#fillMsg').textContent=`答对 ${ok} / ${all}`;if(ok===all){sfx('win');FX.confetti();}else sfx('bad');};
+  $('#fillShow').onclick=()=>{$$('#fillBody input').forEach(i=>{i.value=i.dataset.v;i.classList.add('right');i.classList.remove('wrong');});};
+  $('#fillReset').onclick=build;
+  $('#lawGo').onclick=e=>{$('#law').classList.remove('hide');burstAt(e.currentTarget,30);sfx('ok');};
+  return{};
+})();
+
+/* ================= 13 闯关 ================= */
+S.quiz=(()=>{
+  const Q=[
+    {q:'原子中不带电的粒子是',o:['质子','中子','电子','原子核'],a:1,x:'质子带正电，电子带负电，原子核带正电，<b>中子不带电</b>。'},
+    {q:'原子中一定含有的粒子是',o:['质子和电子','质子和中子','中子和电子','只有质子'],a:0,x:'普通氢原子没有中子，所以原子中<b>一定有质子和电子</b>，不一定有中子。'},
+    {q:'α 粒子散射实验中，极少数 α 粒子被反弹回来，说明',o:['原子核带负电','原子核体积很小、质量很大','电子的质量很大','原子是实心球体'],a:1,x:'α 粒子撞上了<b>体积很小但质量很大</b>的原子核才会被弹回。'},
+    {q:'某原子核内有 26 个质子和 30 个中子，它的核外电子数是',o:['26','30','56','4'],a:0,x:'核外电子数 = 质子数 = <b>26</b>。'},
+    {q:'接上题，这种原子的相对原子质量约为',o:['26','30','56','56 g'],a:2,x:'相对原子质量 ≈ 质子数 + 中子数 = 26 + 30 = <b>56</b>，它是比值，单位不是 g。'},
+    {q:'相对原子质量的标准是',o:['一个碳 12 原子的质量','一个碳 12 原子质量的 1/12','一个氢原子的质量','一个氧原子质量的 1/16'],a:1,x:'以<b>碳 12 原子质量的 1/12</b> 为标准。'},
+    {q:'已知一个碳 12 原子的质量为 a kg，一个 X 原子的质量为 b kg，则 X 的相对原子质量为',o:['b/a','12b/a','a/(12b)','12a/b'],a:1,x:'A<sub>r</sub> = b ÷ (a × 1/12) = <b>12b/a</b>。'},
+    {q:'下列说法正确的是',o:['相对原子质量就是原子的实际质量','原子的质量主要集中在原子核上','原子不显电性是因为原子中没有带电粒子','所有原子核内质子数都等于中子数'],a:1,x:'电子质量很小，原子的质量<b>主要集中在原子核上</b>。'},
+    {q:'核外电子排布中，第二层最多容纳的电子数是',o:['2','8','18','32'],a:1,x:'第一层最多 2 个，<b>第二层最多 8 个</b>。'},
+    {q:'某原子的结构示意图如下，下列说法错误的是',dg:[12,[2,8,2]],o:['核电荷数为 12','核外有 3 个电子层','最外层有 2 个电子','化学反应中易得到电子'],a:3,x:'这是镁原子，最外层 2 个电子（少于 4 个），化学反应中<b>易失去</b>电子。'},
+    {q:'与元素的化学性质关系最密切的是原子的',o:['质子数','中子数','最外层电子数','电子层数'],a:2,x:'<b>最外层电子数</b>决定原子在化学反应中是易得还是易失电子。'},
+    {q:'主持测定了铟、铱等元素相对原子质量新值的我国科学家是',o:['侯德榜','张青莲','屠呦呦','钱学森'],a:1,x:'<b>张青莲</b>院士测定的新值被国际原子量委员会采用为国际新标准。'}];
+  let qi=0,ans=false,team='r',sc={r:0,b:0},left=30,tickAcc=0,over=false;
+  $('#qTot').textContent=Q.length;
+  function setTeam(tm){team=tm;$('#pickR').setAttribute('aria-pressed',String(tm==='r'));$('#pickB').setAttribute('aria-pressed',String(tm==='b'));$('#tR').classList.toggle('on',tm==='r');$('#tB').classList.toggle('on',tm==='b');}
+  $('#pickR').onclick=()=>setTeam('r');$('#pickB').onclick=()=>setTeam('b');
+  function score(tm,v){sc[tm]=Math.max(0,sc[tm]+v);const el=$(tm==='r'?'#scR':'#scB');el.textContent=sc[tm];if(v>0)burstAt(el,22,[tm==='r'?C.p:C.e,C.g]);}
+  $$('[data-t]').forEach(b=>b.onclick=()=>{score(b.dataset.t,+b.dataset.v);sfx(+b.dataset.v>0?'ok':'click');});
+  function render(){
+    over=false;ans=false;left=30;const d=Q[qi];$('#qNo').textContent=qi+1;$('#qText').textContent=d.q+'（  ）';
+    $('#qDg').innerHTML=d.dg?schematic(d.dg[0],d.dg[1]):'';$('#qExp').hidden=true;$('#qNext').textContent=qi===Q.length-1?'查看结果':'下一题 →';
+    const box=$('#qOpts');box.innerHTML='';
+    d.o.forEach((o,i)=>{const b=document.createElement('button');b.innerHTML=`<i>${'ABCD'[i]}</i><span>${o}</span>`;b.onclick=()=>pick(i,b);box.appendChild(b);});
+    $('#qCard').querySelectorAll('.final').forEach(n=>n.remove());$('#qText').hidden=false;
+  }
+  function pick(i,b){
+    if(ans)return;ans=true;const d=Q[qi],bs=$$('#qOpts button');bs.forEach(x=>x.disabled=true);bs[d.a].classList.add('right');
+    if(i===d.a){sfx('ok');burstAt(b,36,[C.ok,C.g]);score(team,10);}else{b.classList.add('wrong');sfx('bad');}
+    const e=$('#qExp');e.innerHTML=(i===d.a?'✔ 回答正确！':'✘ 正确答案是 '+'ABCD'[d.a]+'。')+' '+d.x;e.hidden=false;
+  }
+  $('#qNext').onclick=()=>{if(qi<Q.length-1){qi++;setTeam(team==='r'?'b':'r');render();sfx('click');}else finish();};
+  $('#qRestart').onclick=()=>{qi=0;sc={r:0,b:0};$('#scR').textContent=0;$('#scB').textContent=0;setTeam('r');render();};
+  function finish(){
+    over=true;ans=true;$('#qText').hidden=true;$('#qOpts').innerHTML='';$('#qDg').innerHTML='';$('#qExp').hidden=true;
+    const w=sc.r===sc.b?'平局！两队都是原子小达人':sc.r>sc.b?'红队获胜！':'蓝队获胜！';
+    const f=document.createElement('div');f.className='final';f.innerHTML=`<p class="eyebrow">闯关结束</p><p class="big">${w}</p><p class="mono" style="font-size:1.4em"><span class="cp">红队 ${sc.r}</span> : <span class="ce">${sc.b} 蓝队</span></p>`;
+    $('#qCard').appendChild(f);sfx('win');FX.confetti();
+  }
+  setTeam('r');render();
+  function tick(dt){
+    if(ans||over)return;tickAcc+=dt;if(tickAcc<.1)return;left=Math.max(0,left-tickAcc);tickAcc=0;
+    $('#tmT').textContent=Math.ceil(left);$('#tmC').style.strokeDashoffset=String(100-left/30*100);$('#tmC').style.stroke=left<8?C.bad:C.g;
+    if(left<=0){ans=true;sfx('bad');$$('#qOpts button').forEach(x=>x.disabled=true);$$('#qOpts button')[Q[qi].a].classList.add('right');const e=$('#qExp');e.innerHTML='时间到！'+Q[qi].x;e.hidden=false;}
+  }
+  return{tick};
+})();
+
+/* ================= 14 小结：知识图 ================= */
+S.summary=(()=>{
+  const svg=$('#mm');const ns='http://www.w3.org/2000/svg';
+  const go=id=>()=>goTo(slides.findIndex(s=>s.dataset.id===id));
+  const B=[{x:520,y:150,t:'原子的构成',c:C.p,L:[['原子核：质子(+) + 中子','parts'],['核外电子(−)，质量很小','parts'],['核电荷数 = 质子数 = 电子数','build']],side:-1},
+    {x:520,y:490,t:'核外电子排布',c:C.e,L:[['分层排布：2、8、8…','shells'],['原子结构示意图','shells'],['最外层电子数决定化学性质','outer']],side:-1},
+    {x:880,y:150,t:'原子模型与实验',c:C.n,L:[['道尔顿→汤姆孙→卢瑟福→玻尔','models'],['α 粒子散射实验','ruth'],['原子核：小、重、带正电','zoom']],side:1},
+    {x:880,y:490,t:'相对原子质量',c:C.g,L:[['标准：碳 12 质量的 1/12','mass'],['是比值，单位为“1”','calc'],['Aᵣ ≈ 质子数 + 中子数','table']],side:1}];
+  const el=(n,a,p=svg)=>{const e=document.createElementNS(ns,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;};
+  let d=.1;
+  B.forEach((b,i)=>{
+    el('path',{class:'lk',d:`M700 320 C ${700+(b.x-700)*.5} 320, ${b.x-b.side*40} ${b.y}, ${b.x} ${b.y}`,stroke:b.c,pathLength:1,style:`--d:${.2+i*.15}s`});
+    b.L.forEach((l,j)=>{const ly=b.y-80+j*80,lx=b.side<0?370:1030;
+      el('path',{class:'lk',d:`M${b.x+b.side*-0} ${b.y} C ${(b.x+lx)/2} ${b.y}, ${(b.x+lx)/2} ${ly}, ${lx} ${ly}`,stroke:rgba(b.c,.6),'stroke-width':1.5,pathLength:1,style:`--d:${.8+i*.15+j*.1}s`});});
+  });
+  const ct=el('g',{class:'nd ct',style:'--d:0s'});el('circle',{cx:700,cy:320,r:72,fill:C.g},ct);el('circle',{cx:700,cy:320,r:90,fill:'none',stroke:rgba(C.g,.4),'stroke-width':2,'stroke-dasharray':'4 8'},ct);
+  el('text',{x:700,y:322,'text-anchor':'middle'},ct).textContent='原子';
+  B.forEach((b,i)=>{
+    const g=el('g',{class:'nd br',style:`--d:${.5+i*.15}s`});const wdt=b.t.length*26+40;
+    el('rect',{x:b.x-wdt/2,y:b.y-28,width:wdt,height:56,rx:28,fill:C.panel,stroke:b.c,'stroke-width':2},g);el('text',{x:b.x,y:b.y+1,'text-anchor':'middle',fill:b.c},g).textContent=b.t;
+    b.L.forEach((l,j)=>{const ly=b.y-80+j*80,lx=b.side<0?370:1030;const lw=Math.min(340,l[0].length*19+34);
+      const g2=el('g',{class:'nd leaf',style:`--d:${1.1+i*.15+j*.1}s`,tabindex:0,role:'link'});
+      const rx=b.side<0?lx-lw:lx;el('rect',{x:rx,y:ly-22,width:lw,height:44,rx:10},g2);
+      el('text',{x:rx+lw/2,y:ly+1,'text-anchor':'middle'},g2).textContent=l[0];
+      g2.addEventListener('click',go(l[1]));g2.addEventListener('keydown',e=>{if(e.key==='Enter')go(l[1])();});});
+  });
+  return{enter(){svg.classList.remove('go');void svg.getBoundingClientRect();svg.classList.add('go');setTimeout(()=>{FX.confetti();sfx('win');},1600);}};
+})();
+
+/* ================= 翻页框架 ================= */
+const slides=$$('.slide');let idx=-1;
+const dots=$('#dots'),ml=$('#menuList');
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label',`第 ${i+1} 页：${s.dataset.title}`);b.onclick=()=>goTo(i);dots.appendChild(b);
+  const li=document.createElement('li');li.innerHTML=`<button><b>${String(i+1).padStart(2,'0')}</b><span>${s.dataset.title}</span></button>`;li.firstChild.onclick=()=>{goTo(i);closeMenu();};ml.appendChild(li);
+});
+function goTo(i){
+  i=clamp(i,0,slides.length-1);if(i===idx)return;
+  const old=slides[idx];if(old){S[old.dataset.id]?.leave?.();}
+  idx=i;slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i);s.inert=k!==i;s.setAttribute('aria-hidden',String(k!==i));});
+  S[slides[i].dataset.id]?.enter?.();
+  $$('.dot').forEach((d,k)=>d.classList.toggle('on',k===i));
+  $('#pg').textContent=`${i+1} / ${slides.length}`;$('#prog').style.width=((i+1)/slides.length*100)+'%';
+  $('#btnPrev').disabled=i===0;$('#btnNext').disabled=i===slides.length-1;
+  try{history.replaceState(null,'','#p'+(i+1));}catch(e){}
+  if(old)sfx('click');
+}
+const openMenu=()=>{$('#menu').hidden=false;},closeMenu=()=>{$('#menu').hidden=true;};
+$('#btnPrev').onclick=()=>goTo(idx-1);$('#btnNext').onclick=()=>goTo(idx+1);
+$('#btnMenu').onclick=openMenu;$('#menuX').onclick=closeMenu;$('#menu').onclick=e=>{if(e.target.id==='menu')closeMenu();};
+$('#btnSnd').onclick=e=>{SND.on=!SND.on;e.currentTarget.textContent='音效：'+(SND.on?'开':'关');e.currentTarget.setAttribute('aria-pressed',String(SND.on));if(SND.on)sfx('ok');};
+function toggleFs(){try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.().catch(()=>{});}catch(e){}}
+$('#btnFs').onclick=toggleFs;
+$$('[data-go="next"]').forEach(b=>b.onclick=()=>goTo(idx+1));
+addEventListener('keydown',e=>{
+  const tg=e.target.tagName||'';if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();goTo(idx-1);}
+  else if(e.key===' '&&tg!=='BUTTON'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='Home')goTo(0);else if(e.key==='End')goTo(slides.length-1);
+  else if(e.key==='f'||e.key==='F')toggleFs();else if(e.key==='Escape')closeMenu();
+});
+let tx0=null,ty0=null;
+addEventListener('touchstart',e=>{const t=e.touches[0];tx0=t.clientX;ty0=t.clientY;},{passive:true});
+addEventListener('touchend',e=>{if(tx0===null)return;const t=e.changedTouches[0],dx=t.clientX-tx0,dy=t.clientY-ty0;tx0=null;
+  if(e.target.closest('canvas,input,.ptab'))return;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)goTo(idx+(dx<0?1:-1));},{passive:true});
+
+const m=/^#p(\d+)$/.exec(location.hash||'');goTo(m?(+m[1]-1):0);
+
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  try{BG.tick(dt);const cur=S[slides[idx].dataset.id];cur?.tick?.(dt);FX.tick(dt);}catch(err){console.error(err);}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
