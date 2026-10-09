@@ -182,7 +182,6 @@ td:first-child,th:first-child{text-align:left}
 .ctl .pc button:hover{border-color:var(--gold)}
 .elcard{display:flex;gap:14px;align-items:center}
 .elsym{width:84px;height:84px;flex:none;border-radius:14px;border:2px solid var(--gold);display:grid;place-items:center;position:relative;font:900 38px var(--f-display);background:rgba(255,196,87,.08);box-shadow:0 0 30px rgba(255,196,87,.18)}
-.elsym small{position:absolute;left:6px;top:2px;font:700 13px var(--f-mono);color:var(--gold)}
 .status{padding:10px 12px;border-radius:10px;font-size:.92em;border:1px solid var(--line);background:var(--panel2)}
 .status.ok{border-color:var(--ok);color:var(--ok)}
 .status.warn{border-color:var(--gold);color:var(--gold)}
@@ -385,11 +384,11 @@ td:first-child,th:first-child{text-align:left}
       <div class="side">
         <div class="card tbl-wrap">
           <table>
-            <thead><tr><th>粒子</th><th>电性</th><th>质量 / kg</th><th>相对质量</th></tr></thead>
+            <thead><tr><th>粒子</th><th>电性</th><th>质量 / kg</th></tr></thead>
             <tbody>
-              <tr><td class="cp">质子</td><td>1 个单位正电荷</td><td class="mono">1.6726×10<sup>−27</sup></td><td class="mono">≈ 1</td></tr>
-              <tr><td class="cn">中子</td><td>不带电</td><td class="mono">1.6749×10<sup>−27</sup></td><td class="mono">≈ 1</td></tr>
-              <tr><td class="ce">电子</td><td>1 个单位负电荷</td><td>质子质量的 1/1836</td><td class="mono">≈ 0</td></tr>
+              <tr><td class="cp">质子</td><td>1 个单位正电荷</td><td class="mono">1.6726×10<sup>−27</sup></td></tr>
+              <tr><td class="cn">中子</td><td>不带电</td><td class="mono">1.6749×10<sup>−27</sup></td></tr>
+              <tr><td class="ce">电子</td><td>1 个单位负电荷</td><td>质子质量的 1/1836</td></tr>
             </tbody>
           </table>
         </div>
@@ -425,7 +424,7 @@ td:first-child,th:first-child{text-align:left}
       </div>
       <div class="stage"><canvas id="cvBuild" aria-label="原子模型，随粒子数变化"></canvas><div class="stage-hint">质子数决定原子的种类</div></div>
       <div class="side">
-        <div class="card elcard"><div class="elsym" id="bSym"><small id="bZ"></small><span id="bS">?</span></div><div><h3 id="bName">空空如也</h3><p class="muted" id="bMass">相对原子质量 ≈ 质子数 + 中子数</p></div></div>
+        <div class="card elcard"><div class="elsym" id="bSym"><span id="bS">?</span></div><div><h3 id="bName">空空如也</h3><p class="muted" id="bMass">核电荷数 = 质子数</p></div></div>
         <div class="status" id="bStatus">先加入质子，看看会变成什么原子。</div>
         <div class="card"><p class="eyebrow" style="margin-bottom:6px">电荷账本</p><p class="ledger" id="bLed"></p></div>
       </div>
@@ -818,8 +817,8 @@ S.models=(()=>{
     {y:'1803',who:'道尔顿',name:'实心球模型',d:'原子是构成物质的最小粒子，是坚实的、不可再分的实心球。',s:'提出了近代原子论，奠定了近代化学的基础。'},
     {y:'1904',who:'汤姆孙',name:'“葡萄干布丁”模型',d:'1897 年汤姆孙发现了电子。他认为原子是一个平均分布着正电荷的球体，带负电的电子像葡萄干一样镶嵌其中。',s:'发现电子，第一次证明原子是可以再分的。'},
     {y:'1911',who:'卢瑟福',name:'核式结构模型',d:'原子中心有一个很小的原子核，原子的全部正电荷和几乎全部质量都集中在原子核里，带负电的电子在核外空间绕核运动。',s:'依据是著名的 α 粒子散射实验，下一页我们就来重现它。'},
-    {y:'1913',who:'玻尔',name:'分层模型',d:'电子在原子核外一定的轨道上绕核运动，不同轨道上的电子能量不同，离核越远能量越高。',s:'核外电子究竟怎样分层排布？我们下节课再来研究。'},
-    {y:'1920s',who:'薛定谔 等',name:'电子云模型',d:'现代量子力学认为，电子在核外没有确定的轨道，只能用“电子云”描述它在核外某处出现机会的大小。',s:'人类对原子结构的认识，仍在不断深入。'}];
+    {y:'1913',who:'玻尔',name:'分层模型',d:'电子只能在原子核外一些特定的、大小不同的轨道上绕核运动。',s:'核外电子究竟怎样分层排布？我们下节课再来研究。'},
+    {y:'1920s',who:'薛定谔 等',name:'电子云模型',d:'现代科学认为，电子在核外没有确定的轨道，只能用“电子云”来描述它在核外各处出现机会的大小。',s:'人类对原子结构的认识，仍在不断深入。'}];
   const tl=$('#tl');
   M.forEach((m,i)=>{const b=document.createElement('button');b.setAttribute('aria-pressed',String(i===0));b.innerHTML=`<i>${m.y}</i><span>${m.who}</span>`;b.onclick=()=>show(i);tl.appendChild(b);});
   const th=Array.from({length:9},(_,i)=>({a:i*2.4,r:Math.sqrt((i+.5)/9)*.72}));
@@ -987,10 +986,10 @@ S.build=(()=>{
   const LIM={p:20,n:24,e:20};
   const TASKS=[{t:'造一个氢原子',tip:'最简单的原子。',p:1,n:0,e:1,hint:'1 个质子、0 个中子、1 个电子。氢原子是唯一没有中子的原子。'},
     {t:'造一个氦原子',tip:'气球里充的就是它。',p:2,n:2,e:2,hint:'2 个质子、2 个中子、2 个电子。'},
-    {t:'造一个碳原子（碳 12）',tip:'相对原子质量的“标准”就来自它。',p:6,n:6,e:6,hint:'6 个质子、6 个中子、6 个电子。'},
+    {t:'造一个碳原子',tip:'铅笔芯里的石墨就是由它构成的。',p:6,n:6,e:6,hint:'6 个质子、6 个中子、6 个电子。'},
     {t:'造一个氧原子',tip:'我们呼吸离不开它。',p:8,n:8,e:8,hint:'8 个质子、8 个中子、8 个电子。'},
     {t:'造一个钠原子',tip:'小心：它的质子数和中子数不相等！',p:11,n:12,e:11,hint:'11 个质子、12 个中子、11 个电子。'},
-    {t:'造一个氯原子（氯 35）',tip:'食盐里的另一种元素。',p:17,n:18,e:17,hint:'17 个质子、18 个中子、17 个电子。'}];
+    {t:'造一个氯原子',tip:'它的质子数和中子数也不相等。',p:17,n:18,e:17,hint:'17 个质子、18 个中子、17 个电子。'}];
   function spawn(k){const side=k==='e'?Math.random()<.5?0:W:-20;return{x:k==='e'?side:Math.random()*W,y:k==='e'?Math.random()*H:H+20};}
   function change(k,d){
     if(d>0){if(P[k].length>=LIM[k]){sfx('bad');return;}const s=spawn(k);P[k].push({x:s.x,y:s.y});sfx(k==='e'?'drop':'pop');}
@@ -1008,9 +1007,9 @@ S.build=(()=>{
   function info(){
     const p=P.p.length,n=P.n.length,e=P.e.length,el=EL[p-1];
     $('#cP').textContent=p;$('#cN').textContent=n;$('#cE').textContent=e;
-    $('#bZ').textContent=p||'';$('#bS').textContent=el?el.s:'?';
+    $('#bS').textContent=el?el.s:'?';
     $('#bName').textContent=el?(p===e?`${el.n}原子`:'带电的粒子'):(n||e?'还不是原子':'空空如也');
-    $('#bMass').innerHTML=p||n?`质子数 + 中子数 = <b class="hl mono">${p+n}</b>${el?`（${el.n}的相对原子质量约为 ${el.ar}）`:''}`:'相对原子质量 ≈ 质子数 + 中子数';
+    $('#bMass').innerHTML=p?`核电荷数 = 质子数 = <b class="hl mono">${p}</b>`:'核电荷数 = 质子数';
     const st=$('#bStatus');let cls='',msg='';
     if(!p){msg=n||e?'没有质子就不是原子。质子数决定了是哪种原子，先加质子吧！':'先加入质子，看看会变成什么原子。';cls='warn';}
     else if(p!==e){const q=p-e;
