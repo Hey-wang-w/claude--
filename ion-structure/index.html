@@ -185,10 +185,12 @@ td:first-child,th:first-child{text-align:left}
 
 /* ---------- gallery ---------- */
 .galwrap{overflow-x:auto}
-.gal{display:grid;grid-template-columns:repeat(8,minmax(92px,1fr));gap:6px;min-width:760px}
-.gal .cell{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s,border-color .2s,box-shadow .2s;--sch-bg:var(--panel)}
+.galgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.galgrid{grid-template-columns:minmax(0,1fr)}}
+.gal{display:grid;grid-template-columns:repeat(8,minmax(70px,1fr));gap:5px;min-width:600px}
+.gal .cell{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:5px 4px 3px;justify-content:flex-end;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s,border-color .2s,box-shadow .2s;--sch-bg:var(--panel)}
 .gal .cell:hover{transform:translateY(-2px);border-color:var(--gold)}
-.gal .cell .sch{max-width:120px;height:62px}
+.gal .cell .sch{width:calc(var(--w)*.5px);max-width:100%;height:auto}
 .gal .cell span{font-size:12px;color:var(--dim);white-space:nowrap}
 .gal .cell span b{color:var(--ink);font-family:var(--f-mono)}
 .gal .sp{visibility:hidden}
@@ -204,14 +206,17 @@ td:first-child,th:first-child{text-align:left}
 /* ---------- find errors ---------- */
 .bugs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .bug{display:flex;flex-direction:column;gap:8px;transition:border-color .3s,box-shadow .3s}
-.bug .sch{max-width:220px;margin:0 auto}
+.bug .sch{width:calc(var(--w)*.8px);max-width:100%;margin:0 auto}
+.bugbody{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:10px;align-items:center}
+.bugside{display:flex;flex-direction:column;gap:6px;min-width:0}
+.bug .fix .sch{width:calc(var(--w)*.5px)}
 .bug .lab{font:700 13px var(--f-mono);color:var(--dim);letter-spacing:.06em}
 .bug.right{border-color:var(--ok);box-shadow:0 0 22px rgba(71,224,160,.2)}
 .bug.wrong{border-color:var(--bad);animation:shake .4s}
 .bug .exp{font-size:.92em;color:var(--dim)}
 .bug .exp b{color:var(--ink)}
 .bug .fix{display:flex;align-items:center;gap:10px;font-size:.9em;color:var(--ok)}
-.bug .fix .sch{max-width:150px;margin:0}
+.bug .fix{flex-wrap:wrap}.bug .fix .sch{margin:0}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media (max-width:900px){.bugs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.bugs{grid-template-columns:minmax(0,1fr)}}
@@ -259,7 +264,7 @@ sup{line-height:0}
 .dr .sym{font:700 1.5em/1.2 var(--f-mono)}
 .dr.cat .sym{color:var(--proton)}.dr.an .sym{color:var(--electron)}
 .dr .q{font:900 2.4em/1 var(--f-display);color:var(--faint);margin:auto}
-.dr .sch{max-width:170px}
+.dr .sch{width:calc(var(--w)*.8px);max-width:100%}
 .dr .same{color:var(--gold);font-weight:700}
 .dr small{font-size:12px;color:var(--dim);text-align:center;line-height:1.4}
 .dr.open{border-color:var(--ok)}
@@ -349,12 +354,17 @@ sup{line-height:0}
 .qcard{display:flex;flex-direction:column;gap:12px}
 .qtext{font:700 clamp(18px,1.7vw,27px)/1.55 var(--f-body)}
 .qdg{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;--sch-bg:var(--panel)}
-.qdg figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:clamp(110px,12vw,170px)}
+.qdg figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .qdg figcaption{font:700 14px var(--f-mono);color:var(--dim)}
 .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .opts button{border:1.5px solid var(--line);background:var(--panel2);border-radius:14px;padding:12px 14px;text-align:left;cursor:pointer;font-size:clamp(16px,1.35vw,21px);display:flex;gap:12px;align-items:center;transition:all .25s;--sch-bg:var(--panel2)}
 .opts button i{font:normal 700 1em var(--f-mono);width:1.9em;height:1.9em;border-radius:50%;display:grid;place-items:center;background:var(--deep);flex:none;color:var(--gold)}
-.opts button .sch,.opts button .pic{max-width:130px;max-height:110px}
+.opts button .sch{width:calc(var(--w)*.95px);max-width:100%;height:auto}
+.opts button .pic{width:clamp(96px,9vw,130px);height:auto;flex:none}
+.qdg .sch{width:calc(var(--w)*1.05px);max-width:100%}
+.opts.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.opts.four button{flex-direction:column;justify-content:center;padding:10px 8px}
+@media (max-width:860px){.opts.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .opts button:hover:not(:disabled){border-color:var(--gold);transform:translateY(-2px)}
 .opts button:disabled{cursor:default}
 .opts button.right{border-color:var(--ok);background:rgba(71,224,160,.16)}
@@ -384,6 +394,25 @@ sup{line-height:0}
 .mm .leaf rect{fill:var(--panel);stroke:var(--line)}
 .mm .leaf:hover rect{stroke:var(--gold)}
 
+/* ---------- 矮屏幕紧凑排版 ---------- */
+@media (max-height:820px) and (min-width:700px){
+  .slide{padding-top:calc(env(safe-area-inset-top,0px) + 12px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}
+  .wrap{gap:10px}
+  h2{font-size:clamp(24px,2.6vw,38px)}
+  .lede{font-size:.92em;line-height:1.5}
+  .card{padding:12px 14px}
+  .stage{min-height:clamp(280px,52vh,600px)}
+  .bug{gap:4px}.bug .exp{font-size:.85em}
+  .bugs{gap:8px}
+  .ptable th,.ptable td{padding:.3em .6em}
+  .big2{font-size:clamp(46px,5vw,80px);padding:6px 0 2px}
+  .ions button{padding:6px 4px}.ions button small{min-height:2.6em}
+  .formula-bar{padding:8px 12px;font-size:clamp(16px,1.7vw,24px)}
+  .mm{max-height:calc(100vh - 220px)}
+  .defs .card{padding:8px 12px}
+  .dr{min-height:150px;padding:6px;gap:3px}.dr .sch{width:calc(var(--w)*.62px)}.dr small{font-size:11px}
+}
+.mm{max-height:calc(100vh - 230px)}
 @media (prefers-reduced-motion:reduce){
   .slide{transition:opacity .2s,visibility 0s linear .2s;transform:none!important;filter:none!important}
   .cover h1 .ln,.sch .arc,.sch .en,.mm.go .lk,.mm.go .nd{animation-duration:.01s!important;animation-delay:0s!important}
@@ -449,7 +478,7 @@ sup{line-height:0}
 <section class="slide" data-id="park" data-title="游戏：电子停车场" data-min="4">
   <div class="wrap">
     <header class="head"><p class="eyebrow">互动游戏 · 电子停车场</p><h2>你来当“停车管理员”</h2>
-      <p class="lede">答题队点击电子层放电子；放好后，另一队当裁判先判断对错，再“确认提交”。答对 +20 分；答错不得分，电子会自动归位到正确排布。裁判判断正确 +10 分。</p></header>
+      <p class="lede">答题队点击电子层，<b>按顺序</b>一个个放电子；放好后，另一队当裁判先判断对错，再“确认提交”。答对 +20 分；答错不得分，电子会自动归位到正确排布。裁判判断正确 +10 分。</p></header>
     <div class="cols">
       <div class="stage"><canvas id="cvPark" aria-label="电子停车场，点击电子层放置电子"></canvas></div>
       <div class="side">
@@ -495,10 +524,10 @@ sup{line-height:0}
   <div class="wrap">
     <header class="head"><p class="eyebrow">观察 · 原子结构示意图图鉴</p><h2>1–20 号原子，排排站</h2></header>
     <div class="row"><button class="btn sm" id="gaColor" aria-pressed="false">按类别上色</button><button class="btn sm" id="gaHide" aria-pressed="false">考考你：隐藏电子数</button><span class="hint" id="gaHint">点一个原子可放大查看</span></div>
+    <div class="galgrid">
     <div class="card galwrap" id="gaWrap"><div class="gal" id="gal"></div><div class="catline" style="margin-top:8px"><span class="m">金属</span><span class="x">非金属</span><span class="g">稀有气体</span></div></div>
-    <div class="cols even">
-      <div class="card" id="gaZoom"></div>
       <div class="side">
+        <div class="card" id="gaZoom"></div>
         <button class="btn pri" id="gaFind" style="align-self:flex-start">你发现了什么？</button>
         <div class="card reveal hide" id="gaFinds">
           <ol class="finds">
@@ -517,7 +546,7 @@ sup{line-height:0}
 <!-- 6 找茬 -->
 <section class="slide" data-id="bugs" data-title="示意图找茬" data-min="3">
   <div class="wrap">
-    <header class="head"><p class="eyebrow">练一练 · 示意图找茬</p><h2>下面这些原子结构示意图，画对了吗？</h2></header>
+    <header class="head"><p class="eyebrow">练一练 · 示意图找茬</p><div class="row" style="justify-content:space-between"><h2>下面这些原子结构示意图，画对了吗？</h2><button class="btn sm" id="bugRe">重来</button></div></header>
     <div class="bugs" id="bugs"></div>
   </div>
 </section>
@@ -526,7 +555,7 @@ sup{line-height:0}
 <section class="slide" data-id="pers" data-title="最外层电子与性质" data-min="4">
   <div class="wrap">
     <header class="head"><p class="eyebrow">新知二 · 最外层电子数与化学性质</p><h2>三种原子，三种“性格”</h2><p class="lede">点击画面中的原子，看看它们在化学反应中各有什么“脾气”。</p></header>
-    <div class="stage" style="min-height:clamp(300px,46vh,520px)"><canvas id="cvPers" aria-label="稀有气体、金属、非金属原子的性格动画，可点击"></canvas></div>
+    <div class="stage" style="min-height:clamp(240px,40vh,520px)"><canvas id="cvPers" aria-label="稀有气体、金属、非金属原子的性格动画，可点击"></canvas></div>
     <div class="card tbl-wrap">
       <table class="ptable">
         <thead><tr><th>原子</th><th>最外层电子数</th><th>得失电子的倾向</th><th>结构</th></tr></thead>
@@ -547,7 +576,7 @@ sup{line-height:0}
     <header class="head"><p class="eyebrow">新知三 · 离子的形成</p><h2>电子交易所：一个送，一个抢</h2></header>
     <div class="cols">
       <div class="side">
-        <div class="stage" style="min-height:clamp(300px,50vh,580px)"><canvas id="cvEx" aria-label="原子之间电子转移形成离子的动画"></canvas><div class="stage-tag" id="exTag"></div></div>
+        <div class="stage" style="min-height:clamp(260px,44vh,580px)"><canvas id="cvEx" aria-label="原子之间电子转移形成离子的动画"></canvas><div class="stage-tag" id="exTag"></div></div>
         <div class="row" id="exChips"></div>
         <div class="row"><button class="btn pri" id="exPlay">开始交易</button><button class="btn" id="exStep">下一步</button><button class="btn" id="exReset">重置</button></div>
       </div>
@@ -678,6 +707,7 @@ sup{line-height:0}
           <div class="bin" data-k="m"><h4>由分子构成</h4><div class="items"></div></div>
           <div class="bin" data-k="i"><h4>由离子构成</h4><div class="items"></div></div>
         </div>
+        <div class="row"><button class="btn sm" id="maRe">重来</button></div>
         <div class="status" id="maMsg">氯化钠是由 Na⁺ 和 Cl⁻ 构成的。那铜、水、氯化镁呢？</div>
       </div>
     </div>
@@ -690,7 +720,7 @@ sup{line-height:0}
     <header class="head"><p class="eyebrow">课堂竞赛 · 红蓝对抗</p><h2>合力击败“不稳定大魔王”</h2></header>
     <div class="bossbar"><span class="bossname">不稳定大魔王</span><div class="hp"><i id="bsHp"></i><b id="bsHpT">100 / 100</b></div><div class="qmeta"><span>第 <b id="bsNo">1</b>/<span id="bsTot">13</span> 题</span><div class="timer"><svg viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="28"/><circle class="fgc" id="bsTmC" cx="32" cy="32" r="28" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg><b id="bsTmT">30</b></div></div></div>
     <div class="qarea">
-      <div class="stage bossstage"><canvas id="cvBoss" aria-label="大魔王"></canvas><div class="stage-hint" id="bsTeam">红队答题</div></div>
+      <div class="stage bossstage"><canvas id="cvBoss" aria-label="大魔王"></canvas><div class="stage-hint" id="bsTeam" data-teamlbl>红队答题</div></div>
       <div class="card qcard" id="bsCard">
         <p class="qtext" id="bsQ"></p>
         <div class="qdg" id="bsDg"></div>
@@ -817,7 +847,7 @@ const outerOf=z=>{const s=shellsOf(z);return s[s.length-1];};
 function schematic(p,shells,{hide=false,err=[],errNuc=false,show=null}={}){
   const r=26,g=24,ang=40*Math.PI/180,n=shells.length,maxR=r+g*Math.max(n,1);
   const ext=Math.max(r,maxR*Math.sin(ang))+6,cx=r+8,cy=ext,W=cx+maxR+16,H=cy+ext;
-  let s=`<svg class="sch" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="核内 ${p} 个质子，核外电子排布 ${shells.join('、')}">`;
+  let s=`<svg class="sch" style="--w:${W.toFixed(0)}" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="核内 ${p} 个质子，核外电子排布 ${shells.join('、')}">`;
   s+=`<circle class="nuc${errNuc?' err':''}" cx="${cx}" cy="${cy}" r="${r}"/><text class="nz${errNuc?' err':''}" x="${cx}" y="${cy}">+${p}</text>`;
   shells.forEach((k,i)=>{const R=r+g*(i+1),x1=cx+R*Math.cos(ang),y1=cy-R*Math.sin(ang),y2=cy+R*Math.sin(ang);const e=err.includes(i)?' err':'';
     s+=`<path class="arc${e}" style="--i:${i}" pathLength="1" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}"/>`;
@@ -827,10 +857,11 @@ function schematic(p,shells,{hide=false,err=[],errNuc=false,show=null}={}){
 
 /* ================= 音效 ================= */
 const SND={on:true,ctx:null};
+addEventListener('pointerdown',()=>{try{SND.ctx&&SND.ctx.state==='suspended'&&SND.ctx.resume();}catch(e){}},{capture:true});
 function sfx(type){
   if(!SND.on)return;
   try{
-    SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx,t=a.currentTime;
+    SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx;if(a.state==='suspended')a.resume();const t=a.currentTime;
     const tone=(f,d,typ='sine',v=.1,dl=0,f2)=>{const o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.setValueAtTime(f,t+dl);
       if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dl+d);g.gain.setValueAtTime(0,t+dl);g.gain.linearRampToValueAtTime(v,t+dl+.012);
       g.gain.exponentialRampToValueAtTime(.0001,t+dl+d);o.connect(g).connect(a.destination);o.start(t+dl);o.stop(t+dl+d+.03);};
@@ -1018,6 +1049,11 @@ S.park=(()=>{
     if(c[last]>8)return[last,`第 ${last+1} 层是最外层，<b>最外层电子数不超过 8 个</b>。`];
     for(let i=0;i<last;i++)if(c[i]<CAPS[i])return[i,`第 ${i+1} 层还没排满，外层就有了电子。要<b>先排满内层，再排外层</b>。`];
     if(c[2]>8)return[2,'在 1–20 号原子中，第 3 层排满 8 个后，多出的电子排到第 4 层。'];
+    // 顺序：每放一个电子时，它里面的各层必须已经排满
+    const cnt=[0,0,0,0];
+    for(let st=0;st<history.length;st++){const k=history[st];
+      for(let i=0;i<k;i++)if(cnt[i]<CAPS[i])return[k,`最后的数目对了，但<b>顺序错了</b>：第 ${st+1} 个电子放进了第 ${k+1} 层，可那时第 ${i+1} 层还没排满。电子要<b>从内向外</b>，先排满内层再排外层。`];
+      cnt[k]++;}
     return null;
   }
   function submit(){
@@ -1136,7 +1172,7 @@ S.gal=(()=>{
       b.onclick=()=>{if(hide&&!shown.has(el.z)){shown.add(el.z);sfx('ok');}else sfx('click');cur=el.z;render();};box.appendChild(b);
     }
     const el=EL[cur-1],sh=shellsOf(cur);
-    $('#gaZoom').innerHTML=`<div class="row" style="gap:16px;align-items:center;flex-wrap:nowrap"><div style="width:min(240px,45%)">${schematic(cur,sh,{hide:hide&&!shown.has(cur)})}</div><div><h3>${el.n}原子 <span class="mono">${el.s}</span></h3><p class="muted">${sh.length} 个电子层，最外层 ${hide&&!shown.has(cur)?'?':sh[sh.length-1]} 个电子</p><p class="muted">${{metal:'金属原子',non:'非金属原子',gas:'稀有气体原子'}[catOf(cur)]}</p></div></div>`;
+    $('#gaZoom').innerHTML=`<div class="row" style="gap:16px;align-items:center;flex-wrap:nowrap"><div style="width:min(190px,48%)">${schematic(cur,sh,{hide:hide&&!shown.has(cur)})}</div><div><h3>${el.n}原子 <span class="mono">${el.s}</span></h3><p class="muted">${sh.length} 个电子层，最外层 ${hide&&!shown.has(cur)?'?':sh[sh.length-1]} 个电子</p><p class="muted">${{metal:'金属原子',non:'非金属原子',gas:'稀有气体原子'}[catOf(cur)]}</p></div></div>`;
   }
   $('#gaColor').onclick=e=>{const on=$('#gaWrap').classList.toggle('colored');e.currentTarget.setAttribute('aria-pressed',String(on));};
   $('#gaHide').onclick=e=>{hide=!hide;shown.clear();e.currentTarget.setAttribute('aria-pressed',String(hide));$('#gaHint').textContent=hide?'说出每层电子数，再点击揭晓':'点一个原子可放大查看';render();};
@@ -1155,9 +1191,10 @@ S.bugs=(()=>{
     {z:17,sh:[2,8,8],ok:false,err:[2],errNuc:true,why:'原子中质子数 = 核外电子数，17 ≠ 18！这其实是<b>氯离子</b>的示意图，不是氯原子。',fix:[2,8,7],nm:'氯原子'},
     {z:2,sh:[2],ok:true,why:'氦原子只有 1 个电子层，2 个电子，正确。',nm:'氦原子'}];
   const box=$('#bugs');
+  function build(){box.innerHTML='';
   B.forEach((b,i)=>{
     const c=document.createElement('div');c.className='card bug';
-    c.innerHTML=`<span class="lab">${String.fromCharCode(65+i)} · 有同学画的“${b.nm}”</span><div class="pic">${schematic(b.z,b.sh)}</div><div class="row"><button class="btn sm" data-v="1">✔ 画对了</button><button class="btn sm" data-v="0">✘ 有错误</button></div><div class="exp" hidden></div>`;
+    c.innerHTML=`<span class="lab">${String.fromCharCode(65+i)} · 有同学画的“${b.nm}”</span><div class="bugbody"><div class="pic">${schematic(b.z,b.sh)}</div><div class="bugside"><div class="row"><button class="btn sm" data-v="1">✔ 画对了</button><button class="btn sm" data-v="0">✘ 有错误</button></div><div class="exp" hidden></div></div></div>`;
     c.querySelectorAll('[data-v]').forEach(btn=>btn.onclick=()=>{
       if(c.dataset.done)return;c.dataset.done=1;const said=btn.dataset.v==='1',right=said===b.ok;
       c.classList.add(right?'right':'wrong');sfx(right?'ok':'bad');if(right){burstAt(c,30,[C.ok,C.g]);teamAdd(5);}
@@ -1166,6 +1203,8 @@ S.bugs=(()=>{
       c.querySelectorAll('[data-v]').forEach(x=>x.disabled=true);});
     box.appendChild(c);
   });
+  }
+  build();$('#bugRe').onclick=()=>{build();sfx('click');};
   return{};
 })();
 
@@ -1326,7 +1365,7 @@ S.draw=(()=>{
   show();
   function tick(dt){if(!run)return;left=Math.max(0,left-dt);const s2=Math.ceil(left);if(s2!==lastS){lastS=s2;if(s2<=10&&s2>0)sfx('tick');}
     if(left<=0){run=false;sfx('win');flash(C.g);$('#drClock').textContent='时间到！';$('#drRun').textContent='再来一次';$('#drClock').classList.remove('urgent');return;}show();}
-  return{tick};
+  return{tick,bgTick:tick};
 })();
 
 /* ================= 11 离子符号工厂 ================= */
@@ -1380,7 +1419,7 @@ S.idt=(()=>{
     ans=false;left=12;const d=deck[ci],e=d.z-d.q;
     $('#idBody').innerHTML=d.txt?`<p class="txtp">质子数 <span class="cp">${d.z}</span><br>核外电子数 <span class="ce">${e}</span></p>`:`<div style="width:min(300px,70vw);margin:auto">${schematic(d.z,shellsOf(e))}</div>`;
     $('#idWho').innerHTML='';$('#idCmp').innerHTML='';$$('.idbtns button').forEach(b=>{b.disabled=false;b.className=b.className.replace(/ ?(right|wrong)/g,'');});
-    const c=$('#idCard');c.classList.remove('scanning');void c.offsetWidth;c.classList.add('scanning');sfx('scan');dots();$('#idNext').disabled=true;
+    const c=$('#idCard');c.classList.remove('scanning');void c.offsetWidth;c.classList.add('scanning');if(document.querySelector('.slide.active')?.dataset.id==='idt')sfx('scan');dots();$('#idNext').disabled=true;
   }
   function answer(k){
     if(ans)return;ans=true;const d=deck[ci],e=d.z-d.q,kind=d.q===0?0:d.q>0?1:2,el=EL[d.z-1],ok=k===kind;res[ci]=k===-1?false:ok;
@@ -1396,7 +1435,7 @@ S.idt=(()=>{
   $('#idRe').onclick=()=>{$('#idNext').textContent='下一个 →';restart();};
   restart();
   function tick(dt){if(ans)return;tAcc+=dt;if(tAcc<.05)return;left=Math.max(0,left-tAcc);tAcc=0;$('#idFuse').style.transform=`scaleX(${left/12})`;if(left<=0)answer(-1);}
-  return{tick,enter(){show();}};
+  return{tick};
 })();
 
 /* ================= 12 构成物质的粒子 ================= */
@@ -1415,9 +1454,11 @@ S.matter=(()=>{
   const WHY={'氧气':'氧气由氧分子构成。','水':'水由水分子构成。','二氧化碳':'二氧化碳由二氧化碳分子构成。','铜':'铜由铜原子直接构成。','金刚石':'金刚石由碳原子直接构成。','氦气':'稀有气体由原子直接构成。','汞':'汞（水银）由汞原子直接构成。','氯化钠':'氯化钠由 Na⁺ 和 Cl⁻ 构成。','氯化镁':'氯化镁由 Mg²⁺ 和 Cl⁻ 构成。'};
   let sel=null,left=ITEMS.length;
   const ib=$('#maItems');
-  ITEMS.sort(()=>Math.random()-.5).forEach(([nm,f,k])=>{const d=document.createElement('button');d.className='itm';d.draggable=true;d.dataset.k=k;d.dataset.nm=nm;d.innerHTML=`${nm}<small>${f}</small>`;
+  function deal(){sel=null;left=ITEMS.length;ib.innerHTML='';$$('.bin .items').forEach(x=>x.innerHTML='');$('#maMsg').className='status';$('#maMsg').textContent='氯化钠是由 Na⁺ 和 Cl⁻ 构成的。那铜、水、氯化镁呢？';
+  ITEMS.slice().sort(()=>Math.random()-.5).forEach(([nm,f,k])=>{const d=document.createElement('button');d.className='itm';d.draggable=true;d.dataset.k=k;d.dataset.nm=nm;d.innerHTML=`${nm}<small>${f}</small>`;
     d.onclick=()=>{if(d.classList.contains('done'))return;$$('.itm.sel').forEach(x=>x.classList.remove('sel'));sel=d;d.classList.add('sel');$$('.bin').forEach(b=>b.classList.add('ready'));sfx('click');};
-    d.addEventListener('dragstart',ev=>{sel=d;ev.dataTransfer.setData('text/plain',nm);});ib.appendChild(d);});
+    d.addEventListener('dragstart',ev=>{sel=d;ev.dataTransfer.setData('text/plain',nm);});ib.appendChild(d);});}
+  deal();$('#maRe').onclick=()=>{deal();sfx('click');};
   function place(bin){if(!sel)return;const d=sel,k=bin.dataset.k;$$('.bin').forEach(b=>b.classList.remove('ready','over'));
     if(d.dataset.k===k){d.classList.remove('sel');d.classList.add('done');d.draggable=false;bin.querySelector('.items').appendChild(d);left--;teamAdd(5);sfx('pop');burstAt(d,14,[C.ok,C.g]);
       $('#maMsg').className='status ok';$('#maMsg').textContent=WHY[d.dataset.nm];
@@ -1444,10 +1485,10 @@ S.matter=(()=>{
 S.boss=(()=>{
   const cv=$('#cvBoss');
   const SC=(z,sh)=>schematic(z,sh);
-  const pic=(p,n,eo,no=0)=>{let s=`<svg class="pic" viewBox="0 0 120 120" role="img" aria-label="${p}个质子${n}个中子在核内，核外${eo}个电子${no?`、${no}个中子`:''}"><circle cx="60" cy="60" r="46" fill="none" stroke="${C.line}" stroke-dasharray="4 4"/>`;
-    const N=p+n;for(let i=0;i<N;i++){const a=i/N*TAU+.4,r=N>1?7:0;s+=`<circle cx="${60+Math.cos(a)*r}" cy="${60+Math.sin(a)*r}" r="6" fill="${i<p?C.p:C.n}"/>`;}
-    for(let i=0;i<eo;i++){const a=-Math.PI/4+i*Math.PI;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="4.5" fill="${C.e}"/>`;}
-    for(let i=0;i<no;i++){const a=Math.PI*.75;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="6" fill="${C.n}"/>`;}return s+'</svg>';};
+  const pic=(p,n,eo,no=0)=>{let s=`<svg class="pic" viewBox="0 0 120 120" role="img" aria-label="${p}个质子${n}个中子在核内，核外${eo}个电子${no?`、${no}个中子`:''}"><circle cx="60" cy="60" r="46" fill="none" stroke="${C.dim}" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+    const N=p+n;for(let i=0;i<N;i++){const a=i/N*TAU+.4,r=N>1?9:0;s+=`<circle cx="${60+Math.cos(a)*r}" cy="${60+Math.sin(a)*r}" r="8" fill="${i<p?C.p:C.n}"/>`;}
+    for(let i=0;i<eo;i++){const a=-Math.PI/4+i*Math.PI;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="6" fill="${C.e}"/>`;}
+    for(let i=0;i<no;i++){const a=Math.PI*.75;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="8" fill="${C.n}"/>`;}return s+'</svg>';};
   const LEG='<span class="cp">●</span> 质子 <span class="cn">●</span> 中子 <span class="ce">●</span> 电子';
   const Q=[
     {q:'科学家用一种特殊的氦原子（核内有 2 个质子和 1 个中子）研究超低温现象。这种氦原子的结构示意图是',o:[SC(3,[2,1]),SC(2,[2]),SC(2,[1,1]),SC(1,[2])],a:1,x:'示意图圆圈内是质子数 <b>2</b>，核外电子数 = 质子数 = 2，只有 1 层。中子数不在示意图中体现。'},
@@ -1462,7 +1503,7 @@ S.boss=(()=>{
     {q:'下列符号表示“硫酸根离子”的是',o:['SO<sub>4</sub><sup>2−</sup>','SO<sub>4</sub>','S<sup>2−</sup>','SO<sub>3</sub><sup>2−</sup>'],a:0,x:'硫酸根离子是带 2 个单位负电荷的原子团：<b>SO<sub>4</sub><sup>2−</sup></b>。'},
     {q:'<span class="tag3">提升 1/3</span>某粒子的结构示意图如下，它有几个电子层？',dg:[['',SC(19,[2,8,8,1])]],o:['1 个','3 个','4 个','19 个'],a:2,x:'4 条弧线 → <b>4 个电子层</b>，这是钾原子。'},
     {q:'<span class="tag3">提升 2/3</span>在化学反应中，该原子一般容易',dg:[['',SC(19,[2,8,8,1])]],o:['得到 1 个电子，形成阴离子','失去 1 个电子，形成阳离子','失去 8 个电子','不易得失电子'],a:1,x:'最外层只有 1 个电子，易<b>失去</b>，形成阳离子 <b>K<sup>+</sup></b>。'},
-    {q:'<span class="tag3">提升 3/3</span>下列原子中，与该原子化学性质相似的是',o:[SC(11,[2,8,1]),SC(18,[2,8,8]),SC(17,[2,8,7]),SC(2,[2])],a:0,x:'最外层电子数相同，化学性质相似：钠原子最外层也是 <b>1</b> 个电子。'}];
+    {q:'<span class="tag3">提升 3/3</span>下列原子中，与该原子化学性质相似的是',dg:[['',SC(19,[2,8,8,1])]],o:[SC(11,[2,8,1]),SC(18,[2,8,8]),SC(17,[2,8,7]),SC(2,[2])],a:0,x:'最外层电子数相同，化学性质相似：钠原子最外层也是 <b>1</b> 个电子。'}];
   let qi=0,ans=false,left=30,tAcc=0,hp=100,over=false,t=0,beams=[],hits=[],dead=0,angry=0;
   const dmg=100/Q.length;
   $('#bsTot').textContent=Q.length;
@@ -1471,7 +1512,7 @@ S.boss=(()=>{
     ans=false;left=30;const d=Q[qi];$('#bsNo').textContent=qi+1;$('#bsQ').innerHTML=d.q+'（　）';
     $('#bsDg').innerHTML=(d.dg||[]).map(([c,s])=>`<figure>${s}${c?`<figcaption>${c}</figcaption>`:''}</figure>`).join('');
     $('#bsExp').hidden=true;$('#bsNext').textContent=qi===Q.length-1?'查看战果':'下一题 →';
-    const box=$('#bsOpts');box.innerHTML='';
+    const box=$('#bsOpts');box.innerHTML='';box.classList.toggle('four',d.o.every(o=>o.startsWith('<svg')));
     d.o.forEach((o,i)=>{const b=document.createElement('button');b.innerHTML=`<i>${'ABCD'[i]}</i><span>${o}</span>`;b.onclick=()=>pick(i,b);box.appendChild(b);});
     $('#bsCard').querySelectorAll('.final').forEach(n=>n.remove());$('#bsQ').hidden=false;teamRender();$('#bsTeam').textContent=(TEAM.cur==='r'?'红队':'蓝队')+'答题';
   }
@@ -1483,13 +1524,13 @@ S.boss=(()=>{
   }
   function kill(){if(dead)return;dead=1;sfx('boom');setTimeout(()=>sfx('win'),400);const r=cv.getBoundingClientRect();for(let i=0;i<4;i++)setTimeout(()=>FX.burst(r.left+r.width/2+(Math.random()-.5)*80,r.top+r.height/2+(Math.random()-.5)*80,80,[C.p,C.g,C.e]),i*180);FX.confetti();flash(C.g);}
   function finish(){
-    over=true;ans=true;$('#bsQ').hidden=true;$('#bsOpts').innerHTML='';$('#bsDg').innerHTML='';$('#bsExp').hidden=true;
+    over=true;$('#bsNext').disabled=true;ans=true;$('#bsQ').hidden=true;$('#bsOpts').innerHTML='';$('#bsDg').innerHTML='';$('#bsExp').hidden=true;
     const w=TEAM.sc.r===TEAM.sc.b?'平局！两队都是离子小达人':TEAM.sc.r>TEAM.sc.b?'红队获胜！':'蓝队获胜！';
     const f=document.createElement('div');f.className='final';f.innerHTML=`<p class="eyebrow">${hp<=.01?'大魔王被击败了！':'大魔王逃走了，下次再战！'}</p><p class="big">${w}</p><p class="mono" style="font-size:1.4em"><span class="cp">红队 ${TEAM.sc.r}</span> : <span class="ce">${TEAM.sc.b} 蓝队</span></p><p class="muted">（全课累计积分）</p>`;
     $('#bsCard').appendChild(f);sfx('win');FX.confetti();
   }
-  $('#bsNext').onclick=()=>{if(qi<Q.length-1){qi++;teamNext();render();sfx('click');}else finish();};
-  $('#bsRe').onclick=()=>{qi=0;hp=100;dead=0;over=false;hpUI();render();};
+  $('#bsNext').onclick=()=>{if(over)return;if(qi<Q.length-1){qi++;teamNext();render();sfx('click');}else finish();};
+  $('#bsRe').onclick=()=>{qi=0;hp=100;dead=0;over=false;$('#bsNext').disabled=false;hpUI();render();};
   hpUI();render();
   function tick(dt){
     t+=dt;
@@ -1588,7 +1629,7 @@ const m=/^#p(\d+)$/.exec(location.hash||'');goTo(m?(+m[1]-1):0);
 let last=performance.now();
 function loop(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  try{BG.tick(dt);const cur=S[slides[idx].dataset.id];cur?.tick?.(dt);FX.tick(dt);}catch(err){console.error(err);}
+  try{BG.tick(dt);const cur=S[slides[idx].dataset.id];cur?.tick?.(dt);if(cur!==S.draw)S.draw.bgTick(dt);FX.tick(dt);}catch(err){console.error(err);}
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
