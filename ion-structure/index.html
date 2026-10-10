@@ -248,13 +248,19 @@ td:first-child,th:first-child{text-align:left}
 sup{line-height:0}
 
 /* ---------- draw ions ---------- */
-.drgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
-.dr{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:150px;transition:all .25s;--sch-bg:var(--panel2)}
+.drgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.drtimer{text-align:center}
+.clock{font:700 clamp(54px,6vw,96px)/1.1 var(--f-mono);color:var(--gold);font-variant-numeric:tabular-nums;text-shadow:0 0 26px rgba(255,196,87,.4);margin:4px 0 8px}
+.clock.urgent{color:var(--bad);animation:fire .5s infinite alternate}
+.notes{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.notes li::marker{color:var(--electron)}
+.dr{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:clamp(170px,24vh,240px);transition:all .25s;--sch-bg:var(--panel2)}
 .dr:hover{border-color:var(--gold)}
 .dr .sym{font:700 1.5em/1.2 var(--f-mono)}
 .dr.cat .sym{color:var(--proton)}.dr.an .sym{color:var(--electron)}
 .dr .q{font:900 2.4em/1 var(--f-display);color:var(--faint);margin:auto}
-.dr .sch{max-width:130px}
+.dr .sch{max-width:170px}
+.dr .same{color:var(--gold);font-weight:700}
 .dr small{font-size:12px;color:var(--dim);text-align:center;line-height:1.4}
 .dr.open{border-color:var(--ok)}
 @media (max-width:560px){.drgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -443,7 +449,7 @@ sup{line-height:0}
 <section class="slide" data-id="park" data-title="游戏：电子停车场" data-min="4">
   <div class="wrap">
     <header class="head"><p class="eyebrow">互动游戏 · 电子停车场</p><h2>你来当“停车管理员”</h2>
-      <p class="lede">点击电子层，把仓库里的电子一个个“停”进去，全部放好后点“确认提交”。一次就对得 20 分；提交错了，本关不再得分，但可以改正后过关。</p></header>
+      <p class="lede">答题队点击电子层放电子；放好后，另一队当裁判先判断对错，再“确认提交”。一次就对 +20 分，提交错了本关不得分；裁判判断正确 +10 分。</p></header>
     <div class="cols">
       <div class="stage"><canvas id="cvPark" aria-label="电子停车场，点击电子层放置电子"></canvas></div>
       <div class="side">
@@ -455,6 +461,10 @@ sup{line-height:0}
         </div>
         <div class="status" id="pkMsg">点击某一层电子层，放入一个电子。</div>
         <div class="row"><button class="btn pri big" id="pkGo">确认提交</button><button class="btn" id="pkUndo">撤销一个</button><button class="btn" id="pkReset">清空重排</button><button class="btn pri" id="pkNext" hidden>下一关 →</button></div>
+        <div class="card" id="pkJudge" hidden>
+          <p><b id="pkJT">蓝队</b>当裁判：这样排对吗？先判断，再由答题队“确认提交”。</p>
+          <div class="row" style="margin-top:8px"><button class="btn" data-j="1" aria-pressed="false">✔ 排对了</button><button class="btn" data-j="0" aria-pressed="false">✘ 排错了</button><span class="hint">裁判判断正确 +10 分</span></div>
+        </div>
         <div class="card" id="pkRes" hidden><p class="stars" id="pkStars"></p><div id="pkSch" style="max-width:240px"></div></div>
       </div>
     </div>
@@ -555,7 +565,7 @@ sup{line-height:0}
 </section>
 
 <!-- 9 离子符号 -->
-<section class="slide" data-id="sym" data-title="离子符号 · 画离子示意图" data-min="5">
+<section class="slide" data-id="sym" data-title="离子符号" data-min="3">
   <div class="wrap">
     <header class="head"><p class="eyebrow">新知三 · 离子符号</p><h2>离子怎么“写”？</h2></header>
     <div class="formula-bar">在元素符号<b class="hl">右上角</b>标出离子所带的电荷：<b class="hl">数字在前，正负号在后</b>；带 1 个单位电荷时，<b class="hl">1 省略不写</b>。</div>
@@ -574,13 +584,38 @@ sup{line-height:0}
         <p class="mean" id="mean">先猜一猜，再点击上面的每一部分。</p>
         <p class="hint" style="text-align:center">离子符号前面的数字表示离子的<b>个数</b>，右上角的数字表示每个离子所带的<b>电荷数</b>。</p>
       </div>
-      <div class="card">
-        <div class="row" style="justify-content:space-between"><p class="eyebrow">课堂任务 · 画一画离子结构示意图</p><span class="row"><button class="btn sm" id="drAll">全部揭晓</button><button class="btn sm" id="drHide">全部盖住</button></span></div>
-        <p class="muted" style="font-size:.9em;margin:4px 0 8px">先选出要画的离子（再点一次取消），学生在纸上画好后，点击卡片揭晓答案。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 画一画 -->
+<section class="slide" data-id="draw" data-title="画一画：离子结构示意图" data-min="3">
+  <div class="wrap">
+    <header class="head"><p class="eyebrow">课堂任务 · 画一画</p><h2>画出这些离子的结构示意图</h2>
+      <p class="lede">先选出要画的离子（再点一次取消），学生在纸上画好后，点击卡片揭晓答案。</p></header>
+    <div class="cols">
+      <div class="side">
         <div class="row" id="drPick"></div>
         <div class="drgrid" id="drGrid"></div>
-        <p class="hint" style="margin-top:8px">提示：原子变成离子时，<b>核内质子数不变</b>，变的只是核外电子数。</p>
       </div>
+      <div class="side">
+        <div class="card drtimer">
+          <p class="eyebrow">画图倒计时</p>
+          <div class="clock" id="drClock">3:00</div>
+          <div class="fuse"><i id="drFuse"></i></div>
+          <div class="row" style="justify-content:center;margin-top:10px"><button class="btn sm" data-sec="120" aria-pressed="false">2 分钟</button><button class="btn sm" data-sec="180" aria-pressed="true">3 分钟</button><button class="btn pri" id="drRun">开始</button><button class="btn sm" id="drRst">重置</button></div>
+        </div>
+        <div class="row"><button class="btn" id="drAll">全部揭晓</button><button class="btn" id="drHide">全部盖住</button></div>
+        <div class="card">
+          <h3>画图提示</h3>
+          <ul class="notes">
+            <li>原子变成离子时，<b>核内质子数不变</b>，圆圈里的数字照抄原子的。</li>
+            <li>阳离子：失去最外层电子，<b>少了一个电子层</b>。</li>
+            <li>阴离子：得到电子，<b>最外层变成 8 个</b>。</li>
+            <li>画好后想一想：它和哪种稀有气体原子的电子排布相同？</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -681,7 +716,7 @@ sup{line-height:0}
 <nav class="dock" aria-label="翻页与积分">
   <button class="ic" id="btnPrev" aria-label="上一页">‹</button>
   <div class="dots" id="dots"></div>
-  <span class="pg" id="pg">1 / 14</span>
+  <span class="pg" id="pg">1 / 15</span>
   <button class="ic" id="btnNext" aria-label="下一页">›</button>
   <button class="tm r on" id="tmR" title="设为红队答题"><span>红队</span><b id="tsR">0</b></button>
   <button class="tm b" id="tmB" title="设为蓝队答题"><b id="tsB">0</b><span>蓝队</span></button>
@@ -691,7 +726,7 @@ sup{line-height:0}
   <button class="tx opt" id="btnFs">全屏</button>
 </nav>
 <div class="menu" id="menu" hidden><div class="card">
-  <div class="row" style="justify-content:space-between"><h3>课件目录 <small class="muted" style="font-size:.6em">建议用时合计约 45 分钟，<span class="opt-tag">可选</span>页时间紧可跳过</small></h3><button class="btn sm" id="menuX">关闭</button></div>
+  <div class="row" style="justify-content:space-between"><h3>课件目录 <small class="muted" style="font-size:.6em">全部约 51 分钟；跳过 2 个<span class="opt-tag">可选</span>页约 45 分钟</small></h3><button class="btn sm" id="menuX">关闭</button></div>
   <ol id="menuList"></ol>
   <div class="row" style="margin-top:14px;justify-content:space-between"><span class="muted">积分调整</span>
     <span class="row"><span class="cp">红队</span><button class="btn sm" data-adj="r" data-v="10">+10</button><button class="btn sm" data-adj="r" data-v="-10">−10</button>
@@ -962,16 +997,19 @@ S.queue=(()=>{
 /* ================= 3 电子停车场 ================= */
 S.park=(()=>{
   const cv=$('#cvPark');const SEQ=[3,8,11,13,16,17,19,20];const CAPS=[2,8,8,2];
-  let ri=0,z=3,seat=[[],[],[],[]],tries=0,done=false,doneCnt=0,t=0,flashes=[],hover=-1,geo=null,history=[],bad=-1;
+  let ri=0,z=3,seat=[[],[],[],[]],tries=0,done=false,doneCnt=0,t=0,flashes=[],hover=-1,geo=null,history=[],bad=-1,vote=null,judged=false;
+  const other=()=>TEAM.cur==='r'?'b':'r',tname=k=>k==='r'?'红队':'蓝队';
+  function judgeUI(){const show=!done&&!judged&&placed()===z;$('#pkJudge').hidden=!show;$('#pkJT').textContent=tname(other());$$('#pkJudge [data-j]').forEach(b=>b.setAttribute('aria-pressed',String(vote!==null&&+b.dataset.j===+vote)));}
+  $$('#pkJudge [data-j]').forEach(b=>b.onclick=()=>{vote=b.dataset.j==='1';judgeUI();sfx('click');});
   const placed=()=>seat.reduce((a,s)=>a+s.length,0);
   function msg(h,cls=''){const m=$('#pkMsg');m.className='status '+cls;m.innerHTML=h;}
   function ui(){const el=EL[z-1];$('#pkT').innerHTML=`第 ${ri+1} 关：给 <span class="hl">${el.n}原子（${el.s}）</span>排电子`;
-    $('#pkInfo').textContent=`核电荷数 ${z}，核外共有 ${z} 个电子；仓库里还剩 ${z-placed()} 个。`;$('#pkMiss').textContent=tries;$('#pkDone').textContent=doneCnt;$('#pkGo').disabled=done;}
-  function start(i){ri=((i%SEQ.length)+SEQ.length)%SEQ.length;z=SEQ[ri];seat=[[],[],[],[]];tries=0;done=false;history=[];bad=-1;$('#pkNext').hidden=true;$('#pkRes').hidden=true;msg('点击某一层电子层，放入一个电子。');ui();}
+    $('#pkInfo').textContent=`核电荷数 ${z}，核外共有 ${z} 个电子；仓库里还剩 ${z-placed()} 个。`;$('#pkMiss').textContent=tries;$('#pkDone').textContent=doneCnt;$('#pkGo').disabled=done;judgeUI();}
+  function start(i){ri=((i%SEQ.length)+SEQ.length)%SEQ.length;z=SEQ[ri];seat=[[],[],[],[]];tries=0;done=false;history=[];bad=-1;vote=null;judged=false;$('#pkNext').hidden=true;$('#pkRes').hidden=true;msg('点击某一层电子层，放入一个电子。');ui();}
   function put(k){
     if(done||!geo)return;if(placed()>=z){msg('电子已经全部放完了。全班先判断一下，再点“确认提交”。','warn');return;}
-    const[dx,dy]=geo.depot;seat[k].push({x:dx,y:dy});history.push(k);bad=-1;flashes.push({k,l:.6,col:C.g});sfx('drop');ui();
-    msg(placed()===z?'电子全部放好了！全班先判断一下对不对，再点“确认提交”。':`第 ${k+1} 层现在有 ${seat[k].length} 个电子。`);
+    const[dx,dy]=geo.depot;seat[k].push({x:dx,y:dy});history.push(k);bad=-1;vote=null;flashes.push({k,l:.6,col:C.g});sfx('drop');ui();
+    msg(placed()===z?`电子全部放好了！请${tname(other())}当裁判，先判断对不对，再点“确认提交”。`:`第 ${k+1} 层现在有 ${seat[k].length} 个电子。`);
   }
   function diagnose(){
     const c=seat.map(s=>s.length),last=c.reduce((a,v,i)=>v?i:a,-1);
@@ -984,22 +1022,24 @@ S.park=(()=>{
   }
   function submit(){
     if(done)return;if(placed()<z){msg(`还有 ${z-placed()} 个电子没放进去，放完再提交。`,'warn');sfx('bad');return;}
-    tries++;const d=diagnose();
-    if(d){bad=d[0];flashes.push({k:d[0],l:1,col:C.bad});sfx('bad');shake();flash();msg(`✘ 排错了：${d[1]}<br>本关已不能得分，改正后再提交。`,'bad');ui();return;}
-    win();
+    tries++;const d=diagnose();let jm='';
+    if(!judged&&vote!==null){judged=true;const ok=vote===!d;if(ok)teamAdd(10,other());jm=`<br>裁判${tname(other())}判断${ok?'<b>正确</b>，+10 分':'错误，不加分'}。`;}
+    judged=true;
+    if(d){bad=d[0];flashes.push({k:d[0],l:1,col:C.bad});sfx('bad');shake();flash();msg(`✘ 排错了：${d[1]}<br>本关已不能得分，改正后再提交。${jm}`,'bad');ui();return;}
+    win(jm);
   }
-  function win(){
+  function win(jm=''){
     done=true;doneCnt++;const first=tries===1,pts=first?20:0;if(pts)teamAdd(pts);
     $('#pkStars').innerHTML=first?`★★★ 一次通过！${TEAM.cur==='r'?'红队':'蓝队'} +20`:'改正后通过（本关不加分）';
     $('#pkSch').innerHTML=schematic(z,shellsOf(z));$('#pkRes').hidden=false;$('#pkNext').hidden=false;
-    msg(`✔ 正确！${EL[z-1].n}原子的电子排布是 <b class="hl">${shellsOf(z).join('、')}</b>。`,'ok');
+    msg(`✔ 正确！${EL[z-1].n}原子的电子排布是 <b class="hl">${shellsOf(z).join('、')}</b>。${jm}`,'ok');
     [0,1,2,3].forEach((k,i)=>setTimeout(()=>flashes.push({k,l:1,col:C.ok}),i*120));
     sfx(first?'win':'ok');if(first)FX.confetti();ui();
   }
   $('#pkGo').onclick=submit;
   $('#pkNext').onclick=()=>{teamNext();start(ri+1);sfx('click');};
-  $('#pkReset').onclick=()=>{if(done)return;seat=[[],[],[],[]];history=[];bad=-1;ui();msg('已清空，重新排吧。');};
-  $('#pkUndo').onclick=()=>{if(done||!history.length)return;const k=history.pop();seat[k].pop();bad=-1;ui();msg('撤销了一个电子。');};
+  $('#pkReset').onclick=()=>{if(done)return;seat=[[],[],[],[]];history=[];bad=-1;vote=null;ui();msg('已清空，重新排吧。');};
+  $('#pkUndo').onclick=()=>{if(done||!history.length)return;const k=history.pop();seat[k].pop();bad=-1;vote=null;ui();msg('撤销了一个电子。');};
   function hit(e){if(!geo)return-1;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,d=Math.hypot(x-geo.cx,y-geo.cy);
     for(let k=0;k<4;k++)if(Math.abs(d-geo.R(k))<geo.gap*.5)return k;return-1;}
   cv.addEventListener('click',e=>{const k=hit(e);if(k>=0)put(k);});
@@ -1248,25 +1288,40 @@ S.sym=(()=>{
     b.onclick=()=>{b.querySelector('small').innerHTML=`最外层 ${o} 个电子<br>${q>0?'失去':'得到'} ${Math.abs(q)} 个 → 带 ${Math.abs(q)} 个单位${q>0?'正':'负'}电荷`;burstAt(b,16,[q>0?C.p:C.e,C.g]);sfx('pop');};box.appendChild(b);});
   const M=['前面的 <b class="hl">2</b>：表示 <b>2 个</b>镁离子。','<b>Mg</b>：镁的元素符号。','右上角的 <b class="cp">2+</b>：表示<b>每个</b>镁离子带 <b>2 个单位的正电荷</b>。'];
   $$('#big2 button').forEach(b=>b.onclick=()=>{$$('#big2 button').forEach(x=>x.classList.toggle('on',x===b));$('#mean').innerHTML=M[+b.dataset.m];burstAt(b,20);sfx('pop');});
-  // 画一画：离子结构示意图
-  const pick=new Set(L.map(x=>x[0])),open=new Set();
-  L.forEach(([z,q])=>{const el=EL[z-1],c=document.createElement('button');c.className='btn sm';c.setAttribute('aria-pressed','true');c.innerHTML=`${el.n}离子`;
-    c.onclick=()=>{pick.has(z)?pick.delete(z):pick.add(z);c.setAttribute('aria-pressed',String(pick.has(z)));draw();sfx('click');};$('#drPick').appendChild(c);});
-  function draw(){
-    $('#drGrid').innerHTML='';
-    L.filter(([z])=>pick.has(z)).forEach(([z,q])=>{const el=EL[z-1],d=document.createElement('button');d.dataset.z=z;d.className='dr '+(q>0?'cat':'an')+(open.has(z)?' open':'');
-      d.innerHTML=`<span class="sym">${ionHTML(el.s,q)}</span>`+(open.has(z)?`${schematic(z,shellsOf(z-q))}<small>原子 ${shellsOf(z).join('、')} → 离子 ${shellsOf(z-q).join('、')}<br>${q>0?'失去':'得到'} ${Math.abs(q)} 个电子</small>`:'<span class="q">?</span><small>画好后点击揭晓</small>');
-      d.onclick=()=>{if(open.has(z))open.delete(z);else{open.add(z);sfx('ok');}draw();const nd=$(`#drGrid [data-z="${z}"]`);if(open.has(z)&&nd)burstAt(nd,20,[q>0?C.p:C.e,C.g]);};
-      $('#drGrid').appendChild(d);});
-    if(!pick.size)$('#drGrid').innerHTML='<p class="muted">还没有选择要画的离子。</p>';
-  }
-  $('#drAll').onclick=()=>{pick.forEach(z=>open.add(z));draw();sfx('win');};
-  $('#drHide').onclick=()=>{open.clear();draw();sfx('click');};
-  draw();
   return{};
 })();
 
-/* ================= 10 离子符号工厂 ================= */
+/* ================= 10 画一画 ================= */
+S.draw=(()=>{
+  const L=[[11,1],[12,2],[13,3],[17,-1],[8,-2],[16,-2]];
+  const NOBLE={2:'氦',10:'氖',18:'氩'};
+  const pick=new Set(L.map(x=>x[0])),open=new Set();
+  L.forEach(([z])=>{const el=EL[z-1],c=document.createElement('button');c.className='btn sm';c.setAttribute('aria-pressed','true');c.innerHTML=`${el.n}离子`;
+    c.onclick=()=>{pick.has(z)?pick.delete(z):pick.add(z);c.setAttribute('aria-pressed',String(pick.has(z)));render();sfx('click');};$('#drPick').appendChild(c);});
+  function render(){
+    $('#drGrid').innerHTML='';
+    L.filter(([z])=>pick.has(z)).forEach(([z,q])=>{const el=EL[z-1],e=z-q,d=document.createElement('button');d.dataset.z=z;d.className='dr '+(q>0?'cat':'an')+(open.has(z)?' open':'');
+      d.innerHTML=`<span class="sym">${ionHTML(el.s,q)}</span>`+(open.has(z)?`${schematic(z,shellsOf(e))}<small>原子 ${shellsOf(z).join('、')} → 离子 ${shellsOf(e).join('、')}，${q>0?'失去':'得到'} ${Math.abs(q)} 个电子<br><span class="same">与${NOBLE[e]}原子的电子排布相同</span></small>`:'<span class="q">?</span><small>画好后点击揭晓</small>');
+      d.onclick=()=>{if(open.has(z))open.delete(z);else{open.add(z);sfx('ok');}render();const nd=$(`#drGrid [data-z="${z}"]`);if(open.has(z)&&nd)burstAt(nd,20,[q>0?C.p:C.e,C.g]);};
+      $('#drGrid').appendChild(d);});
+    if(!pick.size)$('#drGrid').innerHTML='<p class="muted">还没有选择要画的离子。</p>';
+  }
+  $('#drAll').onclick=()=>{pick.forEach(z=>open.add(z));render();sfx('win');};
+  $('#drHide').onclick=()=>{open.clear();render();sfx('click');};
+  render();
+  // 倒计时
+  let total=180,left=180,run=false,lastS=-1;
+  function show(){const s2=Math.ceil(left);$('#drClock').textContent=`${Math.floor(s2/60)}:${String(s2%60).padStart(2,'0')}`;$('#drClock').classList.toggle('urgent',run&&left<=10&&left>0);$('#drFuse').style.transform=`scaleX(${left/total})`;$('#drRun').textContent=run?'暂停':left<total&&left>0?'继续':'开始';}
+  $$('[data-sec]').forEach(b=>b.onclick=()=>{total=left=+b.dataset.sec;run=false;$$('[data-sec]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));show();sfx('click');});
+  $('#drRun').onclick=()=>{if(left<=0)left=total;run=!run;show();sfx('click');};
+  $('#drRst').onclick=()=>{left=total;run=false;show();};
+  show();
+  function tick(dt){if(!run)return;left=Math.max(0,left-dt);const s2=Math.ceil(left);if(s2!==lastS){lastS=s2;if(s2<=10&&s2>0)sfx('tick');}
+    if(left<=0){run=false;sfx('win');flash(C.g);$('#drClock').textContent='时间到！';$('#drRun').textContent='再来一次';$('#drClock').classList.remove('urgent');return;}show();}
+  return{tick};
+})();
+
+/* ================= 11 离子符号工厂 ================= */
 S.fac=(()=>{
   const ORD=[{t:'铝离子',c:'',z:13,q:3},{t:'氯离子',c:'',z:17,q:-1},{t:'镁离子',c:'',z:12,q:2},{t:'2 个钠离子',c:'2',z:11,q:1},{t:'氧离子',c:'',z:8,q:-2},
     {t:'3 个钙离子',c:'3',z:20,q:2},{t:'硫离子',c:'',z:16,q:-2},{t:'2 个氟离子',c:'2',z:9,q:-1},{t:'钾离子',c:'',z:19,q:1}];
