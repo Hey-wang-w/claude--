@@ -449,7 +449,7 @@ sup{line-height:0}
 <section class="slide" data-id="park" data-title="游戏：电子停车场" data-min="4">
   <div class="wrap">
     <header class="head"><p class="eyebrow">互动游戏 · 电子停车场</p><h2>你来当“停车管理员”</h2>
-      <p class="lede">答题队点击电子层放电子；放好后，另一队当裁判先判断对错，再“确认提交”。一次就对 +20 分，提交错了本关不得分；裁判判断正确 +10 分。</p></header>
+      <p class="lede">答题队点击电子层放电子；放好后，另一队当裁判先判断对错，再“确认提交”。答对 +20 分；答错不得分，电子会自动归位到正确排布。裁判判断正确 +10 分。</p></header>
     <div class="cols">
       <div class="stage"><canvas id="cvPark" aria-label="电子停车场，点击电子层放置电子"></canvas></div>
       <div class="side">
@@ -457,10 +457,10 @@ sup{line-height:0}
           <p class="eyebrow">本关任务</p>
           <h3 id="pkT">给钠原子排电子</h3>
           <p class="muted" id="pkInfo"></p>
-          <div class="score-strip" style="margin-top:6px"><span>本关提交 <b id="pkMiss">0</b> 次</span><span>已完成 <b id="pkDone">0</b> 关</span></div>
+          <div class="score-strip" style="margin-top:6px"><span>答对 <b id="pkMiss">0</b> 关</span><span>已完成 <b id="pkDone">0</b> 关</span></div>
         </div>
         <div class="status" id="pkMsg">点击某一层电子层，放入一个电子。</div>
-        <div class="row"><button class="btn pri big" id="pkGo">确认提交</button><button class="btn" id="pkUndo">撤销一个</button><button class="btn" id="pkReset">清空重排</button><button class="btn pri" id="pkNext" hidden>下一关 →</button></div>
+        <div class="row"><button class="btn pri big" id="pkGo">确认提交</button><button class="btn" id="pkUndo">撤销一个</button><button class="btn" id="pkReset">清空重排</button><button class="btn" id="pkRetry" hidden>再练一次（不计分）</button><button class="btn pri" id="pkNext" hidden>下一关 →</button></div>
         <div class="card" id="pkJudge" hidden>
           <p><b id="pkJT">蓝队</b>当裁判：这样排对吗？先判断，再由答题队“确认提交”。</p>
           <div class="row" style="margin-top:8px"><button class="btn" data-j="1" aria-pressed="false">✔ 排对了</button><button class="btn" data-j="0" aria-pressed="false">✘ 排错了</button><span class="hint">裁判判断正确 +10 分</span></div>
@@ -997,15 +997,15 @@ S.queue=(()=>{
 /* ================= 3 电子停车场 ================= */
 S.park=(()=>{
   const cv=$('#cvPark');const SEQ=[3,8,11,13,16,17,19,20];const CAPS=[2,8,8,2];
-  let ri=0,z=3,seat=[[],[],[],[]],tries=0,done=false,doneCnt=0,t=0,flashes=[],hover=-1,geo=null,history=[],bad=-1,vote=null,judged=false;
+  let ri=0,z=3,seat=[[],[],[],[]],tries=0,done=false,doneCnt=0,t=0,flashes=[],hover=-1,geo=null,history=[],bad=-1,vote=null,judged=false,practice=false,okCnt=0;
   const other=()=>TEAM.cur==='r'?'b':'r',tname=k=>k==='r'?'红队':'蓝队';
   function judgeUI(){const show=!done&&!judged&&placed()===z;$('#pkJudge').hidden=!show;$('#pkJT').textContent=tname(other());$$('#pkJudge [data-j]').forEach(b=>b.setAttribute('aria-pressed',String(vote!==null&&+b.dataset.j===+vote)));}
   $$('#pkJudge [data-j]').forEach(b=>b.onclick=()=>{vote=b.dataset.j==='1';judgeUI();sfx('click');});
   const placed=()=>seat.reduce((a,s)=>a+s.length,0);
   function msg(h,cls=''){const m=$('#pkMsg');m.className='status '+cls;m.innerHTML=h;}
   function ui(){const el=EL[z-1];$('#pkT').innerHTML=`第 ${ri+1} 关：给 <span class="hl">${el.n}原子（${el.s}）</span>排电子`;
-    $('#pkInfo').textContent=`核电荷数 ${z}，核外共有 ${z} 个电子；仓库里还剩 ${z-placed()} 个。`;$('#pkMiss').textContent=tries;$('#pkDone').textContent=doneCnt;$('#pkGo').disabled=done;judgeUI();}
-  function start(i){ri=((i%SEQ.length)+SEQ.length)%SEQ.length;z=SEQ[ri];seat=[[],[],[],[]];tries=0;done=false;history=[];bad=-1;vote=null;judged=false;$('#pkNext').hidden=true;$('#pkRes').hidden=true;msg('点击某一层电子层，放入一个电子。');ui();}
+    $('#pkInfo').textContent=`核电荷数 ${z}，核外共有 ${z} 个电子；仓库里还剩 ${z-placed()} 个。`;$('#pkMiss').textContent=okCnt;$('#pkDone').textContent=doneCnt;$('#pkGo').disabled=done;judgeUI();}
+  function start(i,prac=false){ri=((i%SEQ.length)+SEQ.length)%SEQ.length;z=SEQ[ri];seat=[[],[],[],[]];tries=0;done=false;history=[];bad=-1;vote=null;judged=prac;practice=prac;$('#pkNext').hidden=true;$('#pkRetry').hidden=true;$('#pkRes').hidden=true;msg(prac?'练习模式：本关不计分。点击电子层放入电子。':'点击某一层电子层，放入一个电子。');ui();}
   function put(k){
     if(done||!geo)return;if(placed()>=z){msg('电子已经全部放完了。全班先判断一下，再点“确认提交”。','warn');return;}
     const[dx,dy]=geo.depot;seat[k].push({x:dx,y:dy});history.push(k);bad=-1;vote=null;flashes.push({k,l:.6,col:C.g});sfx('drop');ui();
@@ -1023,21 +1023,29 @@ S.park=(()=>{
   function submit(){
     if(done)return;if(placed()<z){msg(`还有 ${z-placed()} 个电子没放进去，放完再提交。`,'warn');sfx('bad');return;}
     tries++;const d=diagnose();let jm='';
-    if(!judged&&vote!==null){judged=true;const ok=vote===!d;if(ok)teamAdd(10,other());jm=`<br>裁判${tname(other())}判断${ok?'<b>正确</b>，+10 分':'错误，不加分'}。`;}
-    judged=true;
-    if(d){bad=d[0];flashes.push({k:d[0],l:1,col:C.bad});sfx('bad');shake();flash();msg(`✘ 排错了：${d[1]}<br>本关已不能得分，改正后再提交。${jm}`,'bad');ui();return;}
-    win(jm);
-  }
-  function win(jm=''){
-    done=true;doneCnt++;const first=tries===1,pts=first?20:0;if(pts)teamAdd(pts);
-    $('#pkStars').innerHTML=first?`★★★ 一次通过！${TEAM.cur==='r'?'红队':'蓝队'} +20`:'改正后通过（本关不加分）';
-    $('#pkSch').innerHTML=schematic(z,shellsOf(z));$('#pkRes').hidden=false;$('#pkNext').hidden=false;
-    msg(`✔ 正确！${EL[z-1].n}原子的电子排布是 <b class="hl">${shellsOf(z).join('、')}</b>。${jm}`,'ok');
-    [0,1,2,3].forEach((k,i)=>setTimeout(()=>flashes.push({k,l:1,col:C.ok}),i*120));
-    sfx(first?'win':'ok');if(first)FX.confetti();ui();
+    if(!judged&&vote!==null){const ok=vote===!d;if(ok)teamAdd(10,other());jm=`<br>裁判${tname(other())}判断${ok?'<b>正确</b>，+10 分':'错误，不加分'}。`;}
+    judged=true;done=true;doneCnt++;
+    const right=!d,pts=right&&!practice?20:0;if(right&&!practice)okCnt++;if(pts)teamAdd(pts);
+    const cfg=shellsOf(z).join('、');
+    $('#pkSch').innerHTML=schematic(z,shellsOf(z));$('#pkRes').hidden=false;$('#pkNext').hidden=false;$('#pkRetry').hidden=false;
+    if(right){
+      $('#pkStars').innerHTML=practice?'练习正确！':`★★★ 答对了！${tname(TEAM.cur)} +20`;
+      msg(`✔ 正确！${EL[z-1].n}原子的电子排布是 <b class="hl">${cfg}</b>。${jm}`,'ok');
+      [0,1,2,3].forEach((k,i)=>setTimeout(()=>flashes.push({k,l:1,col:C.ok}),i*120));
+      sfx(practice?'ok':'win');if(!practice)FX.confetti();
+    }else{
+      bad=d[0];flashes.push({k:d[0],l:1,col:C.bad});sfx('bad');shake();flash();
+      $('#pkStars').innerHTML='✘ 本关答错，不得分。正确排布：';
+      msg(`✘ 排错了：${d[1]}<br>看，电子正在归位到正确的排布 <b class="hl">${cfg}</b>。${jm}`,'bad');
+      setTimeout(()=>{// 电子自动归位
+        const all=seat.flat(),c=shellsOf(z);seat=[[],[],[],[]];let i=0;c.forEach((n,k)=>{for(let j=0;j<n;j++)seat[k].push(all[i++]);});
+        bad=-1;c.forEach((_,k)=>setTimeout(()=>flashes.push({k,l:1,col:C.ok}),k*150));sfx('whoosh');},1300);
+    }
+    ui();
   }
   $('#pkGo').onclick=submit;
   $('#pkNext').onclick=()=>{teamNext();start(ri+1);sfx('click');};
+  $('#pkRetry').onclick=()=>{start(ri,true);sfx('click');};
   $('#pkReset').onclick=()=>{if(done)return;seat=[[],[],[],[]];history=[];bad=-1;vote=null;ui();msg('已清空，重新排吧。');};
   $('#pkUndo').onclick=()=>{if(done||!history.length)return;const k=history.pop();seat[k].pop();bad=-1;vote=null;ui();msg('撤销了一个电子。');};
   function hit(e){if(!geo)return-1;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,d=Math.hypot(x-geo.cx,y-geo.cy);
