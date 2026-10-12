@@ -1518,7 +1518,7 @@ S.boss=(()=>{
   }
   function pick(i,b){
     if(ans)return;ans=true;const d=Q[qi],bs=$$('#bsOpts button');bs.forEach(x=>x.disabled=true);bs[d.a].classList.add('right');
-    if(i===d.a){sfx('laser');teamAdd(10);beams.push({l:1,col:TEAM.cur==='r'?C.p:C.e});setTimeout(()=>{hp=Math.max(0,hp-dmg);hpUI();hits.push({l:1,v:Math.round(dmg)});sfx('boom');shake();if(hp<=0.01)kill();},350);}
+    if(i===d.a){sfx('laser');teamAdd(10);beams.push({l:1,col:TEAM.cur==='r'?C.p:C.e});setTimeout(()=>{hp=Math.max(0,hp-dmg);if(hp<.01)hp=0;hpUI();hits.push({l:1,v:Math.round(dmg)});sfx('boom');shake();if(hp<=0.01)kill();},350);}
     else{if(b)b.classList.add('wrong');sfx('bad');angry=1;flash();shake();}
     const e=$('#bsExp');e.innerHTML=(i===d.a?'✔ 回答正确！':i<0?'时间到！':'✘ 正确答案是 '+'ABCD'[d.a]+'。')+' '+d.x;e.hidden=false;
   }

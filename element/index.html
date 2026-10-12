@@ -197,7 +197,7 @@ td:first-child,th:first-child{text-align:left}
 /* ---------- kin game ---------- */
 .kins{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .kin{border:2px solid var(--line);border-radius:16px;background:var(--panel2);padding:8px 10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .3s;min-width:120px}
-.kin svg{width:clamp(100px,10vw,150px);height:auto}
+.kin svg{width:clamp(120px,11vw,170px);height:auto}
 .kin b{font:900 1.15em var(--f-display)}
 .kin small{font-size:12px;color:var(--dim);min-height:1.3em}
 .kin.g0{border-color:var(--electron);box-shadow:0 0 22px rgba(63,216,255,.3)}
@@ -279,6 +279,8 @@ td:first-child,th:first-child{text-align:left}
 .rel .blank.open rect{fill:rgba(71,224,160,.12);stroke:var(--ok);stroke-dasharray:none}
 .rel .blank.open text{fill:var(--ok)}
 .rel .blank:hover rect{stroke-width:3}
+@media (min-width:861px){.qarea{grid-template-columns:minmax(0,330px) minmax(0,1fr)}}
+.bossstage{min-height:clamp(300px,52vh,460px)!important;background:radial-gradient(ellipse at 50% 40%,#1d1036,var(--void) 75%)!important}
 .qdg .pic{width:clamp(90px,8vw,120px);height:auto}
 /* ---------- boss quiz ---------- */
 .bossbar{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
@@ -434,7 +436,7 @@ td:first-child,th:first-child{text-align:left}
 <section class="slide" data-id="kin" data-title="游戏：原子认亲" data-min="5">
   <div class="wrap">
     <header class="head"><p class="eyebrow">互动游戏 · 原子认亲</p><h2>下面的粒子，共有几种元素？</h2>
-      <p class="lede"><span class="cp">●</span> 质子 <span class="cn">●</span> 中子 <span class="ce">●</span> 电子。数一数各粒子的质子数，再选出元素的种数。答对 +10 分。</p></header>
+      <p class="lede">带“+”的<span class="cp">红球</span>是质子，<span class="cn">灰球</span>是中子，圈上的<span class="ce">蓝点</span>是电子。数一数各粒子的质子数，再选出元素的种数。答对 +10 分。</p></header>
     <div class="card"><div class="kins" id="kinBox"></div></div>
     <div class="row" style="justify-content:space-between">
       <div class="nums" id="kinNums"></div>
@@ -534,10 +536,10 @@ td:first-child,th:first-child{text-align:left}
 <!-- 9 BOSS 闯关 -->
 <section class="slide" data-id="boss" data-title="闯关：击败大魔王" data-min="8">
   <div class="wrap">
-    <header class="head"><p class="eyebrow">课堂竞赛 · 红蓝对抗</p><h2>合力击败“元素大魔王”</h2></header>
-    <div class="bossbar"><span class="bossname">元素大魔王</span><div class="hp"><i id="bsHp"></i><b id="bsHpT">100 / 100</b></div><div class="qmeta"><span>第 <b id="bsNo">1</b>/<span id="bsTot">12</span> 题</span><div class="timer"><svg viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="28"/><circle class="fgc" id="bsTmC" cx="32" cy="32" r="28" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg><b id="bsTmT">30</b></div></div></div>
+    <header class="head"><p class="eyebrow">课堂竞赛 · 红蓝对抗</p><h2>合力击败“元素魔像”</h2></header>
+    <div class="bossbar"><span class="bossname">元素魔像</span><div class="hp"><i id="bsHp"></i><b id="bsHpT">100 / 100</b></div><div class="qmeta"><span>第 <b id="bsNo">1</b>/<span id="bsTot">12</span> 题</span><div class="timer"><svg viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="28"/><circle class="fgc" id="bsTmC" cx="32" cy="32" r="28" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg><b id="bsTmT">30</b></div></div></div>
     <div class="qarea">
-      <div class="stage bossstage"><canvas id="cvBoss" aria-label="大魔王"></canvas><div class="stage-hint" id="bsTeam" data-teamlbl>红队答题</div></div>
+      <div class="stage bossstage"><canvas id="cvBoss" aria-label="由元素晶片拼成的元素魔像"></canvas><div class="stage-hint" id="bsTeam" data-teamlbl>红队答题</div></div>
       <div class="card qcard" id="bsCard">
         <p class="qtext" id="bsQ"></p>
         <div class="qdg" id="bsDg"></div>
@@ -545,7 +547,7 @@ td:first-child,th:first-child{text-align:left}
         <p class="qexp" id="bsExp" hidden></p>
       </div>
     </div>
-    <div class="row"><button class="btn pri" id="bsNext">下一题 →</button><button class="btn" id="bsRe">重新开始</button><span class="hint">答对：本队 +10 分，并对大魔王造成伤害；答题队自动轮换（底部可切换）。</span></div>
+    <div class="row"><button class="btn pri" id="bsNext">下一题 →</button><button class="btn" id="bsRe">重新开始</button><span class="hint">答对：本队 +10 分，并打落魔像身上的元素晶片；答题队自动轮换（底部可切换）。</span></div>
   </div>
 </section>
 
@@ -760,17 +762,97 @@ const S={};
 
 
 /* 粒子模型图（● 质子 ● 中子 ● 电子） */
-function pic(p,n,eo,no=0){let s=`<svg class="pic" viewBox="0 0 120 120" role="img" aria-label="核内${p}个质子、${n}个中子，核外${eo}个电子"><circle cx="60" cy="60" r="46" fill="none" stroke="${C.dim}" stroke-width="1.5" stroke-dasharray="4 4"/>`;
-  const N=p+n;for(let i=0;i<N;i++){const a=i/N*TAU+.4,r=N>1?9:0;s+=`<circle cx="${(60+Math.cos(a)*r).toFixed(1)}" cy="${(60+Math.sin(a)*r).toFixed(1)}" r="8" fill="${i<p?C.p:C.n}"/>`;}
-  for(let i=0;i<eo;i++){const a=-Math.PI/4+i/Math.max(eo,1)*TAU;s+=`<circle cx="${(60+Math.cos(a)*46).toFixed(1)}" cy="${(60+Math.sin(a)*46).toFixed(1)}" r="6" fill="${C.e}"/>`;}
-  for(let i=0;i<no;i++){const a=Math.PI*.75;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="8" fill="${C.n}"/>`;}return s+'</svg>';}
-const LEG='<span class="cp">●</span> 质子 <span class="cn">●</span> 中子 <span class="ce">●</span> 电子';
+function pic(p,n,eo,no=0){
+  const V=160,cx=80,cy=80,RR=68,rp=10,c=12;
+  let s=`<svg class="pic" viewBox="0 0 ${V} ${V}" role="img" aria-label="核内${p}个质子、${n}个中子，核外${eo}个电子"><circle cx="${cx}" cy="${cy}" r="${RR}" fill="none" stroke="${C.dim}" stroke-width="1.5" stroke-dasharray="4 5"/>`;
+  const ty=mixPN(p,n);ty.forEach((k,i)=>{const r=ty.length>1?c*Math.sqrt(i+.5):0,a=i*2.39996+.3,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+    s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rp}" fill="${k==='p'?C.p:C.n}" stroke="${C.void}" stroke-width="1.2"/>`;
+    if(k==='p')s+=`<text x="${x.toFixed(1)}" y="${(y+.5).toFixed(1)}" fill="#fff" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="central" font-family="monospace">+</text>`;});
+  for(let i=0;i<eo;i++){const a=-Math.PI/2+i/Math.max(eo,1)*TAU;s+=`<circle cx="${(cx+Math.cos(a)*RR).toFixed(1)}" cy="${(cy+Math.sin(a)*RR).toFixed(1)}" r="6" fill="${C.e}"/>`;}
+  for(let i=0;i<no;i++){const a=Math.PI*.75;s+=`<circle cx="${cx+Math.cos(a)*RR}" cy="${cy+Math.sin(a)*RR}" r="${rp}" fill="${C.n}"/>`;}
+  return s+'</svg>';}
+const LEG='<span class="cp">⊕</span> 质子 <span class="cn">●</span> 中子 <span class="ce">●</span> 电子';
 // 画一个“迷你原子”：原子核 + 一圈电子
 function miniAtom(ctx,x,y,R,p,n,e,t,a=1,types){
   types=types||mixPN(p,n);const br=Math.min(R*.16,R*.62/(1.12*Math.sqrt(p+n)+1));
   ctx.globalAlpha=a;ring(ctx,x,y,R,C.e,.3*a);ctx.globalAlpha=1;
   glow(ctx,x,y,R*.7,C.p,.18*a);ctx.globalAlpha=a;drawNucleus(ctx,x,y,types,br,t,.04);ctx.globalAlpha=1;
   for(let i=0;i<e;i++){const an=t*1.2+i/e*TAU;elec(ctx,x+Math.cos(an)*R,y+Math.sin(an)*R,Math.max(2,R*.1),a);}
+}
+
+
+/* ================= 大魔王：元素魔像 ================= */
+function Golem(){
+  const NAMES='氢氦锂铍硼碳氮氧氟氖钠镁铝硅磷硫氯氩钾钙铁铜锌银碘汞金锰钡锡'.split('');
+  const ROWS=[{n:4,use:[0,3]},{n:3},{n:6},{n:7,core:3},{n:6},{n:5},{n:4,use:[0,3]}];
+  let tiles=[],falling=[],shots=[],booms=[],dmgs=[],bolts=[],smoke=[],shards=[],t=0,knock=0,white=0,charge=0,dead=0,deadT=0,eyeRed=0;
+  function build(){tiles=[];let k=0;ROWS.forEach((r,ri)=>{const idx=r.use||[...Array(r.n).keys()];idx.forEach(i=>{if(r.core===i)return;tiles.push({ri,col:i-(r.n-1)/2,ch:NAMES[k++%NAMES.length],ph:Math.random()*TAU,alive:true});});});
+    // 先打掉离核心最远的
+    tiles.forEach(o=>{o.d=Math.hypot(o.col*1.732,(o.ri-3)*1.5);});tiles.sort((a,b)=>b.d-a.d);}
+  build();
+  function hexPath(ctx,x,y,s){ctx.beginPath();for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;const px=x+Math.cos(a)*s,py=y+Math.sin(a)*s;i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.closePath();}
+  let G={cx:0,cy:0,s:10};
+  const pos=o=>({x:G.cx+o.col*G.s*1.74,y:G.cy+(o.ri-3)*G.s*1.52});
+  function detach(o,power=1){o.alive=false;const p=pos(o),dx=p.x-G.cx,dy=p.y-G.cy,L=Math.hypot(dx,dy)||1;
+    falling.push({ch:o.ch,x:p.x,y:p.y,vx:dx/L*(3+Math.random()*4)*power,vy:-(3+Math.random()*4)*power+dy/L*2,rot:0,vr:(Math.random()-.5)*.4,l:1});}
+  return{
+    reset(){build();falling=[];shots=[];booms=[];dmgs=[];bolts=[];smoke=[];shards=[];dead=0;deadT=0;knock=0;white=0;charge=0;},
+    shoot(col,team){shots.push({col,u:0,side:team==='r'?-1:1,trail:[]});},
+    hurt(v,hp){knock=1;white=1;booms.push({l:1});dmgs.push({v,l:1,x:(Math.random()-.5)*40});
+      const alive=tiles.filter(o=>o.alive).length,keep=Math.round(tiles.length*hp/100);let k=alive-keep;for(const o of tiles){if(k<=0)break;if(o.alive){detach(o);k--;}}
+      for(let i=0;i<24;i++){const a=Math.random()*TAU,sp=2+Math.random()*6;shards.push({x:G.cx,y:G.cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:1,c:[C.g,'#ffffff',C.e][i%3]});}},
+    strike(){charge=1;eyeRed=1;setTimeout(()=>{for(let i=0;i<3;i++)bolts.push({x:(Math.random()-.5),l:1});},350);},
+    die(){dead=1;deadT=0;tiles.forEach(o=>{if(o.alive)detach(o,1.8);});white=1;
+      for(let i=0;i<60;i++){const a=Math.random()*TAU,sp=2+Math.random()*10;shards.push({x:G.cx,y:G.cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:1.4,c:[C.g,C.p,'#ffffff',C.e][i%4],big:i<14});}},
+    draw(cv,dt,hp){
+      t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const k=dt*60;
+      G.s=Math.min(h*.062,w*.072);knock=Math.max(0,knock-dt*3);white=Math.max(0,white-dt*4);charge=Math.max(0,charge-dt*1.6);eyeRed=Math.max(0,eyeRed-dt*.8);
+      const low=hp<35&&!dead;const bob=Math.sin(t*1.6)*G.s*.12;
+      G.cx=w/2+(low?(Math.random()-.5)*3:0);G.cy=h*.47+bob-knock*G.s*.6;
+      if(dead)deadT+=dt;
+      // 光环
+      if(!dead){glow(ctx,G.cx,G.cy,G.s*8,low?C.bad:'#9b5cff',low?.22+.12*Math.sin(t*8):.2);}
+      // 晶片
+      tiles.forEach(o=>{if(!o.alive)return;const p=pos(o);const f=Math.sin(t*2+o.ph)*G.s*.06+(low?(Math.random()-.5)*2:0);
+        const x=p.x,y=p.y+f;hexPath(ctx,x,y,G.s*.92);
+        const g=ctx.createLinearGradient(x,y-G.s,x,y+G.s);g.addColorStop(0,low?'#4a1830':'#3b2468');g.addColorStop(1,low?'#1e0a14':'#160c2c');ctx.fillStyle=g;ctx.fill();
+        ctx.lineWidth=1.6;ctx.strokeStyle=low?rgba(C.bad,.8):rgba(C.g,.55);ctx.stroke();
+        if(white>0){ctx.fillStyle=`rgba(255,255,255,${white*.7})`;ctx.fill();}
+        label(ctx,o.ch,x,y+1,{size:G.s*.78,weight:900,font:DISP,col:low?'#ffb3b3':'#e8dcff',a:.85});});
+      // 核心与眼睛
+      if(!dead){const r=G.s*1.05*(1+.06*Math.sin(t*4));
+        glow(ctx,G.cx,G.cy,r*3,low?C.bad:C.g,.55);
+        ctx.save();ctx.translate(G.cx,G.cy);ctx.rotate(t*.6);ctx.beginPath();for(let i=0;i<6;i++){const a=i/6*TAU,rr=i%2?r*.62:r;ctx.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();
+        const cg=ctx.createRadialGradient(0,0,0,0,0,r);cg.addColorStop(0,'#fff');cg.addColorStop(.35,low?C.bad:C.g);cg.addColorStop(1,low?'#7a1020':'#b0701a');ctx.fillStyle=cg;ctx.fill();ctx.restore();
+        if(low){ctx.strokeStyle='rgba(20,0,0,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(G.cx-r*.6,G.cy-r*.2);ctx.lineTo(G.cx-r*.1,G.cy+r*.1);ctx.lineTo(G.cx+r*.2,G.cy-r*.4);ctx.moveTo(G.cx-r*.1,G.cy+r*.1);ctx.lineTo(G.cx+r*.05,G.cy+r*.7);ctx.stroke();}
+        const ey=G.cy-3*G.s*1.52+bob*.2,blink=(t%4)>3.85?.15:1;
+        [-1,1].forEach(sd=>{const ex=G.cx+sd*G.s*.78;const ec=eyeRed>0||low?C.bad:'#7ff7ff';ctx.save();ctx.translate(ex,ey);ctx.rotate(sd*.3);ctx.fillStyle=ec;ctx.beginPath();ctx.ellipse(0,0,G.s*.42,G.s*.16*blink*(1+charge*.6),0,0,TAU);ctx.fill();ctx.restore();glow(ctx,ex,ey,G.s*(1.2+charge*1.5),ec,.6);});}
+      // 残血冒烟
+      if(low&&Math.random()<.4)smoke.push({x:G.cx+(Math.random()-.5)*G.s*6,y:G.cy+(Math.random()-.5)*G.s*4,r:G.s*.5,l:1});
+      if(dead&&deadT<4&&Math.random()<.5)smoke.push({x:G.cx+(Math.random()-.5)*G.s*4,y:h*.75,r:G.s*.7,l:1});
+      smoke=smoke.filter(p=>{p.l-=dt*.6;p.y-=k*.8;p.r+=k*.3;ctx.fillStyle=`rgba(70,60,80,${.35*p.l})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,TAU);ctx.fill();return p.l>0;});
+      // 被打落的晶片
+      falling=falling.filter(o=>{o.vy+=.35*k;o.x+=o.vx*k;o.y+=o.vy*k;o.rot+=o.vr*k;o.l-=dt*.45;
+        ctx.save();ctx.translate(o.x,o.y);ctx.rotate(o.rot);ctx.globalAlpha=Math.max(0,o.l);hexPath(ctx,0,0,G.s*.92);ctx.fillStyle='#2a1a48';ctx.fill();ctx.strokeStyle=rgba(C.g,.8);ctx.lineWidth=1.5;ctx.stroke();
+        label(ctx,o.ch,0,1,{size:G.s*.78,weight:900,font:DISP,col:'#fff'});ctx.restore();ctx.globalAlpha=1;return o.l>0&&o.y<h+60;});
+      // 能量弹
+      shots=shots.filter(sh=>{sh.u+=dt/.35;const sx=w/2+sh.side*w*.45,sy=h+10,f=Math.min(1,sh.u),x=lerp(sx,G.cx,f),y=lerp(sy,G.cy,f)-Math.sin(f*Math.PI)*h*.18;
+        sh.trail.push([x,y]);if(sh.trail.length>14)sh.trail.shift();ctx.globalCompositeOperation='lighter';
+        sh.trail.forEach(([tx,ty],i)=>glow(ctx,tx,ty,G.s*.25*(i+1)/sh.trail.length*2,sh.col,.5*(i+1)/sh.trail.length));glow(ctx,x,y,G.s*1.2,sh.col,1);glow(ctx,x,y,G.s*.4,'#ffffff',1);ctx.globalCompositeOperation='source-over';return sh.u<1;});
+      // 命中冲击波
+      booms=booms.filter(b=>{b.l-=dt*1.6;const r=(1-b.l)*G.s*7;ctx.strokeStyle=`rgba(255,255,255,${b.l})`;ctx.lineWidth=6*b.l;ctx.beginPath();ctx.arc(G.cx,G.cy,r,0,TAU);ctx.stroke();ctx.strokeStyle=rgba(C.g,b.l*.8);ctx.lineWidth=3;ctx.beginPath();ctx.arc(G.cx,G.cy,r*.7,0,TAU);ctx.stroke();return b.l>0;});
+      shards=shards.filter(p=>{p.vy+=.12*k;p.x+=p.vx*k;p.y+=p.vy*k;p.l-=dt*.9;ctx.globalCompositeOperation='lighter';
+        if(p.big){ctx.fillStyle=rgba(p.c,Math.max(0,p.l));ctx.beginPath();ctx.moveTo(p.x,p.y-6);ctx.lineTo(p.x+5,p.y+4);ctx.lineTo(p.x-5,p.y+4);ctx.fill();}else glow(ctx,p.x,p.y,4,p.c,Math.max(0,p.l));
+        ctx.globalCompositeOperation='source-over';return p.l>0;});
+      // 反击闪电
+      bolts=bolts.filter(b=>{b.l-=dt*2.2;bolt(ctx,G.cx,G.cy-3*G.s*1.52,w/2+b.x*w*.9,h,C.bad,Math.max(0,b.l),40);return b.l>0;});
+      // 伤害数字
+      dmgs=dmgs.filter(d=>{d.l-=dt*.7;const sc=1+.6*Math.max(0,d.l-.7)/.3;label(ctx,`−${d.v}`,G.cx+G.s*3.2+d.x,G.cy-G.s*3-(1-d.l)*50,{size:G.s*1.4*sc,weight:900,col:C.g,a:Math.min(1,d.l*1.5),font:MONO,stroke:C.void});return d.l>0;});
+      if(white>0&&dead){ctx.fillStyle=`rgba(255,255,255,${white*.6})`;ctx.fillRect(0,0,w,h);}
+      if(dead&&deadT>.5){const a=Math.min(1,(deadT-.5)*2);label(ctx,'击败！',w/2,h*.45,{size:G.s*2.4*(1+.2*Math.max(0,1-deadT+.5)),weight:900,font:DISP,col:C.g,a,stroke:C.void});
+        label(ctx,'元素魔像碎成了一地元素',w/2,h*.45+G.s*2.2,{size:Math.max(12,G.s*.8),col:C.dim,a});}
+      if(low&&!dead)label(ctx,'残血！',w/2,h-18,{size:Math.max(12,G.s*.8),weight:900,col:C.bad,a:.6+.4*Math.sin(t*8)});
+    }};
 }
 
 /* ================= 1 封面：氧家族团聚 ================= */
@@ -1018,11 +1100,7 @@ S.map=(()=>{
 S.boss=(()=>{
   const cv=$('#cvBoss');
   const SC=(z,sh)=>schematic(z,sh);
-  const pic=(p,n,eo,no=0)=>{let s=`<svg class="pic" viewBox="0 0 120 120" role="img" aria-label="${p}个质子${n}个中子在核内，核外${eo}个电子${no?`、${no}个中子`:''}"><circle cx="60" cy="60" r="46" fill="none" stroke="${C.dim}" stroke-width="1.5" stroke-dasharray="4 4"/>`;
-    const N=p+n;for(let i=0;i<N;i++){const a=i/N*TAU+.4,r=N>1?9:0;s+=`<circle cx="${60+Math.cos(a)*r}" cy="${60+Math.sin(a)*r}" r="8" fill="${i<p?C.p:C.n}"/>`;}
-    for(let i=0;i<eo;i++){const a=-Math.PI/4+i/Math.max(eo,1)*TAU;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="6" fill="${C.e}"/>`;}
-    for(let i=0;i<no;i++){const a=Math.PI*.75;s+=`<circle cx="${60+Math.cos(a)*46}" cy="${60+Math.sin(a)*46}" r="8" fill="${C.n}"/>`;}return s+'</svg>';};
-  const LEG='<span class="cp">●</span> 质子 <span class="cn">●</span> 中子 <span class="ce">●</span> 电子';
+  const ART=Golem();
   const Q=[
     {q:'超市里有“加碘食盐”“高钙牛奶”“富硒茶叶”等商品，这里的“碘、钙、硒”指的是',o:['原子','分子','元素','离子'],a:2,x:'食品、药品标签上的“碘、钙、硒”等，指的是<b>元素</b>，强调物质中含有这类原子，而不是某个具体的原子或分子。'},
     {q:'碳元素与氧元素的本质区别是',o:['最外层电子数不同','质子数（核电荷数）不同','中子数不同','相对原子质量不同'],a:1,x:'元素是质子数相同的一类原子的总称，不同元素的本质区别是<b>质子数不同</b>。'},
@@ -1050,38 +1128,24 @@ S.boss=(()=>{
   }
   function pick(i,b){
     if(ans)return;ans=true;const d=Q[qi],bs=$$('#bsOpts button');bs.forEach(x=>x.disabled=true);bs[d.a].classList.add('right');
-    if(i===d.a){sfx('laser');teamAdd(10);beams.push({l:1,col:TEAM.cur==='r'?C.p:C.e});setTimeout(()=>{hp=Math.max(0,hp-dmg);hpUI();hits.push({l:1,v:Math.round(dmg)});sfx('boom');shake();if(hp<=0.01)kill();},350);}
-    else{if(b)b.classList.add('wrong');sfx('bad');angry=1;flash();shake();}
+    if(i===d.a){sfx('laser');teamAdd(10);ART.shoot(TEAM.cur==='r'?C.p:C.e,TEAM.cur);setTimeout(()=>{hp=Math.max(0,hp-dmg);if(hp<.01)hp=0;hpUI();ART.hurt(Math.round(dmg),hp);sfx('boom');shake();if(hp<=0.01)kill();},350);}
+    else{if(b)b.classList.add('wrong');sfx('bad');ART.strike();setTimeout(()=>{flash();shake();},380);}
     const e=$('#bsExp');e.innerHTML=(i===d.a?'✔ 回答正确！':i<0?'时间到！':'✘ 正确答案是 '+'ABCD'[d.a]+'。')+' '+d.x;e.hidden=false;
   }
-  function kill(){if(dead)return;dead=1;sfx('boom');setTimeout(()=>sfx('win'),400);const r=cv.getBoundingClientRect();for(let i=0;i<4;i++)setTimeout(()=>FX.burst(r.left+r.width/2+(Math.random()-.5)*80,r.top+r.height/2+(Math.random()-.5)*80,80,[C.p,C.g,C.e]),i*180);FX.confetti();flash(C.g);}
+  function kill(){if(dead)return;dead=1;ART.die();sfx('boom');setTimeout(()=>sfx('win'),400);const r=cv.getBoundingClientRect();for(let i=0;i<4;i++)setTimeout(()=>FX.burst(r.left+r.width/2+(Math.random()-.5)*80,r.top+r.height/2+(Math.random()-.5)*80,80,[C.p,C.g,C.e]),i*180);FX.confetti();flash(C.g);}
   function finish(){
     over=true;$('#bsNext').disabled=true;ans=true;$('#bsQ').hidden=true;$('#bsOpts').innerHTML='';$('#bsDg').innerHTML='';$('#bsExp').hidden=true;
     const w=TEAM.sc.r===TEAM.sc.b?'平局！两队都是元素小达人':TEAM.sc.r>TEAM.sc.b?'红队获胜！':'蓝队获胜！';
-    const f=document.createElement('div');f.className='final';f.innerHTML=`<p class="eyebrow">${hp<=.01?'大魔王被击败了！':'大魔王逃走了，下次再战！'}</p><p class="big">${w}</p><p class="mono" style="font-size:1.4em"><span class="cp">红队 ${TEAM.sc.r}</span> : <span class="ce">${TEAM.sc.b} 蓝队</span></p><p class="muted">（全课累计积分）</p>`;
+    const f=document.createElement('div');f.className='final';f.innerHTML=`<p class="eyebrow">${hp<=.01?'元素魔像被击败了！':'元素魔像逃走了，下次再战！'}</p><p class="big">${w}</p><p class="mono" style="font-size:1.4em"><span class="cp">红队 ${TEAM.sc.r}</span> : <span class="ce">${TEAM.sc.b} 蓝队</span></p><p class="muted">（全课累计积分）</p>`;
     $('#bsCard').appendChild(f);sfx('win');FX.confetti();
   }
   $('#bsNext').onclick=()=>{if(over)return;if(qi<Q.length-1){qi++;teamNext();render();sfx('click');}else finish();};
-  $('#bsRe').onclick=()=>{qi=0;hp=100;dead=0;over=false;$('#bsNext').disabled=false;hpUI();render();};
+  $('#bsRe').onclick=()=>{qi=0;hp=100;dead=0;ART.reset();over=false;$('#bsNext').disabled=false;hpUI();render();};
   hpUI();render();
   function tick(dt){
     t+=dt;
     if(!ans&&!over){tAcc+=dt;if(tAcc>=.1){left=Math.max(0,left-tAcc);tAcc=0;$('#bsTmT').textContent=Math.ceil(left);$('#bsTmC').style.strokeDashoffset=String(100-left/30*100);$('#bsTmC').style.stroke=left<8?C.bad:C.g;if(left<=0)pick(-1,null);}}
-    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h*.45,m=Math.min(w,h);angry=Math.max(0,angry-dt*.8);
-    if(dead){dead=Math.min(2,dead+dt);const a=Math.max(0,1-(dead-1));ctx.globalAlpha=a;}
-    const jit=(1-hp/100)*4+angry*8,R=m*.2*(1+.04*Math.sin(t*3));const jx=(Math.random()-.5)*jit,jy=(Math.random()-.5)*jit;
-    // 尖刺光环
-    if(!LOW){ctx.save();ctx.translate(cx+jx,cy+jy);for(let i=0;i<14;i++){const a=i/14*TAU+t*.4,L=R*(1.4+.25*Math.sin(t*5+i*2));ctx.strokeStyle=rgba(i%2?C.p:C.g,.35+angry*.4);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R*.9,Math.sin(a)*R*.9);ctx.lineTo(Math.cos(a)*L,Math.sin(a)*L);ctx.stroke();}ctx.restore();}
-    glow(ctx,cx,cy,R*2,angry>0?C.bad:C.p,.35);
-    const g=ctx.createRadialGradient(cx-R*.3+jx,cy-R*.3+jy,R*.1,cx+jx,cy+jy,R);g.addColorStop(0,'#5a1a3a');g.addColorStop(1,'#16081a');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx+jx,cy+jy,R,0,TAU);ctx.fill();
-    ctx.strokeStyle=rgba(C.p,.8);ctx.lineWidth=2;ctx.stroke();
-    // 眼睛
-    [-1,1].forEach(s=>{const ex=cx+jx+s*R*.36,ey=cy+jy-R*.12;ctx.fillStyle=angry>0?C.g:C.p;ctx.beginPath();ctx.ellipse(ex,ey,R*.13,R*.07*(1-.8*Math.max(0,Math.sin(t*2.3)>.97?1:0)),s*.35,0,TAU);ctx.fill();glow(ctx,ex,ey,R*.25,C.p,.5);});
-    // 不安分的电子
-    for(let i=0;i<5;i++){const a=t*(1.5+i*.3)+i,rr=R*(1.25+.15*Math.sin(t*4+i));elec(ctx,cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*.6,m*.013);}
-    ctx.globalAlpha=1;
-    beams=beams.filter(b=>{b.l-=dt*2.2;const sx=w/2+(b.col===C.p?-w*.4:w*.4),sy=h;bolt(ctx,sx,sy,cx,cy,b.col,Math.max(0,b.l),30);ctx.globalCompositeOperation='lighter';ctx.strokeStyle=rgba(b.col,b.l*.6);ctx.lineWidth=10*b.l;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(cx,cy);ctx.stroke();ctx.globalCompositeOperation='source-over';return b.l>0;});
-    hits=hits.filter(hh=>{hh.l-=dt*.8;label(ctx,`−${hh.v}`,cx+R*.8,cy-R-(1-hh.l)*40,{size:30,weight:900,col:C.g,a:hh.l,font:MONO,stroke:C.void});glow(ctx,cx,cy,R*1.5*hh.l,C.g,hh.l*.6);return hh.l>0;});
+    ART.draw(cv,dt,hp);
   }
   return{tick,enter(){teamRender();$('#bsTeam').textContent=(TEAM.cur==='r'?'红队':'蓝队')+'答题';}};
 })();
