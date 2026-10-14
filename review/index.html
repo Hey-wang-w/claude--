@@ -494,7 +494,7 @@ p{margin:0}
   .tc{padding-top:24px}
   .net{max-height:calc(100vh - 215px)}
 }
-@media (min-width:861px){[data-id="nh3"] .labbox{min-height:clamp(240px,calc(100vh - 300px),620px)}}
+@media (min-width:861px){[data-id="nh3"] .cols{align-items:center}[data-id="nh3"] .labbox{min-height:clamp(240px,calc(100vh - 300px),620px)}}
 </style>
 </head>
 <body>
@@ -522,8 +522,8 @@ p{margin:0}
 <section class="slide" data-id="net" data-title="知识网络" data-min="4">
   <div class="wrap">
     <header class="head"><span class="tag">梳理 · 宏观与微观</span><div class="row" style="justify-content:space-between"><h2>一张图，串起整个单元</h2><span class="row"><button class="btn sm" id="netAll">全部揭晓</button><button class="btn sm" id="netHide">全部盖住</button></span></div>
-      <p class="lede">点黄色的“?”揭晓。物质由元素<b>组成</b>，由分子、原子或离子<b>构成</b>。</p></header>
-    <div class="card netwrap"><svg class="net" id="net" viewBox="0 0 1200 540" role="img" aria-label="物质、元素、分子、原子、离子之间的关系图"></svg></div>
+      <p class="lede">点黄色的“?”揭晓。宏观：物质由元素<b>组成</b>；微观：物质由分子、原子或离子<b>构成</b>。</p></header>
+    <div class="card netwrap"><svg class="net" id="net" viewBox="0 0 1280 540" role="img" aria-label="物质、元素、分子、原子、离子之间的关系图"></svg></div>
   </div>
 </section>
 
@@ -895,20 +895,17 @@ S.net=(()=>{
   const ar=(d,l='',lx=0,ly=0,c='')=>`<path class="ln ${c}" d="${d}" marker-end="url(#ah2)"/>${l?`<text class="sm" x="${lx}" y="${ly}">${l}</text>`:''}`;
   function draw(){
     let s=`<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#1f2a44"/></marker></defs>`;
-    s+=`<text class="hd" x="200" y="24">宏 观</text><text class="hd" x="830" y="24">微 观</text>`;
-    s+=blank('d',110,50,180,60)+`<text class="sm" x="200" y="128">质子数相同的一类原子</text>`;
-    s+=ar('M200 140 L200 190','组成',232,165);
-    s+=box(40,190,320,320,'','mac')+`<text x="200" y="214">纯净物</text>`;
-    s+=box(70,240,260,54,'铁 Fe','sub','由原子直接构成')+box(70,320,260,54,'水 H₂O','sub','由分子构成')+box(70,400,260,54,'氯化钠 NaCl','sub','由离子构成');
-    s+=blank('c',560,150,150,60)+blank('a',870,300,150,64)+blank('b',560,420,150,60);
-    s+=box(900,80,240,56,'原子核','mic','质子 + 中子')+box(1010,420,150,56,'核外电子','mic');
-    s+=blank('e',1040,170,110,44);
-    s+=ar('M945 300 L1000 136','构成',955,215)+ar('M1020 136 L1080 170','',0,0)+ar('M985 364 L1060 420','',0,0);
-    s+=ar('M880 320 C 820 270, 760 210, 712 190','结合',800,226)+ar('M560 180 C 450 190, 400 340, 332 347','构成',470,250);
-    s+=ar('M870 260 C 700 120, 500 230, 332 267','直接构成',640,140);
-    s+=`<path class="ln" d="M880 350 C 820 410, 760 440, 712 448" marker-end="url(#ah2)" marker-start="url(#ah2)"/>`+blank('f',740,370,120,40);
-    s+=ar('M560 450 L 332 427','构成',450,452);
-    s+=`<path class="ln d" d="M290 80 L 945 80 L 945 300"/><text class="sm" x="620" y="64" style="fill:var(--coral)">总称</text>`;
+    s+=`<ellipse cx="555" cy="290" rx="335" ry="240" fill="#fbecc8"/><text class="hd" x="555" y="78">物 质</text>`;
+    s+=`<text class="hd" x="105" y="200">宏 观</text><text class="hd" x="960" y="70">微 观</text>`;
+    s+=blank('d',30,260,150,60)+`<text class="sm" x="105" y="340">质子数相同的</text><text class="sm" x="105" y="360">一类原子的总称</text>`;
+    s+=`<path class="ln" d="M180 290 L300 290 M330 150 L300 150 L300 430 L330 430 M300 290 L330 290"/><text class="sm" x="240" y="272">组成</text>`;
+    s+=box(335,122,440,56,'氧气 O₂、氢气 H₂、水 H₂O 等')+box(335,262,440,56,'铁 Fe、汞 Hg、金刚石 C 等')+box(335,402,440,56,'氯化钠 NaCl、硫酸铜等');
+    s+=blank('c',885,120,150,60)+blank('a',885,260,150,60)+blank('b',885,400,150,60);
+    [150,290,430].forEach(y=>{s+=ar(`M883 ${y} L779 ${y}`,'构成',831,y-16);});
+    s+=ar('M945 182 L945 256','分成',915,219)+ar('M975 256 L975 182','结合',1005,219);
+    s+=ar('M960 322 L960 396')+blank('f',812,341,130,38);
+    s+=`<path class="ln" d="M1037 290 L1058 290 M1072 228 L1058 228 L1058 352 L1072 352"/>`;
+    s+=box(1075,203,190,50,'原子核','mic')+blank('e',1080,262,80,34)+`<text x="1170" y="279">+</text>`+box(1180,262,80,34,'中子','sub')+box(1075,327,190,50,'核外电子','mic');
     svg.innerHTML=s;
     $$('.blank',svg).forEach(g=>{const f=()=>{const id=g.dataset.b;open.has(id)?open.delete(id):(open.add(id),sfx('ok'));draw();};g.onclick=f;g.onkeydown=e=>{if(e.key==='Enter')f();};});
   }
@@ -963,36 +960,72 @@ S.nh3=(()=>{
   $('#nhRe').onclick=reset;
   reset();qa();
   const pink=a=>`rgba(255,72,140,${a})`;
-  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);ctx.lineWidth=3;ctx.strokeStyle='#1f2a44';ctx.lineJoin='round';const sp=(heat?2.2:1)*dt*60;
+  const GLASS='rgba(205,232,250,.28)',ASH='rgba(255,255,255,.75)';
+  function beaker(ctx,c,lev,liq,over){
+    const ly=c.y+c.h*(1-lev);
+    ctx.save();ctx.beginPath();ctx.moveTo(c.x,c.y+4);ctx.lineTo(c.x,c.y+c.h-6);ctx.quadraticCurveTo(c.x,c.y+c.h,c.x+6,c.y+c.h);ctx.lineTo(c.x+c.w-6,c.y+c.h);ctx.quadraticCurveTo(c.x+c.w,c.y+c.h,c.x+c.w,c.y+c.h-6);ctx.lineTo(c.x+c.w,c.y+4);ctx.closePath();
+    ctx.fillStyle=GLASS;ctx.fill();ctx.clip();
+    ctx.fillStyle=liq;ctx.fillRect(c.x,ly,c.w,c.h);if(over){ctx.fillStyle=over;ctx.fillRect(c.x,ly,c.w,c.h);}
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(c.x+c.w/2,ly,c.w/2,4,0,0,TAU);ctx.fill();
+    ctx.fillStyle=ASH;ctx.fillRect(c.x+5,c.y+10,4,c.h-22);ctx.restore();
+    ctx.strokeStyle='#1f2a44';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(c.x-6,c.y-3);ctx.lineTo(c.x,c.y+4);ctx.lineTo(c.x,c.y+c.h-6);ctx.quadraticCurveTo(c.x,c.y+c.h,c.x+6,c.y+c.h);ctx.lineTo(c.x+c.w-6,c.y+c.h);ctx.quadraticCurveTo(c.x+c.w,c.y+c.h,c.x+c.w,c.y+c.h-6);ctx.lineTo(c.x+c.w,c.y+4);ctx.lineTo(c.x+c.w+3,c.y);ctx.stroke();
+    ctx.lineWidth=1.5;ctx.strokeStyle='rgba(31,42,68,.45)';for(let k=1;k<=4;k++){const y=c.y+c.h-k*c.h/5;ctx.beginPath();ctx.moveTo(c.x+c.w-(k%2?8:13),y);ctx.lineTo(c.x+c.w-2,y);ctx.stroke();}
+    return ly;
+  }
+  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);ctx.lineJoin='round';ctx.lineCap='round';const sp=(heat?2.2:1)*dt*60;
     if(mode==='cup'){
-      const bx=w*.08,bw=w*.6,by=h*.12,bh=h*.8;
-      const A={x:bx+bw*.12,w:bw*.28,y:by+bh*.6,h:bh*.4},B={x:bx+bw*.6,w:bw*.28,y:by+bh*.6,h:bh*.4},Cc={x:w*.76,w:w*.16,y:by+bh*.6,h:bh*.4};
-      const cup=(c,fill)=>{ctx.fillStyle=fill;ctx.fillRect(c.x,c.y+c.h*.35,c.w,c.h*.65);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x,c.y+c.h);ctx.lineTo(c.x+c.w,c.y+c.h);ctx.lineTo(c.x+c.w,c.y);ctx.stroke();};
-      cup(A,'rgba(31,159,214,.12)');cup(B,red>0?pink(Math.min(.75,red/40)):'rgba(255,255,255,.6)');cup(Cc,'rgba(255,255,255,.6)');
-      ctx.beginPath();ctx.moveTo(bx,by+bh);ctx.lineTo(bx,by+20);ctx.quadraticCurveTo(bx,by,bx+20,by);ctx.lineTo(bx+bw-20,by);ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+20);ctx.lineTo(bx+bw,by+bh);ctx.stroke();
-      label(ctx,'A',A.x+A.w/2,A.y-12,{size:16,weight:700,col:'#1f2a44'});label(ctx,'B',B.x+B.w/2,B.y-12,{size:16,weight:700,col:'#1f2a44'});label(ctx,'C',Cc.x+Cc.w/2,Cc.y-12,{size:16,weight:700,col:'#1f2a44'});
-      label(ctx,'浓氨水',A.x+A.w/2,A.y+A.h+14,{size:12,col:'#55617f'});label(ctx,'酚酞溶液',B.x+B.w/2,B.y+B.h+14,{size:12,col:'#55617f'});label(ctx,'酚酞溶液',Cc.x+Cc.w/2,Cc.y+Cc.h+14,{size:12,col:'#55617f'});
-      if(run){acc+=dt*(heat?30:14);while(acc>1){acc--;if(ps.length<400)ps.push({x:A.x+Math.random()*A.w,y:A.y+A.h*.35,vx:0,vy:-1});}}
-      ps=ps.filter(p=>{if(run){p.vx+=(Math.random()-.5)*.6;p.vy+=(Math.random()-.5)*.6-.02;p.vx*=.95;p.vy*=.95;p.x+=p.vx*sp;p.y+=p.vy*sp;}
-        if(p.x<bx+6){p.x=bx+6;p.vx*=-1;}if(p.x>bx+bw-6){p.x=bx+bw-6;p.vx*=-1;}if(p.y<by+6){p.y=by+6;p.vy*=-1;}if(p.y>by+bh-6){p.y=by+bh-6;p.vy*=-1;}
-        if(p.x>B.x&&p.x<B.x+B.w&&p.y>B.y+B.h*.35){red++;return false;}
+      const T=h*.88,bx=w*.06,bw=w*.6,by=h*.15,cw=bw*.27,ch=Math.min(h*.34,cw*1.25);
+      const A={x:bx+bw*.1,w:cw,y:T-ch,h:ch},B={x:bx+bw*.63,w:cw,y:T-ch,h:ch},Cc={x:w*.76,w:cw,y:T-ch,h:ch};
+      ctx.fillStyle='#e7cfa6';ctx.fillRect(w*.02,T,w*.96,10);ctx.strokeStyle='#1f2a44';ctx.lineWidth=2;ctx.strokeRect(w*.02,T,w*.96,10);
+      if(heat){ctx.fillStyle='rgba(255,140,60,.25)';ctx.beginPath();ctx.ellipse(A.x+A.w/2,T,A.w*.7,10,0,0,TAU);ctx.fill();}
+      const ldA=beaker(ctx,A,.55,'rgba(165,210,238,.55)');
+      const ldB=beaker(ctx,B,.55,'rgba(200,228,246,.5)',red>0?pink(Math.min(.7,red/40)):null);
+      beaker(ctx,Cc,.55,'rgba(200,228,246,.5)');
+      // 倒扣的大烧杯
+      ctx.beginPath();ctx.moveTo(bx-7,T);ctx.lineTo(bx,T-6);ctx.lineTo(bx,by+12);ctx.quadraticCurveTo(bx,by,bx+12,by);ctx.lineTo(bx+bw-12,by);ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+12);ctx.lineTo(bx+bw,T-6);ctx.lineTo(bx+bw+7,T);
+      ctx.fillStyle='rgba(205,232,250,.16)';ctx.fill();ctx.lineWidth=3;ctx.strokeStyle='#1f2a44';ctx.stroke();
+      ctx.fillStyle=ASH;ctx.fillRect(bx+10,by+18,6,(T-by)*.7);ctx.fillRect(bx+22,by+18,3,(T-by)*.5);
+      ctx.lineWidth=1.5;ctx.strokeStyle='rgba(31,42,68,.4)';for(let k=1;k<=6;k++){const y=by+20+k*(T-by-40)/7;ctx.beginPath();ctx.moveTo(bx+bw-(k%2?10:18),y);ctx.lineTo(bx+bw-3,y);ctx.stroke();}
+      label(ctx,'大烧杯（倒扣）',bx+bw/2,by-14,{size:13,weight:700,col:'#55617f'});
+      label(ctx,'A',A.x+A.w/2,A.y-14,{size:16,weight:700,col:'#1f2a44'});label(ctx,'B',B.x+B.w/2,B.y-14,{size:16,weight:700,col:'#1f2a44'});label(ctx,'C',Cc.x+Cc.w/2,Cc.y-14,{size:16,weight:700,col:'#1f2a44'});
+      label(ctx,'浓氨水',A.x+A.w/2,T+24,{size:12,col:'#55617f'});label(ctx,'酚酞溶液',B.x+B.w/2,T+24,{size:12,col:'#55617f'});label(ctx,'酚酞溶液',Cc.x+Cc.w/2,T+24,{size:12,col:'#55617f'});
+      if(run){acc+=dt*(heat?30:14);while(acc>1){acc--;if(ps.length<400)ps.push({x:A.x+6+Math.random()*(A.w-12),y:ldA-2,vx:0,vy:-1});}}
+      ps=ps.filter(p=>{if(run){p.vx+=(Math.random()-.5)*1.1;p.vy+=(Math.random()-.5)*1.1-.015;p.vx*=.97;p.vy*=.97;p.x+=p.vx*sp;p.y+=p.vy*sp;}
+        if(p.x<bx+6){p.x=bx+6;p.vx*=-1;}if(p.x>bx+bw-6){p.x=bx+bw-6;p.vx*=-1;}if(p.y<by+6){p.y=by+6;p.vy*=-1;}if(p.y>T-6){p.y=T-6;p.vy*=-1;}
+        if(p.x>B.x&&p.x<B.x+B.w&&p.y>ldB){red++;return false;}
+        if(p.x>A.x&&p.x<A.x+A.w&&p.y>ldA){p.y=ldA-1;p.vy=-Math.abs(p.vy);}
         ctx.fillStyle='#1f9fd6';ctx.beginPath();ctx.arc(p.x,p.y,3.2,0,TAU);ctx.fill();return true;});
-      if(red>15)label(ctx,'B 变红了！',B.x+B.w/2,B.y+B.h*.7,{size:15,weight:900,col:'#1f2a44'});
+      if(red>15)label(ctx,'B 变红了！',B.x+B.w/2,B.y-36,{size:15,weight:900,col:'#e5487a'});
     }else{
-      const tx=w*.4,top=h*.14,bot=h*.94,tw=Math.max(26,w*.05),by=(top+bot)/2;
-      ctx.strokeRect(tx-tw/2,top,tw,bot-top);ctx.beginPath();ctx.moveTo(tx+tw/2,by-10);ctx.lineTo(w*.66,by-10);ctx.moveTo(tx+tw/2,by+10);ctx.lineTo(w*.66,by+10);ctx.stroke();
-      ctx.fillStyle='rgba(31,159,214,.15)';ctx.beginPath();ctx.arc(w*.72,by,22,0,TAU);ctx.fill();ctx.stroke();label(ctx,'浓氨水',w*.72,by+38,{size:12,col:'#55617f'});
-      const n=strip.length,seg=(bot-top-8)/n;for(let i=0;i<n;i++){const v=Math.min(1,strip[i]/10);ctx.fillStyle=v>0?pink(.15+.65*v):'#fff';ctx.fillRect(tx-5,top+4+i*seg,10,seg);}
-      ctx.strokeStyle='#97a2bb';ctx.lineWidth=1;ctx.strokeRect(tx-5,top+4,10,bot-top-8);
-      [['a',top+10],['b',by],['c',bot-10]].forEach(([s,y])=>label(ctx,s,tx-tw/2-16,y,{size:18,weight:900,font:'Fredoka,sans-serif',col:'#1f2a44'}));
-      if(run){acc+=dt*(heat?30:14);while(acc>1){acc--;if(ps.length<300)ps.push({x:w*.66,y:by+(Math.random()-.5)*12,vx:-1.5,vy:0});}}
+      const tx=w*.36,top=h*.14,bot=h*.9,tw=Math.max(30,w*.06),by=(top+bot)/2,ah=Math.max(10,tw*.34),ax=w*.66;
+      // 玻璃管
+      ctx.beginPath();ctx.moveTo(tx-tw/2,top);ctx.lineTo(tx-tw/2,bot);ctx.lineTo(tx+tw/2,bot);ctx.lineTo(tx+tw/2,by+ah);ctx.lineTo(ax,by+ah);ctx.lineTo(ax,by-ah);ctx.lineTo(tx+tw/2,by-ah);ctx.lineTo(tx+tw/2,top);ctx.closePath();
+      ctx.fillStyle='rgba(205,232,250,.35)';ctx.fill();ctx.strokeStyle='#1f2a44';ctx.lineWidth=3;ctx.stroke();
+      ctx.fillStyle=ASH;ctx.fillRect(tx-tw/2+4,top+6,4,bot-top-12);ctx.fillRect(tx+tw/2+10,by-ah+3,ax-tx-tw/2-20,3);
+      // 纱布条
+      const n=strip.length,seg=(bot-top-8)/n,sw=Math.max(8,tw*.32);
+      for(let i=0;i<n;i++){const v=Math.min(1,strip[i]/10);ctx.fillStyle=v>0?pink(.12+.7*v):'#fbfbf6';ctx.fillRect(tx-sw/2,top+4+i*seg,sw,seg+.5);}
+      ctx.strokeStyle='rgba(120,130,150,.35)';ctx.lineWidth=1;for(let y=top+8;y<bot-4;y+=6){ctx.beginPath();ctx.moveTo(tx-sw/2,y);ctx.lineTo(tx+sw/2,y);ctx.stroke();}
+      ctx.strokeStyle='#97a2bb';ctx.strokeRect(tx-sw/2,top+4,sw,bot-top-8);
+      // 胶塞
+      ctx.fillStyle='#4a5266';ctx.strokeStyle='#1f2a44';ctx.lineWidth=2;
+      [[top-14,top+4],[bot-4,bot+14]].forEach(([y0,y1])=>{ctx.beginPath();ctx.moveTo(tx-tw/2-5,y0);ctx.lineTo(tx+tw/2+5,y0);ctx.lineTo(tx+tw/2-1,y1);ctx.lineTo(tx-tw/2+1,y1);ctx.closePath();ctx.fill();ctx.stroke();});
+      // 胶头滴管（浓氨水）
+      const dl=w*.08;ctx.fillStyle='rgba(165,210,238,.6)';ctx.fillRect(ax-10,by-4,dl+10,8);ctx.strokeStyle='#1f2a44';ctx.lineWidth=2;ctx.strokeRect(ax-10,by-4,dl+10,8);
+      ctx.fillStyle='#4a5266';ctx.fillRect(ax-4,by-ah-4,10,2*ah+8);ctx.strokeRect(ax-4,by-ah-4,10,2*ah+8);
+      ctx.fillStyle='#e5484d';ctx.beginPath();ctx.ellipse(ax+dl+20,by,22,15,0,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.ellipse(ax+dl+14,by-6,7,4,0,0,TAU);ctx.fill();
+      label(ctx,'浓氨水（胶头滴管）',ax+dl/2+10,by+ah+26,{size:12,col:'#55617f'});
+      [['a',top+12],['b',by],['c',bot-12]].forEach(([s,y])=>label(ctx,s,tx-tw/2-20,y,{size:18,weight:900,font:'Fredoka,sans-serif',col:'#1f2a44'}));
+      ctx.strokeStyle='#55617f';ctx.lineWidth=1.5;const ly=top+(by-top)*.4;ctx.beginPath();ctx.moveTo(tx+sw/2,ly);ctx.lineTo(tx+tw/2+46,ly-18);ctx.stroke();
+      label(ctx,'湿润的酚酞纱布条',tx+tw/2+52,ly-18,{size:12,col:'#55617f',align:'left'});
+      if(run){acc+=dt*(heat?30:14);while(acc>1){acc--;if(ps.length<300)ps.push({x:ax-6,y:by+(Math.random()-.5)*ah,vx:-1.5,vy:0});}}
       ps=ps.filter(p=>{if(run){p.vx+=(Math.random()-.5)*.5;p.vy+=(Math.random()-.5)*.5-.035;p.vx*=.93;p.vy*=.93;p.x+=p.vx*sp;p.y+=p.vy*sp;}
         if(p.x<tx+tw/2&&p.x>tx-tw/2){if(p.x<tx-tw/2+4){p.x=tx-tw/2+4;p.vx*=-1;}if(p.y<top+4){p.y=top+4;p.vy*=-1;}if(p.y>bot-4){p.y=bot-4;p.vy*=-1;}
-          if(Math.abs(p.x-tx)<6){const k=Math.floor((p.y-top-4)/seg);if(k>=0&&k<n&&run)strip[k]+=.12;}}
-        else{if(run)p.vx-=.05;if(p.x>w*.66){p.x=w*.66;p.vx=-Math.abs(p.vx);}if(p.y<by-8){p.y=by-8;p.vy*=-1;}if(p.y>by+8){p.y=by+8;p.vy*=-1;}}
+          if(Math.abs(p.x-tx)<sw/2+2){const k=Math.floor((p.y-top-4)/seg);if(k>=0&&k<n&&run)strip[k]+=.12;}}
+        else{if(run)p.vx-=.05;if(p.x>ax-6){p.x=ax-6;p.vx=-Math.abs(p.vx);}if(p.y<by-ah+3){p.y=by-ah+3;p.vy*=-1;}if(p.y>by+ah-3){p.y=by+ah-3;p.vy*=-1;}}
         ctx.fillStyle='#1f9fd6';ctx.beginPath();ctx.arc(p.x,p.y,3,0,TAU);ctx.fill();return true;});
       const up=strip.slice(0,n/2).filter(v=>v>=5).length,dn=strip.slice(n/2).filter(v=>v>=5).length;
-      if(up+dn>4)label(ctx,`ba 段变红 ${up} 格 · bc 段变红 ${dn} 格`,w*.72,h*.12,{size:14,weight:700,col:'#1f2a44'});
+      if(up+dn>4)label(ctx,`ba 段变红 ${up} 格 · bc 段变红 ${dn} 格`,w*.7,bot-10,{size:14,weight:700,col:'#1f2a44'});
     }
   }
   return{tick};
@@ -1087,6 +1120,7 @@ S.sym=(()=>{
 S.race=(()=>{
   const STN=[[50,330,'起点'],[150,300,'分子站'],[110,200,'原子站'],[220,140,'离子站'],[340,190,'元素站'],[450,120,'符号站'],[540,210,'周期表站'],[490,320,'终点']];
   const cell=(z,s,n,a,c='non')=>`<div class="el ${c}"><i>${z}</i><b>${s}</b><span>${n}</span><em>${a}</em></div>`;
+  const TT=`<svg width="250" height="170" viewBox="0 0 260 176" role="img" aria-label="T形三通管装置"><g stroke="#1f2a44" stroke-width="2.5" stroke-linejoin="round"><path d="M84 18 V158 H112 V96 H190 V76 H112 V18 Z" fill="#e3f1fb"/><rect x="92" y="22" width="12" height="132" fill="#fbfbf6" stroke="#97a2bb" stroke-width="1.5"/><path d="M78 6 H118 L113 20 H83 Z M83 156 H113 L118 170 H78 Z" fill="#4a5266" stroke-width="2"/><rect x="186" y="72" width="10" height="28" fill="#4a5266" stroke-width="2"/><rect x="180" y="82" width="42" height="8" fill="#bfe0f2" stroke-width="2"/><ellipse cx="236" cy="86" rx="18" ry="12" fill="#e5484d" stroke-width="2"/></g><g font-size="16" font-weight="900" fill="#1f2a44" text-anchor="middle"><text x="66" y="30">a</text><text x="66" y="92">b</text><text x="66" y="156">c</text></g><g font-size="11" fill="#55617f"><path d="M104 50 L140 36" stroke="#55617f" stroke-width="1.2"/><text x="142" y="40">湿润的酚酞纱布条</text><text x="168" y="122">浓氨水</text></g></svg>`;
   const Q=[
     {q:'我国研发的光控智能黏附材料由 Fe、C、N、H 等元素组成，其中属于金属元素的是',o:['Fe','C','N','H'],a:0,x:'铁（Fe）是“钅”字旁的<b>金属</b>元素。'},
     {q:'下列宏观事实的微观解释<b>不正确</b>的是',o:['花香四溢——分子在不断运动','气体可压缩储存于钢瓶——分子间有间隔','水结成冰——分子停止运动','一滴水中约有 1.67×10²¹ 个水分子——分子很小'],a:2,x:'分子<b>总在不断运动</b>，冰中的水分子也在运动。'},
@@ -1099,7 +1133,7 @@ S.race=(()=>{
     {q:'某粒子的结构示意图如下，该粒子是',fig:()=>schematic(17,[2,8,8]),o:['原子','阳离子','阴离子','稀有气体原子'],a:2,x:'质子数 17 < 电子数 18，是<b>阴离子</b> Cl⁻。'},
     {q:'硒元素在元素周期表中的信息如下，下列说法<b>错误</b>的是',fig:()=>cell(34,'Se','硒','78.97'),o:['硒属于金属元素','硒的元素符号为 Se','硒原子核外有 34 个电子','硒的相对原子质量为 78.97'],a:0,x:'硒是“石”字旁，属于<b>非金属</b>元素。'},
     {q:'下列化学模型正确的是',o:['原子结构：原子由原子核（质子、电子）和中子构成','地壳中元素含量：氧 > 硅 > 铝 > 铁','空气组成（按体积）：氧气约占 78%','分子间隔：氧气 < 液氧 < 固氧'],a:1,x:'原子由原子核（质子、中子）和电子构成；空气中氮气约占 78%；分子间隔：气态 > 液态 > 固态。'},
-    {q:'<span class="dbl">提升</span>用 T 形管做氨分子运动实验，ba 段纱布条比 bc 段先变红，主要原因是',o:['氨气的密度比空气小，氨分子更易向上运动','酚酞分子运动到了浓氨水中','氨分子只向上运动','纱布条上段吸收了更多空气'],a:0,lv:2,x:'分子向各个方向运动，氨气<b>密度比空气小</b>，上方先聚集较多氨分子。'}];
+    {q:'<span class="dbl">提升</span>用如图 T 形三通管做氨分子运动实验，从 b 处滴入浓氨水，ba 段纱布条比 bc 段先变红，主要原因是',fig:()=>TT,o:['氨气的密度比空气小，氨分子更易向上运动','酚酞分子运动到了浓氨水中','氨分子只向上运动','纱布条上段吸收了更多空气'],a:0,lv:2,x:'分子向各个方向运动，氨气<b>密度比空气小</b>，上方先聚集较多氨分子。'}];
   let qi=0,ans=false,pos={r:0,b:0},over=false;
   function road(){let s=`<path d="M${STN.map(p=>p[0]+' '+p[1]).join(' L')}" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M${STN.map(p=>p[0]+' '+p[1]).join(' L')}" fill="none" stroke="#1f2a44" stroke-width="3" stroke-dasharray="8 8"/>`;
     STN.forEach(([x,y,n],i)=>{s+=`<circle class="st" cx="${x}" cy="${y}" r="${i===0||i===STN.length-1?24:18}" fill="${i===STN.length-1?'#ffd23f':i===0?'#fff':'#ffe3dc'}"/><text x="${x}" y="${y+34}">${n}</text>`;});
