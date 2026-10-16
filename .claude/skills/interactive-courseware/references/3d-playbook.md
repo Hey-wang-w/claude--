@@ -13,11 +13,29 @@
 
 ## 1. 什么时候用 3D
 
-她要求“场景演示最好给我 3D 模型，可以操作互动”，但也评价过 3D 版课件“没有第三单元的完美”。所以：
+- **默认不用 3D。** 她的最新要求是：“用户不主动要求，不使用 3D 制作演示场景。”演示用精致的 2D Canvas / SVG 动画，这正是她最满意的第三单元课件的做法。
+- 她主动要求 3D 时，**模型必须用 Blender 制作**（她的原话：“它能做成更精美的 3D 模型，没有就先安装”）。three.js 只负责在课件里显示和交互，不用它的基本几何体拼凑模型。
+- 3D 的完成度不能低于同一套课件里的 2D 页面。
 
-- **用 3D**：空间结构（分子模型、实验装置）、真实比例对比（100 L 水箱 vs 0.77 L 小杯）、因果沙盘（水循环、污染源→河流）、需要旋转观察的物体。
-- **不用 3D**：配对、填表、判断、分类等以文字为主的活动——这些用精致的 2D 更清晰。
-- 3D 的完成度不能低于同一套课件里的 2D 页面。做不精就换成 2D 动画。
+## 1.5 Blender 建模流程（已在云端环境实测）
+
+安装（无界面，作为 Python 模块使用）：
+
+```bash
+python3 --version            # bpy 5.x 需要 Python 3.13；4.x 需要 3.11
+python3 -m venv <scratchpad>/bl && <scratchpad>/bl/bin/pip install bpy   # 约 400 MB，PyPI 可访问
+# 备选：apt-get install blender（Ubuntu 源可访问，版本较旧，运行时用 blender -b -P script.py）
+```
+
+建模脚本（`<scratchpad>/bl/bin/python model.py`）的要点：
+
+- `bpy.ops.wm.read_factory_settings(use_empty=True)` 清空场景；单位按真实尺寸设置（例如 1 单位 = 1 dm），方便表现真实比例。
+- 造型：从基本体或曲线出发，配合倒角修改器（Bevel）、表面细分（Subdivision Surface）、`shade_smooth` 和自动平滑法线；器皿用“车削”（曲线加 Screw 修改器）；管道用曲线挤出；动物、植物等复杂模型优先导入 CC0 模型，在 Blender 里修整、重新上材质。
+- 材质：只用 Principled BSDF。玻璃设 `Transmission Weight=1`、`Roughness≈0.05`、`IOR=1.5`；金属设 `Metallic=1`、`Roughness≈0.15`；水设透射加浅青色。这些参数导出到 glTF 后，three.js 会对应到 `MeshPhysicalMaterial`。
+- 导出前应用修改器，并控制面数（单个模型最好在 5 万三角面以内）：`bpy.ops.export_scene.gltf(filepath=..., export_format='GLB', export_apply=True)`。
+- 预览：用 Cycles CPU 低采样渲一张 PNG 检查造型；或者直接放进 three.js 查看器，用 Playwright 截图检查。
+- 动态（水位上升、倒水、粒子）仍在 three.js 里做：Blender 负责静态的精美模型，交互和动画在课件里实现。
+- 内联：GLB 转 base64 放进 `ASSET.glb`，用 `glb(name)` 加载（见第 4 节）。
 
 ## 2. 引擎搭建
 

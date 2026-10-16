@@ -20,6 +20,7 @@
 | HDR 天空 / 摄影棚光照（可选） | three.js 的 `examples/textures/equirectangular/*.hdr`（多为 Poly Haven） | CC0 | sparse checkout |
 | 图标几何 | npm 包 `@mdi/svg`（Material Design Icons，7000 多个） | Apache 2.0 | `npm pack @mdi/svg` |
 | 3D 引擎 | npm `three@0.160.0` + `esbuild` | MIT | 见 `scripts/three-bundle/` |
+| 3D 建模工具 | PyPI `bpy`（Blender 作为 Python 模块；5.x 对应 Python 3.13），或 `apt-get install blender` | GPL（工具本身；导出的模型归作者所有） | 见 `3d-playbook.md` 第 1.5 节 |
 
 找不到合适免费模型的东西（例如水龙头、猪），要么换成库里有的近似物（用农场代替养殖场），要么用车削体、平滑弯管、圆角方块精细建模，并配上物理材质。
 
