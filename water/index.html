@@ -4565,7 +4565,7 @@ class WaterCol{
 function glassCyl(R,H,{ticks=0,base=true}={}){const g=new T3.Group();const m=M3.glass();
   const wall=new T3.Mesh(new T3.CylinderGeometry(R,R,H,64,1,true),m);wall.position.y=H/2;g.add(wall);
   const rim=new T3.Mesh(new T3.TorusGeometry(R,.018,8,64),new T3.MeshPhysicalMaterial({color:0xffffff,roughness:.05,transparent:true,opacity:.5}));rim.rotation.x=Math.PI/2;rim.position.y=H;g.add(rim);
-  if(base){const b=new T3.Mesh(new T3.CylinderGeometry(R,R*1.02,.05,64),new T3.MeshPhysicalMaterial({color:0xdff6ff,roughness:.05,transparent:true,opacity:.35}));b.position.y=-.025;g.add(b);}
+  if(base){const b=new T3.Mesh(new T3.CylinderGeometry(R,R*1.02,.05,64),new T3.MeshPhysicalMaterial({color:0xcfe9f3,roughness:.25,metalness:0,clearcoat:1,clearcoatRoughness:.1,envMapIntensity:1.2}));b.position.y=.031;b.receiveShadow=true;g.add(b);}
   if(ticks){const tm=new T3.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7});for(let i=1;i<ticks;i++){const l=i%5===0?.18:.09;const tk=new T3.Mesh(new T3.BoxGeometry(l,.012,.012),tm);const a=-.6;tk.position.set(Math.sin(a)*(R+.002),H*i/ticks,Math.cos(a)*(R+.002));tk.rotation.y=a;g.add(tk);}}
   return g;}
 /* 一条流动的水流（管状），用于“倒水”“调水” */
@@ -4785,13 +4785,12 @@ S.cycle=(()=>{
     for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const h=x<SEA_X-.1?-.05:hL(x,z);p.setY(i,h);let c;const rv=riverD(x,z);
       if(h>1.55)c=[.94,.96,.97];else if(h>1.05)c=[.52,.46,.4];else if(rv<.18&&x>SEA_X)c=[.66,.6,.45];else if(h<.12)c=[.82,.76,.55];else c=[.33+.1*NZ.n3(x*3,z*3,0),.58,.3];cols.push(...c);}
     g.setAttribute('color',new T3.Float32BufferAttribute(cols,3));g.computeVertexNormals();const land=new T3.Mesh(g,new T3.MeshStandardMaterial({vertexColors:true,roughness:.92}));land.receiveShadow=true;land.castShadow=true;sc.add(land);
-    sc.add(skirt(3-SEA_X,4,(x,z)=>hL(x,z),-.09,(3+SEA_X)/2,0));
+    sc.add(skirt(3-SEA_X,4,(x,z)=>hL(x,z),-.08,(3+SEA_X)/2,0));
     // 剖面：土层、地下水层、岩层（陆地一侧）；海水与海床（海洋一侧）
     const lw=3-SEA_X,lx=(3+SEA_X)/2;
-    [[-.08,-.45,0x7a5a3a],[-.45,-.85,0x3d86a8],[-.85,-1.25,0x5a5a62]].forEach(([a,b,c],k)=>{const m=new T3.Mesh(new T3.BoxGeometry(lw,a-b,4),k===1?new T3.MeshPhysicalMaterial({color:c,roughness:.3,transparent:true,opacity:.85}):M3.mat(c,.95));m.position.set(lx,(a+b)/2,0);sc.add(m);});
-    const soilTop=new T3.Mesh(new T3.BoxGeometry(lw,.1,4),M3.mat(0x8a6a45,.95));soilTop.position.set(lx,-.04,0);sc.add(soilTop);
+    [[-.08,-.45,0x7a5a3a],[-.45,-.85,0x3d86a8],[-.85,-1.25,0x5a5a62]].forEach(([a,b,c],k)=>{const m=new T3.Mesh(new T3.BoxGeometry(lw-(k===1?.004:0),a-b-(k===1?.004:0),k===1?3.996:4),k===1?new T3.MeshPhysicalMaterial({color:c,roughness:.3,transparent:true,opacity:.85}):M3.mat(c,.95));m.position.set(lx,(a+b)/2,0);sc.add(m);});
     const sw=SEA_X+3,sx=(-3+SEA_X)/2;const bed=new T3.Mesh(new T3.BoxGeometry(sw,.4,4),M3.mat(0xc9b583,.95));bed.position.set(sx,-1.05,0);sc.add(bed);
-    const seaV=new T3.Mesh(new T3.BoxGeometry(sw,.86,4),new T3.MeshPhysicalMaterial({color:0x1b78b0,roughness:.15,transparent:true,opacity:.86,clearcoat:1,depthWrite:true}));seaV.position.set(sx,-.43,0);sc.add(seaV);
+    const seaV=new T3.Mesh(new T3.BoxGeometry(sw-.004,.86,3.996),new T3.MeshPhysicalMaterial({color:0x1b78b0,roughness:.15,transparent:true,opacity:.86,clearcoat:1,depthWrite:true}));seaV.position.set(sx-.002,-.43,0);sc.add(seaV);
     const sg=new T3.PlaneGeometry(sw,4,90,90);sg.rotateX(-Math.PI/2);seaTop=new T3.Mesh(sg,new T3.MeshStandardMaterial({color:0x1f8fc8,roughness:.4,transparent:true,opacity:.9,envMapIntensity:.35}));seaTop.position.set(sx,.012,0);seaTop.userData.base=Float32Array.from(sg.attributes.position.array);sc.add(seaTop);
     // 河流（贴地的流动水带）
     const rc=document.createElement('canvas');rc.width=32;rc.height=128;const rx=rc.getContext('2d');const rg=rx.createLinearGradient(0,0,0,128);for(let i=0;i<=6;i++)rg.addColorStop(i/6,i%2?'#bff6fb':'#3fb5e0');rx.fillStyle=rg;rx.fillRect(0,0,32,128);
@@ -4897,7 +4896,7 @@ S.tap=(()=>{
     const cap=new T3.Mesh(new T3.CylinderGeometry(.03,.03,.01,24),new T3.MeshStandardMaterial({color:0xd2483a,roughness:.4}));cap.position.set(0,1.915,0);fa.add(cap);
     fa.position.set(.47,0,-.45);sc.add(shadowAll(fa));
     TIP.set(tipP.x+.47,tipP.y-.075,tipP.z-.45);
-    const cyl=glassCyl(.33,1.55,{ticks:20});cyl.position.set(TIP.x,.06,TIP.z);sc.add(cyl);const foot=new T3.Mesh(new T3.CylinderGeometry(.45,.48,.06,6),M3.glass());foot.position.set(TIP.x,.03,TIP.z);sc.add(foot);
+    const cyl=glassCyl(.33,1.55,{ticks:20});cyl.position.set(TIP.x,.06,TIP.z);sc.add(cyl);const foot=new T3.Mesh(new T3.CylinderGeometry(.45,.48,.06,6),M3.glass());foot.position.set(TIP.x,.033,TIP.z);sc.add(foot);
     wc=new WaterCol(.31,0x5ce1e6,.8);wc.grp.position.set(TIP.x,.06,TIP.z);sc.add(wc.grp);
     drop=new T3.Mesh(new T3.SphereGeometry(.045,24,16),M3.water(0x9ef0f8,.9));sc.add(drop);
     spl=[];for(let i=0;i<14;i++){const s=new T3.Mesh(new T3.SphereGeometry(.014,8,6),M3.water(0xbff6fb,.9));s.visible=false;sc.add(s);spl.push({m:s,v:new T3.Vector3(),l:0});}
