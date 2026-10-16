@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>水资源及其利用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="gf" rel="stylesheet" media="print" href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;700&family=Quicksand:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* 布局：方格纸上的“贴纸卡片”——白卡、粗描边、错位投影、糖果色分类；与前几课的深色霓虹风格刻意拉开。 */
+:root{
+  color-scheme: light;
+  --void:#f3f6fb;        /* 纸面（也用作画布文字描边） */
+  --paper:#f3f6fb;
+  --gridline:#dde6f2;
+  --deep:#e8eef8;
+  --panel:#ffffff;
+  --panel2:#f7f9fd;
+  --line:#c9d3e3;
+  --ink:#1f2a44;
+  --dim:#55617f;
+  --faint:#97a2bb;
+  --proton:#ff6b5a;      /* 珊瑚：金属 / 阳 */
+  --electron:#1f9fd6;    /* 天蓝 */
+  --neutron:#9aa3b5;
+  --gold:#ffb000;
+  --sun:#ffd23f;
+  --coral:#ff7a5c;
+  --teal:#1fb39f;
+  --grape:#8a6cff;
+  --ok:#1f9d6b;
+  --bad:#e5484d;
+  --f-display:"ZCOOL KuaiLe","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  --f-sym:"Fredoka","Baloo 2","Arial Rounded MT Bold","Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,monospace;
+  --bd:2.5px solid var(--ink);
+  --sh:4px 4px 0 var(--ink);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;color:var(--ink);font:400 clamp(15px,1.12vw,20px)/1.6 var(--f-body);background-color:var(--paper);
+  background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:28px 28px}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.35}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:59;opacity:0;background:var(--bad)}
+#flash.go{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:.25}100%{opacity:0}}
+#deck{position:fixed;inset:0;z-index:1}
+#deck.shaking{animation:quake .4s}
+@keyframes quake{20%{transform:translate(-7px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,3px)}}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--electron);outline-offset:2px}
+.slide{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:calc(env(safe-area-inset-top,0px) + clamp(16px,3.6vh,40px)) clamp(16px,4vw,64px) calc(env(safe-area-inset-bottom,0px) + 92px);
+  opacity:0;visibility:hidden;transform:translateY(24px) rotate(-.6deg);transition:opacity .45s,transform .6s cubic-bezier(.3,1.5,.5,1),visibility 0s linear .6s}
+.slide.past{transform:translateY(-24px) rotate(.6deg)}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.wrap{max-width:1320px;margin-inline:auto;min-height:100%;display:flex;flex-direction:column;gap:clamp(10px,1.8vh,20px)}
+.head{display:flex;flex-direction:column;gap:2px}
+.tag{display:inline-block;align-self:flex-start;font:700 13px/1 var(--f-body);letter-spacing:.08em;background:var(--sun);border:var(--bd);border-radius:999px;padding:5px 12px;box-shadow:2px 2px 0 var(--ink);transform:rotate(-2deg)}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;line-height:1.2;text-wrap:balance}
+h2{font-size:clamp(28px,3.3vw,48px)}
+h3{font-size:clamp(20px,1.7vw,28px)}
+p{margin:0}
+.lede{color:var(--dim);max-width:66ch}
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.cols.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--panel);border:var(--bd);border-radius:18px;box-shadow:var(--sh);padding:clamp(12px,1.4vw,20px);min-width:0;--sch-bg:#fff}
+.card.tilt{transform:rotate(-.6deg)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--dim)}
+.hint{font-size:13px;color:var(--faint)}
+.hl{background:linear-gradient(transparent 55%,rgba(255,210,63,.75) 55%);font-weight:700}
+.cm{color:var(--coral);font-weight:700}.cn{color:var(--teal);font-weight:700}.cgp{color:var(--grape);font-weight:700}.cg{color:var(--ok);font-weight:700}.cb{color:var(--bad);font-weight:700}
+.sym{font-family:var(--f-sym);font-weight:700}
+.status{padding:10px 14px;border-radius:14px;border:var(--bd);background:#fff;min-height:3em;box-shadow:2px 2px 0 var(--ink)}
+.status.ok{background:#e6f7ef}.status.bad{background:#fdeaea}.status.warn{background:#fff6d6}
+.reveal{transition:opacity .5s,transform .5s cubic-bezier(.3,1.5,.5,1)}
+.reveal.hide{opacity:0;transform:scale(.9) rotate(-2deg);pointer-events:none}
+@media (max-width:900px){.cols,.cols.even{grid-template-columns:minmax(0,1fr)}}
+
+/* 按钮：贴纸按钮，按下“压扁” */
+.btn{appearance:none;border:var(--bd);background:#fff;color:var(--ink);padding:.45em 1em;border-radius:12px;cursor:pointer;font-weight:700;font-size:.92em;line-height:1.4;box-shadow:3px 3px 0 var(--ink);transition:transform .1s,box-shadow .1s,background .2s;display:inline-flex;align-items:center;gap:.4em;white-space:nowrap}
+.btn:hover{background:#fffbe6}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn.pri{background:var(--sun)}
+.btn.go{background:var(--teal);color:#fff}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{font-size:.8em;padding:.3em .75em;box-shadow:2px 2px 0 var(--ink)}
+.btn.big{font-size:1.15em;padding:.6em 1.3em}
+
+/* 底栏 */
+.prog{position:fixed;top:0;left:0;height:6px;width:0;z-index:45;background:repeating-linear-gradient(45deg,var(--coral) 0 12px,var(--sun) 12px 24px,var(--teal) 24px 36px);transition:width .6s cubic-bezier(.3,1.4,.5,1);border-bottom:2px solid var(--ink)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:45;display:flex;align-items:center;gap:4px;padding:5px;background:#fff;border:var(--bd);border-radius:16px;box-shadow:var(--sh);max-width:calc(100% - 24px)}
+.dock .ic{width:40px;height:40px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-size:24px;line-height:1;display:grid;place-items:center}
+.dock .ic:hover{background:var(--deep)}
+.dock .tx{border:0;background:transparent;cursor:pointer;padding:8px 10px;border-radius:10px;font-size:14px;color:var(--dim);white-space:nowrap;font-weight:700}
+.dock .tx:hover{background:var(--deep);color:var(--ink)}
+.dots{display:flex;gap:5px;padding-inline:6px}
+.dot{width:10px;height:10px;border-radius:3px;border:2px solid var(--ink);padding:0;background:#fff;cursor:pointer;transition:all .3s}
+.dot.on{background:var(--sun);width:24px}
+.pg{font:700 13px var(--f-mono);color:var(--dim);min-width:4.2em;text-align:center}
+.tm{white-space:nowrap;border:2px solid transparent;background:transparent;cursor:pointer;border-radius:10px;padding:4px 10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--dim)}
+.tm b{font:700 18px var(--f-sym);min-width:1.8em;text-align:center}
+.tm.r b{color:var(--coral)}.tm.b b{color:var(--electron)}
+.tm.on.r{border-color:var(--ink);background:#ffe3dc;color:var(--ink)}
+.tm.on.b{border-color:var(--ink);background:#dcf1fb;color:var(--ink)}
+.tm.bump b{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.7) rotate(-8deg)}}
+@media (max-width:1000px){.dots{display:none}}
+@media (max-width:560px){.dock .tx.opt{display:none}.tm span{display:none}}
+.menu{position:fixed;inset:0;z-index:55;background:rgba(31,42,68,.35);display:grid;place-items:center;padding:16px}
+.menu .card{width:min(780px,100%);max-height:84vh;overflow:auto}
+.menu ol{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.menu li button{width:100%;text-align:left;border:2px solid var(--ink);background:#fff;border-radius:12px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:baseline;font-weight:700}
+.menu li button:hover{background:#fffbe6}
+.menu li button b{font:700 13px var(--f-mono);color:var(--coral);min-width:2em}
+.menu li button small{margin-left:auto;color:var(--faint);font-size:12px;white-space:nowrap;font-weight:400}
+.menu .opt-tag{color:var(--electron)}
+
+/* 示意图（浅色版） */
+.sch{width:100%;height:auto;display:block;overflow:visible}
+.sch .nuc{fill:#ffe9e5;stroke:var(--coral);stroke-width:2.5}
+.sch .nz{fill:var(--ink);font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central}
+.sch .arc{fill:none;stroke:var(--electron);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .5s ease-out forwards;animation-delay:calc(var(--i)*.12s)}
+.sch .en{fill:#e8590c;font:700 18px var(--f-mono);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--sch-bg,#fff);stroke-width:7px;opacity:0;animation:pop .35s forwards;animation-delay:calc(var(--i)*.12s + .25s);transform-box:fill-box;transform-origin:center}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+
+/* 元素格子 */
+.el{position:relative;border:2px solid var(--ink);border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;padding:3px 2px;user-select:none;min-width:0}
+.el i{position:absolute;left:4px;top:2px;font:700 .62em var(--f-mono);font-style:normal;color:var(--dim)}
+.el b{font:700 1.45em var(--f-sym)}
+.el span{font-size:.72em;font-weight:700}
+.el em{font:normal 600 .58em var(--f-mono);color:var(--dim)}
+.el.metal{background:#ffe3dc}.el.non{background:#d9f5f0}.el.gas{background:#e9e3ff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--dim);font-weight:700}
+.legend span::before{content:"";display:inline-block;width:14px;height:14px;border:2px solid var(--ink);border-radius:4px;margin-right:5px;vertical-align:-2px}
+.legend .m::before{background:#ffe3dc}.legend .x::before{background:#d9f5f0}.legend .g::before{background:#e9e3ff}
+
+
+/* ================= 水与玻璃主题（覆盖贴纸风格） ================= */
+:root{
+  --void:#eef8fc;--paper:#eef8fc;--gridline:transparent;--deep:#e0f1f7;--panel:#ffffff;--panel2:#f4fbfe;--line:#cfe5ee;
+  --ink:#0e3a50;--dim:#466b7e;--faint:#8fb0bf;
+  --proton:#ff7f66;--electron:#1b8fd1;--neutron:#9aaab5;--gold:#f5a623;--sun:#ffd166;--coral:#ff7f66;--teal:#12a5a5;--grape:#6c7ae0;--ok:#1e9e6a;--bad:#e0524f;
+  --sea:#1b8fd1;--sea2:#0b5f8a;--fresh:#7fd3f0;
+  --f-display:"ZCOOL XiaoWei","Noto Serif SC","Songti SC","SimSun",serif;
+  --f-sym:"Quicksand","Fredoka","Segoe UI",sans-serif;
+  --bd:1.5px solid rgba(14,58,80,.16);
+  --sh:0 16px 34px -18px rgba(14,58,80,.5);
+  --glass:rgba(255,255,255,.74);
+}
+body{background:linear-gradient(180deg,#f5fcff 0%,#e4f4fa 55%,#d0ebf5 100%)}
+#bg{opacity:1}
+.slide{transform:translateY(22px);transition:opacity .5s,transform .7s cubic-bezier(.2,.8,.2,1),visibility 0s linear .7s}
+.slide.past{transform:translateY(-22px)}
+.tag{background:linear-gradient(90deg,#1b8fd1,#12a5a5);color:#fff;border:0;box-shadow:0 6px 14px -8px rgba(27,143,209,.8);transform:none;letter-spacing:.14em;padding:6px 14px}
+h2{letter-spacing:.03em}
+.card{background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.95);outline:1px solid rgba(14,58,80,.07);border-radius:22px;box-shadow:var(--sh)}
+.btn{border:1.5px solid rgba(14,58,80,.2);border-radius:999px;background:#fff;box-shadow:0 5px 12px -8px rgba(14,58,80,.6)}
+.btn:hover{background:#f0faff}
+.btn:active{transform:scale(.96);box-shadow:none}
+.btn.pri{background:linear-gradient(135deg,#27a6e6,#12a5a5);color:#fff;border-color:transparent}
+.btn.pri:hover{filter:brightness(1.06)}
+.btn.go{background:var(--ok)}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.sm{box-shadow:0 3px 8px -6px rgba(14,58,80,.6)}
+.status{border:1px solid var(--line);border-left:5px solid var(--sea);box-shadow:none;border-radius:12px;background:rgba(255,255,255,.88)}
+.status.ok{background:#e9f8f1;border-left-color:var(--ok)}.status.bad{background:#fdeeee;border-left-color:var(--bad)}.status.warn{background:#fff7e3;border-left-color:var(--gold)}
+.hl{background:linear-gradient(transparent 58%,rgba(127,211,240,.65) 58%)}
+.prog{height:5px;border-bottom:0;background:linear-gradient(90deg,#7fd3f0,#1b8fd1,#12a5a5)}
+.dock{background:rgba(255,255,255,.84);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.95);outline:1px solid rgba(14,58,80,.08);border-radius:999px;box-shadow:0 14px 30px -16px rgba(14,58,80,.6);padding:5px 10px}
+.dot{border-radius:50%;border:1.5px solid var(--faint)}
+.dot.on{background:var(--sea);border-color:var(--sea);width:22px;border-radius:999px}
+.tm.on.r{border-color:transparent;background:#ffe6df}.tm.on.b{border-color:transparent;background:#dcf0fb}
+.menu{background:rgba(14,58,80,.3)}
+.menu li button{border:1px solid var(--line);border-radius:14px}
+.menu li button:hover{background:#f0faff}
+.dp{display:inline-block;width:.7em;height:.7em;background:linear-gradient(135deg,#7fd3f0,#1b8fd1);border-radius:0 50% 50% 50%;transform:rotate(45deg);margin-right:.45em;vertical-align:.05em;flex:none}
+.num{font-family:var(--f-sym);font-weight:700}
+
+/* ---------- 1 封面 ---------- */
+.cov{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;min-height:100%}
+.cov h1{font:400 clamp(54px,7.6vw,128px)/1.04 var(--f-display);margin:.18em 0 .1em;background:linear-gradient(180deg,#0e3a50 40%,#1b8fd1 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cov h1 em{font-style:normal;display:block;font-size:.62em;letter-spacing:.08em}
+.cov .sub{font-size:1.15em;color:var(--dim);font-weight:700;letter-spacing:.06em}
+.cov .qs{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+.cov .qs p{display:flex;align-items:center;background:rgba(255,255,255,.8);border:1px solid #fff;border-radius:999px;padding:7px 16px;align-self:flex-start;box-shadow:0 8px 18px -14px rgba(14,58,80,.7);font-weight:700}
+.cov .qs p:nth-child(2){margin-left:2em}.cov .qs p:nth-child(3){margin-left:4em}
+.globe{position:relative;aspect-ratio:1;width:min(100%,calc(100vh - 170px));margin-inline:auto;cursor:pointer}
+.globe canvas{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:900px){.cov{grid-template-columns:minmax(0,1fr)}.globe{width:min(100%,360px)}}
+
+/* ---------- 2 一桶水 ---------- */
+.tankbox{position:relative;height:clamp(300px,calc(100vh - 250px),620px);padding:0;overflow:hidden}
+.tankbox canvas{position:absolute;inset:0;width:100%;height:100%}
+.opts4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.opts4 button{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:10px;font:700 1.25em var(--f-sym);cursor:pointer;color:var(--ink);transition:all .2s}
+.opts4 button[aria-pressed="true"]{background:#e3f4fb;border-color:var(--sea);box-shadow:0 0 0 3px rgba(27,143,209,.18)}
+.opts4 button.right{background:#e9f8f1;border-color:var(--ok)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps i{font-style:normal;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:#e8f3f8;color:var(--faint)}
+.steps i.on{background:var(--sea);color:#fff}
+
+/* ---------- 3 我国的水 ---------- */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{background:#fff;border-radius:18px;padding:10px 12px;border:1px solid var(--line)}
+.tile small{display:block;color:var(--dim);font-weight:700;font-size:.8em}
+.tile b{font:700 clamp(26px,2.6vw,42px)/1.1 var(--f-sym);color:var(--sea2)}
+.tile span{font-size:.82em;color:var(--dim);margin-left:4px}
+.tile.warn{background:#fff6e6;border-color:#ffe1a6}.tile.warn b{color:#c97a00}
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.bar{display:grid;grid-template-columns:5.5em minmax(0,1fr) 4em;align-items:center;gap:10px;font-weight:700}
+.bar i{display:block;height:26px;border-radius:999px;background:linear-gradient(90deg,#7fd3f0,#1b8fd1);width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.bar.cn i{background:linear-gradient(90deg,#ffc58a,#ff7f66)}
+.bars.go .bar i{width:var(--v)}
+.bar em{font-style:normal;font:700 1em var(--f-sym);color:var(--dim)}
+.dist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.dist>div{background:#fff;border-radius:16px;padding:10px 12px;border:1px solid var(--line)}
+.dist h4{margin:0 0 4px;font-size:.95em}
+.dist svg{width:100%;height:auto;display:block}
+.nbsvg{width:100%;height:auto;display:block;max-height:calc(100vh - 380px)}
+.nbsvg .flow{stroke-dasharray:10 12;animation:none}
+.nbsvg.run .flow{animation:flowup 1s linear infinite}
+@keyframes flowup{to{stroke-dashoffset:-22}}
+
+/* ---------- 4 水循环 ---------- */
+.cyc{position:relative;height:clamp(300px,calc(100vh - 250px),640px);padding:0;overflow:hidden}
+.cyc canvas{position:absolute;inset:0;width:100%;height:100%}
+.hot{position:absolute;transform:translate(-50%,-50%);border:2px solid #fff;background:rgba(14,58,80,.82);color:#fff;border-radius:999px;min-width:2.1em;height:2.1em;padding:0 .55em;font-weight:700;cursor:pointer;box-shadow:0 6px 14px -6px rgba(0,0,0,.5);white-space:nowrap;font-size:.92em;transition:background .2s}
+.hot:hover{background:var(--sea)}
+.hot.open{background:#fff;color:var(--ink);border-color:var(--sea)}
+.tf{display:flex;flex-direction:column;gap:8px}
+.tf .it{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.tf .it p{font-size:.92em}
+.tf .it small{display:block;color:var(--dim);font-size:.85em}
+.tf .it button{width:2.3em;height:2.3em;border-radius:50%;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-weight:700}
+.tf .it.ok{background:#e9f8f1;border-color:#bfe8d4}.tf .it.no{background:#fdeeee;border-color:#f3c5c5}
+
+/* ---------- 5 水龙头 ---------- */
+.tapbox{position:relative;height:clamp(300px,calc(100vh - 250px),600px);padding:0;overflow:hidden}
+.tapbox canvas{position:absolute;inset:0;width:100%;height:100%}
+.ctl{display:grid;grid-template-columns:auto minmax(0,1fr) 4.8em;gap:6px 10px;align-items:center;font-weight:700;font-size:.92em}
+.ctl input[type=range]{width:100%;accent-color:var(--sea)}
+.ctl output{font:700 1.1em var(--f-sym);color:var(--sea2);text-align:right}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.calc{display:flex;flex-direction:column;gap:6px;font-size:.95em}
+.calc div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 12px;transition:opacity .4s,filter .4s}
+.calc.hide div.s{filter:blur(7px);opacity:.5}
+.calc b{font-family:var(--f-sym)}
+.big{font:700 clamp(28px,3vw,46px)/1.1 var(--f-sym);color:var(--sea2)}
+
+/* ---------- 6 分类 ---------- */
+.sort{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:clamp(12px,2vw,26px);align-items:center;min-height:clamp(300px,calc(100vh - 300px),560px)}
+.bin{position:relative;height:100%;min-height:260px;border-radius:26px;border:2px dashed rgba(14,58,80,.2);background:rgba(255,255,255,.6);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px 10px;text-align:center;transition:transform .2s,border-color .2s}
+.bin:hover,.bin.over{transform:translateY(-4px);border-color:var(--sea)}
+.bin h3{position:relative;z-index:2}
+.bin .cnt{position:relative;z-index:2;font:700 2.2em var(--f-sym)}
+.bin .lq{position:absolute;left:0;right:0;bottom:0;height:var(--h,0%);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.bin.good .lq{background:linear-gradient(180deg,rgba(127,211,240,.75),rgba(27,143,209,.85))}
+.bin.bad .lq{background:linear-gradient(180deg,rgba(176,170,110,.7),rgba(110,104,60,.85))}
+.bin .log{position:relative;z-index:2;display:flex;flex-direction:column;gap:4px;font-size:.78em;max-height:55%;overflow:hidden;width:100%}
+.bin .log span{background:rgba(255,255,255,.85);border-radius:8px;padding:2px 6px}
+.deckc{display:flex;flex-direction:column;align-items:center;gap:12px}
+.wcard{width:100%;max-width:420px;min-height:190px;background:#fff;border-radius:26px;box-shadow:0 22px 40px -22px rgba(14,58,80,.7);border:1px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;text-align:center;font-size:1.3em;font-weight:700;cursor:grab;touch-action:none;user-select:none;position:relative}
+.wcard .ico{width:72px;height:72px}
+.wcard.fly{transition:transform .45s cubic-bezier(.5,0,.7,.4),opacity .45s}
+.wcard.in{animation:cardin .45s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes cardin{from{transform:translateY(40px) scale(.8);opacity:0}}
+.sortmsg{min-height:4.6em;width:100%}
+@media (max-width:900px){.sort{grid-template-columns:1fr 1fr}.deckc{grid-column:1/-1;order:-1}.bin{min-height:180px}}
+
+/* ---------- 7 污染侦探 ---------- */
+.riv{width:100%;height:auto;display:block;max-height:calc(100vh - 230px);border-radius:18px}
+.riv .src{cursor:pointer}
+.riv .src .ring{fill:rgba(255,255,255,.01);stroke:#ffd166;stroke-width:4;opacity:0}
+.riv .src:hover .ring{opacity:.9}
+.riv .src.found .ring{opacity:1;stroke:#ff7f66;stroke-dasharray:8 6}
+.riv .src.fixed .ring{opacity:1;stroke:#1e9e6a;stroke-dasharray:none}
+.riv .src .badge{opacity:0}.riv .src.fixed .badge{opacity:1}
+.riv .ow{animation:ooze 1.6s linear infinite}
+.riv .src.fixed .ow{display:none}
+@keyframes ooze{to{stroke-dashoffset:-24}}
+.riv .flowr{stroke-dasharray:3 30;animation:ooze 1.4s linear infinite}
+.pan{display:flex;flex-direction:column;gap:10px}
+.pan .typ{display:flex;gap:6px;flex-wrap:wrap}
+.meter{height:14px;border-radius:999px;background:#e5eef2;overflow:hidden}
+.meter i{display:block;height:100%;width:var(--v,0%);background:linear-gradient(90deg,#7fd3f0,#1b8fd1);transition:width .6s}
+
+/* ---------- 8 节水标志 ---------- */
+.signs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sign{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:12px 8px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700;transition:transform .2s}
+.sign:hover{transform:translateY(-3px)}
+.sign svg{width:min(100%,130px);height:auto}
+.sign.right{background:#e9f8f1;border-color:var(--ok)}.sign.wrong{background:#fdeeee;border-color:var(--bad);animation:wob .4s}
+@keyframes wob{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tip{position:relative;min-height:clamp(90px,13vh,130px);perspective:800px;cursor:pointer}
+.tip>div{position:absolute;inset:0;border-radius:18px;display:grid;place-items:center;text-align:center;padding:10px;backface-visibility:hidden;transition:transform .55s cubic-bezier(.3,1.3,.5,1)}
+.tip .f{background:linear-gradient(135deg,#27a6e6,#12a5a5);color:#fff;font:400 1.5em var(--f-display)}
+.tip .b{background:#fff;border:1.5px solid var(--line);transform:rotateY(180deg);font-size:.9em}
+.tip.open .f{transform:rotateY(-180deg)}.tip.open .b{transform:rotateY(0)}
+@media (max-width:900px){.signs{grid-template-columns:repeat(2,minmax(0,1fr))}.tips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ---------- 9 蓄水大作战 ---------- */
+.resbox{position:relative;height:clamp(280px,calc(100vh - 260px),560px);padding:0;overflow:hidden}
+.resbox canvas{position:absolute;inset:0;width:100%;height:100%}
+.qbox{display:flex;flex-direction:column;gap:10px}
+.qbox .qt{font-size:1.18em;font-weight:700;line-height:1.55}
+.qbox .ops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qbox .ops button{display:flex;gap:10px;align-items:center;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:10px 12px;cursor:pointer;font-size:1em;color:var(--ink);min-height:3.2em}
+.qbox .ops button b{flex:none;width:1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;background:#e3f4fb;color:var(--sea2);font-family:var(--f-sym)}
+.qbox .ops button:hover{border-color:var(--sea)}
+.qbox .ops button.right{background:#e9f8f1;border-color:var(--ok)}.qbox .ops button.wrong{background:#fdeeee;border-color:var(--bad)}
+.qbox .dbl{display:inline-block;background:linear-gradient(135deg,#ff9f7a,#ff7f66);color:#fff;border-radius:8px;padding:0 .4em;margin-right:.35em;font-size:.85em}
+.qbox .fig{display:flex;justify-content:center}
+@media (max-width:700px){.qbox .ops{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- 10 小结 ---------- */
+.tree{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;align-items:stretch}
+.tree .root{grid-row:1/3;writing-mode:vertical-rl;letter-spacing:.3em;font:400 1.6em var(--f-display);background:linear-gradient(180deg,#27a6e6,#12a5a5);color:#fff;border-radius:18px;display:grid;place-items:center;padding:12px 8px}
+.tree .br{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px 14px}
+.tree .br h4{margin:0 0 6px;font:400 1.25em var(--f-display);color:var(--sea2)}
+.tree ul{margin:0;padding-left:1.1em}
+.tree li{margin:2px 0}
+.pledge{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pledge button{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:9px 12px;cursor:pointer;font-weight:700;color:var(--ink)}
+.pledge button.on{background:linear-gradient(135deg,#e3f4fb,#d6f3ef);border-color:var(--sea)}
+.pledge button .dp{opacity:.3;transition:opacity .3s,transform .3s}
+.pledge button.on .dp{opacity:1;transform:rotate(45deg) scale(1.25)}
+.jar{position:relative;height:clamp(140px,22vh,220px);width:clamp(110px,10vw,160px);margin-inline:auto;border:3px solid rgba(14,58,80,.25);border-top:0;border-radius:0 0 30px 30px;overflow:hidden;background:rgba(255,255,255,.6)}
+.jar i{position:absolute;left:0;right:0;bottom:0;height:var(--h,0%);background:linear-gradient(180deg,#7fd3f0,#1b8fd1);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.jar b{position:absolute;inset:0;display:grid;place-items:center;font:700 1.6em var(--f-sym);color:var(--ink);z-index:2}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="prog" id="prog"></div>
+
+<main id="deck">
+
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面：一颗蓝色星球" data-min="2">
+  <div class="wrap"><div class="cov">
+    <div>
+      <span class="tag">第四单元 自然界的水 · 课题 1 水资源及其利用</span>
+      <h1>人类拥有的<em>水资源及其保护</em></h1>
+      <p class="sub">第 1 课时</p>
+      <div class="qs"><p><span class="dp"></span>地球表面约 71% 被水覆盖，为什么还说“缺水”？</p><p><span class="dp"></span>一个漏水的水龙头，一天要浪费多少水？</p><p><span class="dp"></span>一条河被污染了，我们能做什么？</p></div>
+      <div class="row"><button class="btn pri big" data-go="next">开始探索 →</button><span class="hint">点一点右边的水球</span></div>
+    </div>
+    <div class="globe" id="globe"><canvas id="cvCov" aria-label="表示地球表面约71%被水覆盖的水球动画"></canvas></div>
+  </div></div>
+</section>
+
+<!-- 2 一桶水 -->
+<section class="slide" data-id="earth" data-title="地球上的水：一桶水的故事" data-min="5">
+  <div class="wrap">
+    <header class="head"><span class="tag">水资源现状 · 全球</span><h2>如果地球上所有的水装满一个 100 L 的大桶……</h2>
+      <p class="lede">真正方便人类直接利用的淡水有多少？两队先猜，再一步步“倒水”揭晓。</p></header>
+    <div class="cols">
+      <div class="card tankbox"><canvas id="cvTank" aria-label="把全球水量比作100升水的分解动画"></canvas></div>
+      <div class="side">
+        <div class="card"><h3>猜一猜：能直接利用的淡水约有</h3><div class="opts4" id="tkOps"></div></div>
+        <div class="steps" id="tkSteps"><i>① 海水</i><i>② 淡水</i><i>③ 能用的淡水</i></div>
+        <div class="row"><button class="btn pri" id="tkGo">第 1 步：分出海水</button><button class="btn" id="tkRe">重来</button></div>
+        <div class="status" id="tkMsg">选好答案后，点“第 1 步”开始揭晓。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 我国的水 -->
+<section class="slide" data-id="china" data-title="我国的水资源" data-min="4">
+  <div class="wrap">
+    <header class="head"><span class="tag">水资源现状 · 我国</span><h2>总量不少，为什么我国仍然缺水？</h2></header>
+    <div class="cols even">
+      <div class="card">
+        <div class="tiles"><div class="tile"><small>水资源总量</small><b>约 2.8</b><span>万亿 m³</span></div><div class="tile"><small>总量排名</small><b>第 6</b><span>位（世界）</span></div><div class="tile warn"><small>人均水量</small><b>约 ¼</b><span>世界人均</span></div></div>
+        <div class="bars" id="cnBars"><div class="bar"><span>世界人均</span><i style="--v:100%"></i><em>1</em></div><div class="bar cn"><span>我国人均</span><i style="--v:25%"></i><em>约 ¼</em></div></div>
+        <div class="dist">
+          <div><h4>时间分布不均</h4><svg viewBox="0 0 240 90" aria-label="我国降水夏秋多冬春少示意"><g id="mBars"></g><text x="6" y="86" font-size="11" fill="#466b7e">春</text><text x="66" y="86" font-size="11" fill="#466b7e">夏</text><text x="126" y="86" font-size="11" fill="#466b7e">秋</text><text x="186" y="86" font-size="11" fill="#466b7e">冬</text></svg><p class="muted" style="font-size:.85em">夏秋多、冬春少</p></div>
+          <div><h4>空间分布不均</h4><svg viewBox="0 0 240 90" aria-label="我国水资源南多北少示意"><rect x="20" y="12" width="90" height="62" rx="10" fill="#e8f3f8"/><rect x="20" y="58" width="90" height="16" rx="6" fill="#7fd3f0"/><text x="65" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#0e3a50">北方</text><rect x="130" y="12" width="90" height="62" rx="10" fill="#e8f3f8"/><rect x="130" y="24" width="90" height="50" rx="6" fill="#1b8fd1"/><text x="175" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">南方</text></svg><p class="muted" style="font-size:.85em">南多北少</p></div>
+        </div>
+        <p style="margin-top:10px">小结：我国水资源<span class="hl">总量较多，人均很少，时空分布不均</span>。</p>
+      </div>
+      <div class="card side">
+        <div class="row" style="justify-content:space-between"><h3>南水北调（示意）</h3><span class="row"><button class="btn pri sm" id="nbGo">开闸调水</button><button class="btn sm" id="nbRe">复位</button></span></div>
+        <svg class="nbsvg" id="nbSvg" viewBox="0 0 600 400" role="img" aria-label="南水北调示意：把南方的水调往北方"></svg>
+        <div class="status" id="nbMsg">想一想：南水北调能<b>增加</b>我国的水资源总量吗？</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 水循环 -->
+<section class="slide" data-id="cycle" data-title="自然界的水循环" data-min="6">
+  <div class="wrap">
+    <header class="head"><span class="tag">水资源现状 · 水的天然循环</span><div class="row" style="justify-content:space-between"><h2>一滴水的旅行</h2><span class="row"><button class="btn sm" id="cyAll">全部揭晓</button><button class="btn sm" id="cyZoom" aria-pressed="false">放大看分子</button></span></div>
+      <p class="lede">点数字揭晓各环节。水的天然循环靠<b>水的三态变化</b>实现，太阳提供能量。</p></header>
+    <div class="cols">
+      <div class="card cyc" id="cycBox"><canvas id="cvCyc" aria-label="水的天然循环动画"></canvas></div>
+      <div class="side">
+        <h3>判一判（答对 +5）</h3>
+        <div class="tf" id="cyTF"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 水龙头 -->
+<section class="slide" data-id="tap" data-title="算一算：滴水成河" data-min="4">
+  <div class="wrap">
+    <header class="head"><span class="tag">爱护水资源 · 节约用水</span><h2>滴答，滴答……一个漏水的水龙头</h2>
+      <p class="lede">先让各队在草稿纸上算，再点“揭晓计算”核对。参数可以改，出新题。</p></header>
+    <div class="cols">
+      <div class="card tapbox"><canvas id="cvTap" aria-label="漏水水龙头与量筒动画"></canvas></div>
+      <div class="side">
+        <div class="card ctl">
+          <span>每秒漏</span><input type="range" id="tpD" min="1" max="4" step="1" value="1"><output id="tpDo"></output>
+          <span>每 1 mL 约</span><input type="range" id="tpM" min="10" max="30" step="1" value="16"><output id="tpMo"></output>
+          <span>每人每天饮水</span><input type="range" id="tpP" min="1.2" max="2.5" step="0.1" value="1.8"><output id="tpPo"></output>
+          <span>时间</span><span class="seg" id="tpT" style="grid-column:2/4"><button class="btn sm" data-s="3600">1 小时</button><button class="btn sm" data-s="86400" aria-pressed="true">1 天</button><button class="btn sm" data-s="2592000">30 天</button><button class="btn sm" data-s="31536000">1 年</button></span>
+        </div>
+        <div class="calc hide" id="tpCalc"></div>
+        <div class="row"><button class="btn pri" id="tpShow">揭晓计算</button><button class="btn" id="tpRun">快进看水量</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 分类 -->
+<section class="slide" data-id="sort" data-title="游戏：节水还是浪费" data-min="5">
+  <div class="wrap">
+    <header class="head"><span class="tag">爱护水资源 · 红蓝对抗</span><h2>这样做，是爱护水资源吗？</h2>
+      <p class="lede">把卡片拖进（或点）左右两个水池。两队轮流，答对 +5。</p></header>
+    <div class="sort">
+      <div class="bin good" id="binG" role="button" tabindex="0"><div class="lq"></div><h3>爱护水资源</h3><div class="cnt">0</div><div class="log"></div></div>
+      <div class="deckc"><div class="wcard" id="wcard"></div><div class="status sortmsg" id="soMsg">红队先来。</div><div class="row"><span class="muted" id="soLeft"></span><button class="btn sm" id="soRe">重新开始</button></div></div>
+      <div class="bin bad" id="binB" role="button" tabindex="0"><div class="lq"></div><h3>不利于保护水资源</h3><div class="cnt">0</div><div class="log"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 污染侦探 -->
+<section class="slide" data-id="river" data-title="污染侦探：让河流变清" data-min="5">
+  <div class="wrap">
+    <header class="head"><span class="tag">爱护水资源 · 防治水体污染</span><h2>污染侦探：这条河为什么变浑了？</h2>
+      <p class="lede">找出 5 个污染源，判断它属于哪类污染，再“治理”它，看河水变清。</p></header>
+    <div class="cols">
+      <div class="card" style="padding:8px"><svg class="riv" id="rivSvg" viewBox="0 0 1000 560" role="img" aria-label="河流及沿岸污染源示意图"></svg></div>
+      <div class="side pan">
+        <div class="card" id="rvPanel"><h3>点击图中可疑的地方</h3><p class="muted">提示：工厂、农田、养殖场、居民区、河岸……</p></div>
+        <div><div class="row" style="justify-content:space-between"><b>河水清澈度</b><span class="muted" id="rvCnt">已治理 0 / 5</span></div><div class="meter" id="rvMeter"><i></i></div></div>
+        <div class="card" id="rvSum" hidden><h3>防治水体污染</h3>
+          <p><b>工业</b>：应用新技术、新工艺减少污染物产生；工业废水处理达标后排放。</p>
+          <p><b>农业</b>：合理施用化肥和农药，提倡使用农家肥。</p>
+          <p><b>生活</b>：生活污水逐步实现集中处理和排放；不向河流湖泊乱扔垃圾。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 节水标志 -->
+<section class="slide" data-id="sign" data-title="节水标志与节水妙招" data-min="2">
+  <div class="wrap">
+    <header class="head"><span class="tag">爱护水资源 · 节约用水</span><h2>认一认：哪个是国家节水标志？</h2></header>
+    <div class="signs" id="signs"></div>
+    <div class="status" id="sgMsg">点你认为正确的标志。</div>
+    <h3>节水妙招（点开翻看）</h3>
+    <div class="tips" id="tips"></div>
+  </div>
+</section>
+
+<!-- 9 蓄水大作战 -->
+<section class="slide" data-id="race" data-title="蓄水大作战" data-min="10">
+  <div class="wrap">
+    <header class="head"><span class="tag">课堂竞赛 · 红蓝对抗</span><h2>蓄水大作战：谁的水库蓄得多？</h2></header>
+    <div class="cols even">
+      <div class="side"><div class="card resbox"><canvas id="cvRes" aria-label="红蓝两队的水库水位"></canvas></div>
+        <p class="hint">答对：本队水库蓄水 1 格并 +10 分；“提升”题答对蓄水 2 格。答题队自动轮换。</p></div>
+      <div class="card qbox"><span class="tag" id="rqCat">第 1 题</span><p class="qt" id="rqT"></p><div class="fig" id="rqFig"></div><div class="ops" id="rqOps"></div>
+        <p class="status" id="rqExp" hidden></p>
+        <div class="row" style="justify-content:flex-end"><button class="btn" id="rqRe">重新开始</button><button class="btn pri" id="rqNext">下一题 →</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 小结 -->
+<section class="slide" data-id="sum" data-title="小结与节水承诺" data-min="2">
+  <div class="wrap">
+    <header class="head"><span class="tag">课堂小结</span><h2>珍惜每一滴水</h2></header>
+    <div class="cols">
+      <div class="tree">
+        <div class="root">人类拥有的水资源</div>
+        <div class="br"><h4>现状</h4><ul><li>全球：总水量大，<b>淡水很少</b>，可直接利用的淡水不足总水量的 1%</li><li>我国：总量较多，<b>人均少</b>，时空分布不均</li><li>水在自然界中不断循环，但<b>不是</b>取之不尽、用之不竭</li></ul></div>
+        <div class="br"><h4>爱护水资源</h4><ul><li><b>节约用水</b>：提高水的利用率（生活一水多用、农业喷灌滴灌、工业重复利用）</li><li><b>防治水体污染</b>：工业、农业、生活三方面治理</li></ul></div>
+      </div>
+      <div class="side">
+        <h3>我的节水承诺（点亮水滴）</h3>
+        <div class="pledge" id="pledge"></div>
+        <div class="jar" id="jar"><i></i><b>0 / 6</b></div>
+        <p class="muted">下节课：<b>水的净化</b>——浑浊的河水怎样变成自来水？</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<nav class="dock" aria-label="翻页与积分">
+  <button class="ic" id="btnPrev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="pg" id="pg">1 / 10</span>
+  <button class="ic" id="btnNext" aria-label="下一页">›</button>
+  <button class="tm r on" id="tmR" title="设为红队答题"><span>红队</span><b id="tsR">0</b></button>
+  <button class="tm b" id="tmB" title="设为蓝队答题"><b id="tsB">0</b><span>蓝队</span></button>
+  <button class="tx" id="btnMenu">目录</button>
+  <button class="tx opt" id="btnSnd">音效：开</button>
+  <button class="tx opt" id="btnFxq">特效：高</button>
+  <button class="tx opt" id="btnFs">全屏</button>
+</nav>
+<div class="menu" id="menu" hidden><div class="card">
+  <div class="row" style="justify-content:space-between"><h3>课件目录 <small class="muted" style="font-size:.6em">建议用时合计约 45 分钟</small></h3><button class="btn sm" id="menuX">关闭</button></div>
+  <ol id="menuList"></ol>
+  <div class="row" style="margin-top:14px;justify-content:space-between"><span class="muted">积分调整</span>
+    <span class="row"><span class="cm">红队</span><button class="btn sm" data-adj="r" data-v="10">+10</button><button class="btn sm" data-adj="r" data-v="-10">−10</button>
+    <span style="color:var(--electron);font-weight:700">蓝队</span><button class="btn sm" data-adj="b" data-v="10">+10</button><button class="btn sm" data-adj="b" data-v="-10">−10</button>
+    <button class="btn sm" id="adjZero">清零</button></span></div>
+</div></div>
+<div id="flash"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+(()=>{
+'use strict';
+/* ================= 基础工具 ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let LOW=reduce;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={p:css('--proton')||'#ff5d77',n:css('--neutron')||'#b3bdd9',e:css('--electron')||'#3fd8ff',g:css('--gold')||'#ffc457',ink:css('--ink')||'#ecf0ff',dim:css('--dim')||'#a2acd8',faint:css('--faint')||'#606c9e',line:css('--line')||'#2a3768',ok:css('--ok')||'#47e0a0',bad:css('--bad')||'#ff6a6a',void:css('--void')||'#080c1c',panel:css('--panel')||'#111938',deep:css('--deep')||'#0d1430'};
+const MONO='"JetBrains Mono",Consolas,monospace',BODY='"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif',DISP='"Noto Serif SC","Songti SC","SimSun",serif';
+const rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgba=(h,a)=>{const[r,g,b]=rgb(h);return`rgba(${r},${g},${b},${a})`;};
+const shade=(h,k)=>{const[r,g,b]=rgb(h);const f=v=>Math.round(k<0?v*(1+k):v+(255-v)*k);return`rgb(${f(r)},${f(g)},${f(b)})`;};
+const gf=$('#gf');if(gf)gf.media='all';
+
+function fit(cv){
+  const dpr=Math.min(LOW?1:2,window.devicePixelRatio||1);const r=cv.getBoundingClientRect();
+  const w=Math.max(1,r.width),h=Math.max(1,r.height);const W=Math.round(w*dpr),H=Math.round(h*dpr);
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return{ctx,w,h,dpr};
+}
+function ball(ctx,x,y,r,col,a=1){
+  if(r<=.2)return;ctx.globalAlpha=a;
+  if(LOW){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.globalAlpha=1;return;}
+  const g=ctx.createRadialGradient(x-r*.38,y-r*.42,r*.08,x,y,r);
+  g.addColorStop(0,shade(col,.75));g.addColorStop(.38,col);g.addColorStop(1,shade(col,-.55));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.globalAlpha=1;
+}
+function glow(ctx,x,y,r,col,a=1){
+  if(r<=.5||a<=0)return;if(LOW&&r>40)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+}
+function elec(ctx,x,y,r,a=1,col=C.e){
+  ctx.globalCompositeOperation='lighter';glow(ctx,x,y,r*3.4,col,.5*a);ctx.globalCompositeOperation='source-over';ball(ctx,x,y,r,col,a);
+}
+function label(ctx,txt,x,y,{size=14,col=C.ink,align='center',weight=500,font=BODY,a=1,base='middle',stroke=null}={}){
+  ctx.globalAlpha=a;ctx.font=`${weight} ${size}px ${font}`;ctx.textAlign=align;ctx.textBaseline=base;
+  if(stroke){ctx.lineWidth=size*.35;ctx.strokeStyle=stroke;ctx.lineJoin='round';ctx.strokeText(txt,x,y);}
+  ctx.fillStyle=col;ctx.fillText(txt,x,y);ctx.globalAlpha=1;
+}
+function ring(ctx,x,y,R,col,a=.3,dash=true,lw=1.3){ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.lineWidth=lw;if(dash)ctx.setLineDash([4,7]);ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
+function mixPN(p,n){const o=[];let a=0,b=0;for(let i=0;i<p+n;i++){if(b>=n||(a<p&&a/(p||1)<=b/(n||1))){o.push('p');a++;}else{o.push('n');b++;}}return o;}
+function nucPos(i,br){if(i===0)return[0,0];const r=br*1.12*Math.sqrt(i+.3),a=i*2.39996;return[Math.cos(a)*r,Math.sin(a)*r];}
+function nucRadius(N,br){return N<=1?br:br*1.12*Math.sqrt(N-.7)+br;}
+function drawNucleus(ctx,x,y,types,br,t=0,jit=.05){
+  for(let i=types.length-1;i>=0;i--){const[px,py]=nucPos(i,br);const j=br*jit;
+    ball(ctx,x+px+Math.sin(t*9+i*1.7)*j,y+py+Math.cos(t*8+i*2.3)*j,br,types[i]==='p'?C.p:C.n);}
+}
+// 闪电：中点位移
+function bolt(ctx,x1,y1,x2,y2,col,a=1,jag=26){
+  let pts=[[x1,y1],[x2,y2]];
+  for(let k=0;k<5;k++){const np=[];for(let i=0;i<pts.length-1;i++){const[ax,ay]=pts[i],[bx,by]=pts[i+1];const mx=(ax+bx)/2,my=(ay+by)/2,dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy)||1;
+    const off=(Math.random()-.5)*jag*Math.pow(.55,k);np.push([ax,ay],[mx-dy/L*off,my+dx/L*off]);}np.push(pts[pts.length-1]);pts=np;}
+  ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';ctx.lineCap='round';
+  [[LOW?0:10,.15],[4,.45],[1.6,1]].forEach(([lw,al])=>{if(!lw)return;ctx.strokeStyle=rgba(col,al*a);ctx.lineWidth=lw;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();});
+  ctx.globalCompositeOperation='source-over';
+}
+
+/* ================= 元素与离子数据 ================= */
+const EL=[['H','氢',0],['He','氦',2],['Li','锂',4],['Be','铍',5],['B','硼',6],['C','碳',6],['N','氮',7],['O','氧',8],['F','氟',10],['Ne','氖',10],
+ ['Na','钠',12],['Mg','镁',12],['Al','铝',14],['Si','硅',14],['P','磷',16],['S','硫',16],['Cl','氯',18],['Ar','氩',22],['K','钾',20],['Ca','钙',20]]
+ .map((d,i)=>({z:i+1,s:d[0],n:d[1],nn:d[2]}));
+const shellsOf=e=>{const caps=[2,8,8,2],o=[];let r=e;for(const c of caps){if(r<=0)break;const k=Math.min(c,r);o.push(k);r-=k;}return o;};
+const METAL=[3,4,11,12,13,19,20],GAS=[2,10,18];
+const catOf=z=>GAS.includes(z)?'gas':METAL.includes(z)?'metal':'non';
+const supTxt=q=>q===0?'':(Math.abs(q)>1?Math.abs(q):'')+(q>0?'+':'−');
+const ionHTML=(s,q)=>`${s}<sup>${supTxt(q)}</sup>`;
+const SUPU={'+':'⁺','−':'⁻','1':'¹','2':'²','3':'³'};
+const ionU=(s,q)=>s+supTxt(q).split('').map(c=>SUPU[c]||c).join('');
+const outerOf=z=>{const s=shellsOf(z);return s[s.length-1];};
+
+/* 原子结构示意图 SVG */
+function schematic(p,shells,{hide=false,err=[],errNuc=false,show=null}={}){
+  const r=26,g=24,ang=40*Math.PI/180,n=shells.length,maxR=r+g*Math.max(n,1);
+  const ext=Math.max(r,maxR*Math.sin(ang))+6,cx=r+8,cy=ext,W=cx+maxR+16,H=cy+ext;
+  let s=`<svg class="sch" style="--w:${W.toFixed(0)}" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="核内 ${p} 个质子，核外电子排布 ${shells.join('、')}">`;
+  s+=`<circle class="nuc${errNuc?' err':''}" cx="${cx}" cy="${cy}" r="${r}"/><text class="nz${errNuc?' err':''}" x="${cx}" y="${cy}">+${p}</text>`;
+  shells.forEach((k,i)=>{const R=r+g*(i+1),x1=cx+R*Math.cos(ang),y1=cy-R*Math.sin(ang),y2=cy+R*Math.sin(ang);const e=err.includes(i)?' err':'';
+    s+=`<path class="arc${e}" style="--i:${i}" pathLength="1" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}"/>`;
+    s+=`<text class="en${e}" style="--i:${i}" x="${cx+R}" y="${cy}">${hide&&!(show&&show.includes(i))?'?':k}</text>`;});
+  return s+'</svg>';
+}
+
+/* ================= 音效 ================= */
+const SND={on:true,ctx:null};
+addEventListener('pointerdown',()=>{try{SND.ctx&&SND.ctx.state==='suspended'&&SND.ctx.resume();}catch(e){}},{capture:true});
+function sfx(type){
+  if(!SND.on)return;
+  try{
+    SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx;if(a.state==='suspended')a.resume();const t=a.currentTime;
+    const tone=(f,d,typ='sine',v=.1,dl=0,f2)=>{const o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.setValueAtTime(f,t+dl);
+      if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dl+d);g.gain.setValueAtTime(0,t+dl);g.gain.linearRampToValueAtTime(v,t+dl+.012);
+      g.gain.exponentialRampToValueAtTime(.0001,t+dl+d);o.connect(g).connect(a.destination);o.start(t+dl);o.stop(t+dl+d+.03);};
+    const noise=(d,v=.2,dl=0,hp=200)=>{const b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*Math.pow(1-i/ch.length,2);
+      const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='highpass';f.frequency.value=hp;g.gain.value=v;s.connect(f).connect(g).connect(a.destination);s.start(t+dl);};
+    ({click:()=>tone(700,.07,'triangle',.05),
+      pop:()=>tone(380,.14,'sine',.09,0,900),
+      drop:()=>tone(900,.12,'sine',.07,0,300),
+      ok:()=>{tone(660,.14,'triangle',.09);tone(990,.22,'triangle',.09,.1);},
+      bad:()=>tone(230,.28,'sawtooth',.05,0,130),
+      win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.3,'triangle',.08,i*.1)),
+      whoosh:()=>tone(160,.45,'sine',.06,0,700),
+      tick:()=>tone(1200,.04,'square',.02),
+      zap:()=>{noise(.35,.12,0,1500);tone(1800,.3,'sawtooth',.03,0,200);},
+      boom:()=>{noise(.6,.3,0,60);tone(120,.5,'sine',.15,0,40);},
+      stamp:()=>{noise(.15,.25,0,100);tone(90,.2,'square',.08,0,50);},
+      laser:()=>tone(2000,.35,'sawtooth',.04,0,300),
+      scan:()=>tone(500,.8,'sine',.04,0,1500),
+      shield:()=>{tone(440,.4,'sine',.07);tone(880,.4,'sine',.05,.05);}})[type]?.();
+  }catch(e){}
+}
+
+/* ================= 特效层 ================= */
+const FX=(()=>{
+  const cv=$('#fx');let ps=[],dirty=false;
+  function burst(x,y,n=26,cols=[C.g,C.e,C.p],spd=6){
+    n=LOW?Math.ceil(n/3):n;
+    for(let i=0;i<n;i++){const a=Math.random()*TAU,s=spd*(.3+Math.random());
+      ps.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,dec:.016+Math.random()*.02,r:1.5+Math.random()*3,c:cols[i%cols.length],g:.1,sh:0});}
+  }
+  function confetti(){
+    const w=innerWidth,cols=[C.g,C.e,C.p,C.ok,C.n];
+    for(let i=0;i<(LOW?40:170);i++)ps.push({x:Math.random()*w,y:-20-Math.random()*240,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,life:1,dec:.0035+Math.random()*.004,
+      r:4+Math.random()*4,c:cols[i%5],g:.04,sh:1,rot:Math.random()*TAU,vr:(Math.random()-.5)*.3});
+  }
+  function tick(dt){
+    if(!ps.length){if(dirty){const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);dirty=false;}return;}
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const k=dt*60;dirty=true;
+    ps=ps.filter(p=>{p.vy+=p.g*k;p.vx*=.99;p.x+=p.vx*k;p.y+=p.vy*k;p.life-=p.dec*k;
+      ctx.globalAlpha=clamp(p.life,0,1);
+      if(p.sh){p.rot+=p.vr*k;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r*.4,p.r*2,p.r*.8);ctx.restore();}
+      else if(LOW){ctx.fillStyle=p.c;ctx.fillRect(p.x-p.r/2,p.y-p.r/2,p.r,p.r);}
+      else{ctx.globalCompositeOperation='lighter';glow(ctx,p.x,p.y,p.r*3,p.c,.9);ctx.globalCompositeOperation='source-over';}
+      return p.life>0&&p.y<h+40;});
+    ctx.globalAlpha=1;
+  }
+  return{burst,confetti,tick};
+})();
+const burstAt=(el,n,cols)=>{const r=el.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height/2,n,cols);};
+const cvPt=(cv,x,y)=>{const r=cv.getBoundingClientRect();return[r.left+x,r.top+y];};
+function shake(){if(LOW)return;const d=$('#deck');d.classList.remove('shaking');void d.offsetWidth;d.classList.add('shaking');}
+function flash(col){const f=$('#flash');f.style.background=col||C.bad;f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
+
+/* ================= 红蓝队积分（全课共用） ================= */
+const TEAM={cur:'r',sc:{r:0,b:0}};
+function teamRender(){$('#tsR').textContent=TEAM.sc.r;$('#tsB').textContent=TEAM.sc.b;$('#tmR').classList.toggle('on',TEAM.cur==='r');$('#tmB').classList.toggle('on',TEAM.cur==='b');$$('[data-teamlbl]').forEach(e=>e.textContent=(TEAM.cur==='r'?'红队':'蓝队')+'答题');}
+function teamAdd(v,tm=TEAM.cur){TEAM.sc[tm]=Math.max(0,TEAM.sc[tm]+v);teamRender();const el=$(tm==='r'?'#tmR':'#tmB');el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');if(v>0)burstAt(el,22,[tm==='r'?C.p:C.e,C.g]);}
+function teamSet(tm){TEAM.cur=tm;teamRender();}
+function teamNext(){teamSet(TEAM.cur==='r'?'b':'r');}
+$('#tmR').onclick=()=>{teamSet('r');sfx('click');};$('#tmB').onclick=()=>{teamSet('b');sfx('click');};
+$$('[data-adj]').forEach(b=>b.onclick=()=>teamAdd(+b.dataset.v,b.dataset.adj));
+$('#adjZero').onclick=()=>{TEAM.sc={r:0,b:0};teamRender();};
+
+/* ================= 背景粒子 ================= */
+const BG=(()=>{
+  const cv=$('#bg');let t=0;
+  const bs=Array.from({length:36},()=>({x:Math.random(),y:Math.random(),r:1.5+Math.random()*4.5,s:.012+Math.random()*.03,ph:Math.random()*TAU}));
+  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    [[.84,16,.006,'rgba(27,143,209,.09)',.5],[.89,11,.009,'rgba(18,165,165,.09)',-.7],[.93,8,.013,'rgba(27,143,209,.08)',.9]].forEach(([y0,A,k,col,sp])=>{
+      ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(0,h);for(let x=0;x<=w+16;x+=16)ctx.lineTo(x,h*y0+Math.sin(x*k+t*sp)*A);ctx.lineTo(w,h);ctx.closePath();ctx.fill();});
+    const N=LOW?10:bs.length;ctx.lineWidth=1.2;
+    for(let i=0;i<N;i++){const b=bs[i];b.y-=b.s*dt*(LOW?.3:1);if(b.y<-.05){b.y=1.05;b.x=Math.random();}
+      const x=b.x*w+Math.sin(t*.8+b.ph)*10,y=b.y*h;ctx.strokeStyle='rgba(27,143,209,.22)';ctx.beginPath();ctx.arc(x,y,b.r,0,TAU);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.arc(x-b.r*.35,y-b.r*.35,b.r*.3,0,TAU);ctx.fill();}
+  }
+  return{tick};
+})();
+
+const S={};
+
+
+/* ================= 元素周期表数据（前 4 周期 + 常见元素） ================= */
+const RAW=[[1,'H','氢','1.008','non'],[2,'He','氦','4.003','gas'],[3,'Li','锂','6.941','metal'],[4,'Be','铍','9.012','metal'],[5,'B','硼','10.81','non'],[6,'C','碳','12.01','non'],[7,'N','氮','14.01','non'],[8,'O','氧','16.00','non'],[9,'F','氟','19.00','non'],[10,'Ne','氖','20.18','gas'],
+ [11,'Na','钠','22.99','metal'],[12,'Mg','镁','24.31','metal'],[13,'Al','铝','26.98','metal'],[14,'Si','硅','28.09','non'],[15,'P','磷','30.97','non'],[16,'S','硫','32.06','non'],[17,'Cl','氯','35.45','non'],[18,'Ar','氩','39.95','gas'],[19,'K','钾','39.10','metal'],[20,'Ca','钙','40.08','metal'],
+ [21,'Sc','钪','44.96','metal'],[22,'Ti','钛','47.87','metal'],[23,'V','钒','50.94','metal'],[24,'Cr','铬','52.00','metal'],[25,'Mn','锰','54.94','metal'],[26,'Fe','铁','55.85','metal'],[27,'Co','钴','58.93','metal'],[28,'Ni','镍','58.69','metal'],[29,'Cu','铜','63.55','metal'],[30,'Zn','锌','65.38','metal'],
+ [31,'Ga','镓','69.72','metal'],[32,'Ge','锗','72.63','metal'],[33,'As','砷','74.92','non'],[34,'Se','硒','78.97','non'],[35,'Br','溴','79.90','non'],[36,'Kr','氪','83.80','gas'],
+ [47,'Ag','银','107.9','metal'],[53,'I','碘','126.9','non'],[56,'Ba','钡','137.3','metal'],[58,'Ce','铈','140.1','metal'],[79,'Au','金','197.0','metal'],[80,'Hg','汞','200.6','metal']];
+const SH={21:[2,8,9,2],22:[2,8,10,2],23:[2,8,11,2],24:[2,8,13,1],25:[2,8,13,2],26:[2,8,14,2],27:[2,8,15,2],28:[2,8,16,2],29:[2,8,18,1],30:[2,8,18,2],31:[2,8,18,3],32:[2,8,18,4],33:[2,8,18,5],34:[2,8,18,6],35:[2,8,18,7],36:[2,8,18,8]};
+const PT=RAW.map(([z,s,n,ar,cat])=>({z,s,n,ar,cat,sh:z<=20?shellsOf(z):SH[z]||null}));
+const BYZ=Object.fromEntries(PT.map(e=>[e.z,e])),BYS=Object.fromEntries(PT.map(e=>[e.s,e]));
+const colOf=z=>z===1?1:z===2?18:z<=4?z-2:z<=10?z+8:z<=12?z-10:z<=18?z:z<=20?z-18:z-18;
+const perOf=z=>z<=2?1:z<=10?2:z<=18?3:4;
+const GL={1:'ⅠA',2:'ⅡA',13:'ⅢA',14:'ⅣA',15:'ⅤA',16:'ⅥA',17:'ⅦA',18:'0'};
+const ARR={H:1,C:12,N:14,O:16,Na:23,Mg:24,Al:27,S:32,Cl:35.5,K:39,Ca:40,Mn:55,Fe:56,Cu:64,Zn:65,Ag:108,Ba:137};
+const elHTML=(e,{num=true,ar=false,name=true}={})=>`<div class="el ${e.cat}" data-z="${e.z}">${num?`<i>${e.z}</i>`:''}<b>${e.s}</b>${name?`<span>${e.n}</span>`:''}${ar?`<em>${e.ar}</em>`:''}</div>`;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const tname=k=>k==='r'?'红队':'蓝队';
+function note(f,d=.18,type='triangle',v=.09){if(!SND.on)return;try{SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx;if(a.state==='suspended')a.resume();const t=a.currentTime,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02);}catch(e){}}
+
+
+/* ================= 1 封面 ================= */
+S.cover=(()=>{
+  const cv=$('#cvCov');let t=0,lv=0,rip=[],bub=[];
+  cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect();rip.push({x:e.clientX-r.left,y:e.clientY-r.top,a:0});sfx('drop');});
+  function tick(dt){t+=dt;lv=Math.min(1,lv+dt*.45);const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    const R=Math.min(w,h)*.44,cx=w/2,cy=h/2,top=cy+R-2*R*.71*ease(lv);
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.clip();
+    const sky=ctx.createLinearGradient(0,cy-R,0,cy+R);sky.addColorStop(0,'#ffffff');sky.addColorStop(1,'#e6f6fc');ctx.fillStyle=sky;ctx.fillRect(cx-R,cy-R,2*R,2*R);
+    // 陆地剪影（露出水面的部分）
+    ctx.fillStyle='#bfe3c4';ctx.beginPath();ctx.moveTo(cx-R,top+30);ctx.quadraticCurveTo(cx-R*.55,top-R*.35,cx-R*.15,top+10);ctx.quadraticCurveTo(cx+R*.2,top-R*.22,cx+R*.6,top+6);ctx.lineTo(cx+R,top+30);ctx.lineTo(cx+R,cy+R);ctx.lineTo(cx-R,cy+R);ctx.fill();
+    const wave=(off,A,k,sp,c1,c2)=>{const g=ctx.createLinearGradient(0,top,0,cy+R);g.addColorStop(0,c1);g.addColorStop(1,c2);ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(cx-R,cy+R);
+      for(let x=cx-R;x<=cx+R+6;x+=6)ctx.lineTo(x,top+off+Math.sin(x*k+t*sp)*A+Math.sin(x*k*.37-t*sp*.6)*A*.7);ctx.lineTo(cx+R,cy+R);ctx.fill();};
+    wave(-6,7,.03,1.6,'rgba(127,211,240,.55)','rgba(27,143,209,.55)');wave(4,6,.024,-1.2,'#4bb8e8','#0b5f8a');
+    if(!LOW&&Math.random()<.2)bub.push({x:cx+(Math.random()-.5)*R*1.4,y:cy+R,r:2+Math.random()*4});
+    bub=bub.filter(b=>{b.y-=dt*40;b.x+=Math.sin(t*3+b.r)*.4;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,TAU);ctx.stroke();return b.y>top+8;});
+    rip=rip.filter(r=>{r.a+=dt;for(let k=0;k<3;k++){const rr=r.a*120-k*18;if(rr>0){ctx.strokeStyle=`rgba(255,255,255,${Math.max(0,.8-r.a*.6)})`;ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(r.x,r.y,rr,rr*.45,0,0,TAU);ctx.stroke();}}return r.a<1.4;});
+    label(ctx,Math.round(71*ease(lv))+'%',cx,top+(cy+R-top)*.42,{size:R*.36,weight:700,col:'#ffffff',font:'Quicksand,Fredoka,sans-serif'});
+    label(ctx,'地球表面被水覆盖',cx,top+(cy+R-top)*.42+R*.27,{size:Math.max(13,R*.085),weight:700,col:'rgba(255,255,255,.92)'});
+    ctx.restore();
+    ctx.strokeStyle='rgba(14,58,80,.18)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=6;ctx.lineCap='round';ctx.beginPath();ctx.arc(cx,cy,R*.88,-2.6,-1.9);ctx.stroke();ctx.lineCap='butt';
+  }
+  return{tick,enter(){lv=0;}};
+})();
+
+/* ================= 2 一桶水 ================= */
+S.earth=(()=>{
+  const cv=$('#cvTank'),OPS=['约 30 L','约 10 L','约 2.5 L','不到 1 L'];let pick=-1,step=0,an=1,t=0,drops=[];
+  const BTN=['第 1 步：分出海水','第 2 步：倒出淡水','第 3 步：哪些能直接用？','已全部揭晓'];
+  const MSG=['选好答案后，点“第 1 步”开始揭晓。',
+    '<b>海水</b>约占全球总水量的 <b>96.5%</b>（约 96.5 L），含盐量高，不能直接饮用，也不能直接灌溉。另有少量咸水湖水、咸的地下水。',
+    '<b>淡水</b>只约占 <b>2.53%</b>（约 2.5 L）。把它倒进右边的小桶——为了看得清，小桶<b>放大了 20 倍</b>。',
+    '淡水中约 <b>2/3</b> 是两极和高山的冰川、永久积雪，其余大多是地下水，很多埋藏很深——都难以利用。真正方便利用的江河湖泊水和浅层地下水，<b>不足全球总水量的 1%</b>，也就是 100 L 里<b>不到 1 L</b>！'];
+  $('#tkOps').innerHTML=OPS.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('');
+  $$('#tkOps button').forEach(b=>b.onclick=()=>{if(step>=3)return;pick=+b.dataset.i;$$('#tkOps button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
+  function ui(){$('#tkGo').textContent=BTN[step];$('#tkGo').disabled=step>=3;$('#tkMsg').innerHTML=MSG[step];$$('#tkSteps i').forEach((x,k)=>x.classList.toggle('on',k<step));}
+  $('#tkGo').onclick=()=>{if(step>=3)return;step++;an=0;sfx(step===2?'whoosh':'pop');ui();
+    if(step===3){$$('#tkOps button')[3].classList.add('right');
+      if(pick===3){$('#tkMsg').className='status ok';$('#tkMsg').innerHTML='✔ 猜对了！'+MSG[3];teamAdd(10);sfx('win');FX.confetti();}
+      else{$('#tkMsg').className='status warn';$('#tkMsg').innerHTML=(pick<0?'':'没猜中，')+MSG[3];}}};
+  $('#tkRe').onclick=()=>{step=0;an=1;pick=-1;drops=[];$('#tkMsg').className='status';$$('#tkOps button').forEach(x=>{x.setAttribute('aria-pressed','false');x.classList.remove('right');});ui();};
+  ui();
+  function bucket(ctx,x0,x1,y0,y1){const k=(x1-x0)*.06;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+k,y1-10);ctx.quadraticCurveTo(x0+k,y1,x0+k+10,y1);ctx.lineTo(x1-k-10,y1);ctx.quadraticCurveTo(x1-k,y1,x1-k,y1-10);ctx.lineTo(x1,y0);}
+  function fillLayer(ctx,x0,x1,y0,y1,a,b,col){ // a,b: 0..1 from bottom
+    const H=y1-y0,ya=y1-H*a,yb=y1-H*b;ctx.save();bucket(ctx,x0,x1,y0,y1);ctx.closePath();ctx.clip();ctx.fillStyle=col;ctx.fillRect(x0-2,yb,x1-x0+4,ya-yb+.5);ctx.restore();return[ya,yb];}
+  function tag(ctx,x,y,txt,sub,col='#0e3a50'){ctx.strokeStyle='rgba(14,58,80,.45)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x-16,y);ctx.lineTo(x-2,y);ctx.stroke();
+    label(ctx,txt,x+2,y-(sub?8:0),{size:14,weight:700,col,align:'left'});if(sub)label(ctx,sub,x+2,y+10,{size:12,col:'#466b7e',align:'left'});}
+  function tick(dt){t+=dt;an=Math.min(1,an+dt*.55);const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    const bx0=w*.05,bx1=w*.42,by0=h*.14,by1=h*.9,e=ease(an);
+    // 大桶
+    let fresh=1;if(step>=2)fresh=step===2?1-e:0;const top=.965+.01+.025*fresh;
+    if(step===0){fillLayer(ctx,bx0,bx1,by0,by1,0,1,'#2c9ad6');}
+    else{fillLayer(ctx,bx0,bx1,by0,by1,0,.965,'#1474ad');fillLayer(ctx,bx0,bx1,by0,by1,.965,.975,'#5aa6a6');if(fresh>0)fillLayer(ctx,bx0,bx1,by0,by1,.975,top,'#8fdcf6');}
+    ctx.save();bucket(ctx,bx0,bx1,by0,by1);ctx.closePath();ctx.clip();ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(bx0+14,by0,8,by1-by0);ctx.restore();
+    ctx.strokeStyle='#0e3a50';ctx.lineWidth=3;bucket(ctx,bx0,bx1,by0,by1);ctx.stroke();
+    ctx.lineWidth=2;ctx.beginPath();ctx.ellipse((bx0+bx1)/2,by0,(bx1-bx0)/2,8,0,0,TAU);ctx.stroke();
+    ctx.strokeStyle='rgba(14,58,80,.4)';ctx.beginPath();ctx.ellipse((bx0+bx1)/2,by0-2,(bx1-bx0)*.34,Math.min(h*.09,(bx1-bx0)*.2),0,Math.PI*1.04,Math.PI*1.96);ctx.stroke();
+    label(ctx,'100 L',(bx0+bx1)/2,by0+(by1-by0)*.5,{size:Math.max(20,w*.035),weight:700,col:'rgba(255,255,255,.9)',font:'Quicksand,Fredoka,sans-serif'});
+    if(step>=1){label(ctx,'海水 约 96.5 L',(bx0+bx1)/2,by0+(by1-by0)*.62,{size:15,weight:700,col:'#ffffff'});
+      tag(ctx,bx1+20,by0+(by1-by0)*.03+6,'咸水湖等 约 1 L','',`#3f7f7f`);}
+    if(step===1){tag(ctx,bx1+20,by0-12,'淡水 约 2.5 L','在最上面这一薄层','#1b8fd1');}
+    // 小桶（放大 20 倍）
+    const jx0=w*.6,jx1=w*.8,jy0=h*.3,jy1=h*.9;let jf=0;if(step===2)jf=e;if(step>=3)jf=1;
+    if(step>=2){
+      if(step===2&&an<1){if(!LOW||Math.random()<.4)for(let i=0;i<2;i++)drops.push({x:bx1-6,y:by0+4,vx:2.6+Math.random()*1.2,vy:-1.5-Math.random()});}
+      if(step>=3){const e3=ease(Math.min(1,an*1.4));
+        fillLayer(ctx,jx0,jx1,jy0,jy1,0,.687*jf,'#eaf6fb');
+        fillLayer(ctx,jx0,jx1,jy0,jy1,.687,.988,'#9fc7c9');fillLayer(ctx,jx0,jx1,jy0,jy1,.988,1,'#2c9ad6');
+        // 冰块纹理
+        ctx.save();bucket(ctx,jx0,jx1,jy0,jy1);ctx.closePath();ctx.clip();ctx.strokeStyle='rgba(27,143,209,.35)';ctx.lineWidth=1.5;
+        for(let i=0;i<9;i++){const x=jx0+((i*53)%100)/100*(jx1-jx0),y=jy1-(jy1-jy0)*(.08+((i*37)%60)/100);ctx.strokeRect(x,y,18,14);}ctx.restore();
+        tag(ctx,jx1+18,jy1-(jy1-jy0)*.34,'冰川、永久积雪','约 1.7 L · 难以利用');tag(ctx,jx1+18,jy1-(jy1-jy0)*.84,'地下水','约 0.75 L · 多数埋藏很深');
+        // 小杯：真正方便利用
+        const cx0=w*.84,cx1=w*.95,cy0=h*.04,cy1=h*.2;
+        ctx.fillStyle='rgba(27,143,209,.9)';ctx.fillRect(cx0+3,cy1-(cy1-cy0)*.35*e3,cx1-cx0-6,(cy1-cy0)*.35*e3);
+        ctx.strokeStyle='#0e3a50';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx0,cy0);ctx.lineTo(cx0+3,cy1);ctx.lineTo(cx1-3,cy1);ctx.lineTo(cx1,cy0);ctx.stroke();
+        label(ctx,'方便利用的：不到 1 L',(cx0+cx1)/2-w*.06,cy1+16,{size:13,weight:700,col:'#e0524f'});
+        ctx.strokeStyle='#e0524f';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(jx1-6,jy0+4);ctx.quadraticCurveTo(w*.86,jy0-10,(cx0+cx1)/2,cy1+28);ctx.stroke();ctx.setLineDash([]);
+      }else fillLayer(ctx,jx0,jx1,jy0,jy1,0,jf,'#8fdcf6');
+      ctx.strokeStyle='#0e3a50';ctx.lineWidth=3;bucket(ctx,jx0,jx1,jy0,jy1);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.ellipse((jx0+jx1)/2,jy0,(jx1-jx0)/2,6,0,0,TAU);ctx.stroke();
+      label(ctx,'淡水 约 2.5 L（放大 20 倍）',(jx0+jx1)/2,jy1+18,{size:13,weight:700,col:'#0e3a50'});
+    }
+    drops=drops.filter(d=>{d.vy+=.25*dt*60;d.x+=d.vx*dt*60;d.y+=d.vy*dt*60;ctx.fillStyle='#5cc4ef';ctx.beginPath();ctx.arc(d.x,d.y,3,0,TAU);ctx.fill();return d.y<jy0+30&&d.x<jx1;});
+  }
+  return{tick};
+})();
+
+/* ================= 3 我国的水 ================= */
+S.china=(()=>{
+  const M=[[18,'春'],[40,'夏'],[30,'秋'],[10,'冬']];
+  $('#mBars').innerHTML=M.map(([v],i)=>`<rect x="${4+i*60}" y="${74-v*1.4}" width="40" height="${v*1.4}" rx="6" fill="${v>25?'#1b8fd1':'#7fd3f0'}"/>`).join('');
+  const svg=$('#nbSvg');let on=false,lvN=.18,lvS=.86,tgN=.18,tgS=.86,raf=0;
+  function draw(){
+    const basin=(x,y,w,h,lv,name,sub)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" fill="#eef7fb" stroke="#0e3a50" stroke-opacity=".25" stroke-width="2"/>
+      <clipPath id="cp${name}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"/></clipPath>
+      <rect clip-path="url(#cp${name})" x="${x}" y="${y+h*(1-lv)}" width="${w}" height="${h*lv}" fill="url(#gW)"/>
+      <text x="${x+w/2}" y="${y+28}" text-anchor="middle" font-size="18" font-weight="700" fill="#0e3a50">${name}</text><text x="${x+w/2}" y="${y+50}" text-anchor="middle" font-size="13" fill="#466b7e">${sub}</text>`;
+    const line=(x,lbl,plan)=>`<path d="M${x} 288 L${x} 132" stroke="#cfe5ee" stroke-width="16" stroke-linecap="round"/><path class="flow" d="M${x} 288 L${x} 132" stroke="${plan?'#9fb7c2':'#1b8fd1'}" stroke-width="8" stroke-linecap="round" ${plan?'stroke-dasharray="4 10" style="animation:none"':''}/>
+      <path d="M${x-12} 150 L${x} 128 L${x+12} 150" fill="none" stroke="${plan?'#9fb7c2':'#1b8fd1'}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="${x+18}" y="214" font-size="15" font-weight="700" fill="${plan?'#8fb0bf':'#0e3a50'}">${lbl}</text>`;
+    svg.innerHTML=`<defs><linearGradient id="gW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd3f0"/><stop offset="1" stop-color="#1b8fd1"/></linearGradient></defs>`+
+      basin(40,10,520,120,lvN,'北方','黄淮海等部分地区缺水')+basin(40,290,520,100,lvS,'南方','长江流域水量较多')+line(130,'西线（规划中）',true)+line(300,'中线',false)+line(470,'东线',false);
+    svg.classList.toggle('run',on);
+  }
+  function anim(){lvN+=(tgN-lvN)*.04;lvS+=(tgS-lvS)*.04;draw();if(Math.abs(tgN-lvN)>.002)raf=requestAnimationFrame(anim);}
+  $('#nbGo').onclick=()=>{if(on)return;on=true;tgN=.48;tgS=.78;sfx('whoosh');cancelAnimationFrame(raf);anim();
+    $('#nbMsg').className='status ok';$('#nbMsg').innerHTML='南水北调把南方的水调往北方，<b>缓解了北方部分地区缺水</b>。但它只是对水资源进行<b>重新分配</b>，<b>不能增加</b>我国的水资源总量——节约用水仍然重要。';};
+  $('#nbRe').onclick=()=>{on=false;tgN=lvN=.18;tgS=lvS=.86;draw();$('#nbMsg').className='status';$('#nbMsg').innerHTML='想一想：南水北调能<b>增加</b>我国的水资源总量吗？';};
+  draw();
+  return{enter(){const b=$('#cnBars');b.classList.remove('go');void b.offsetWidth;setTimeout(()=>b.classList.add('go'),250);}};
+})();
+
+/* ================= 4 水循环 ================= */
+S.cycle=(()=>{
+  const cv=$('#cvCyc'),box=$('#cycBox');let t=0,zoom=false,vap=[],rain=[],trn=[];
+  const HS=[['蒸发',.12,.5],['水汽输送',.5,.13],['降水',.8,.33],['植物蒸腾',.62,.42],['地表径流',.6,.72],['下渗',.82,.86]];
+  const open=new Set();
+  HS.forEach(([n,x,y],i)=>{const b=document.createElement('button');b.className='hot';b.style.left=x*100+'%';b.style.top=y*100+'%';b.textContent=i+1;b.dataset.i=i;
+    b.onclick=()=>{if(open.has(i)){open.delete(i);b.classList.remove('open');b.textContent=i+1;}else{open.add(i);b.classList.add('open');b.textContent=`${i+1} ${n}`;sfx('pop');}};box.appendChild(b);});
+  $('#cyAll').onclick=()=>{$$('.hot',box).forEach((b,i)=>{open.add(i);b.classList.add('open');b.textContent=`${i+1} ${HS[i][0]}`;});sfx('ok');};
+  $('#cyZoom').onclick=e=>{zoom=!zoom;e.currentTarget.setAttribute('aria-pressed',String(zoom));sfx('click');};
+  const TF=[['水循环中，水分子本身发生了变化',0,'只是状态改变，水分子本身<b>没有</b>改变。'],['水变成水蒸气，水分子间的间隔变大',1,'这是物理变化，分子间<b>间隔</b>变大。'],
+    ['水的天然循环实现了水资源的重新分配',1,'循环使地球上的水在各处重新分配。'],['水在不断循环，所以淡水取之不尽、用之不竭',0,'可利用淡水很少，且分布不均、易被污染，<b>必须爱护</b>。']];
+  $('#cyTF').innerHTML=TF.map(([s],i)=>`<div class="it" data-i="${i}"><p>${s}<small></small></p><button data-v="1" aria-label="对">✓</button><button data-v="0" aria-label="错">✗</button></div>`).join('');
+  $$('#cyTF .it').forEach(it=>it.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(it.dataset.done)return;it.dataset.done=1;const d=TF[+it.dataset.i],ok=+b.dataset.v===d[1];
+    it.classList.add(ok?'ok':'no');it.querySelector('small').innerHTML=(d[1]?'正确：':'错误：')+d[2];if(ok){teamAdd(5);sfx('ok');}else sfx('bad');teamNext();}));
+  function mol(ctx,x,y,s,a){ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle='#ff7f66';ctx.beginPath();ctx.arc(0,0,s,0,TAU);ctx.fill();ctx.fillStyle='#ffffff';ctx.strokeStyle='#9aaab5';ctx.lineWidth=1;
+    [[-.95,.7],[.95,.7]].forEach(([dx,dy])=>{ctx.beginPath();ctx.arc(dx*s,dy*s,s*.62,0,TAU);ctx.fill();ctx.stroke();});ctx.restore();}
+  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const G=h*.62,SX=w*.45;
+    const sky=ctx.createLinearGradient(0,0,0,G);sky.addColorStop(0,'#d7f0fb');sky.addColorStop(1,'#f5fcff');ctx.fillStyle=sky;ctx.fillRect(0,0,w,G);
+    // 太阳
+    ctx.fillStyle='#ffd166';ctx.beginPath();ctx.arc(w*.07,h*.11,h*.06,0,TAU);ctx.fill();ctx.strokeStyle='rgba(245,166,35,.6)';ctx.lineWidth=3;
+    for(let i=0;i<10;i++){const a=i/10*TAU+t*.3;ctx.beginPath();ctx.moveTo(w*.07+Math.cos(a)*h*.08,h*.11+Math.sin(a)*h*.08);ctx.lineTo(w*.07+Math.cos(a)*h*.11,h*.11+Math.sin(a)*h*.11);ctx.stroke();}
+    // 土壤 + 山
+    ctx.fillStyle='#d9c7a2';ctx.fillRect(SX,G,w-SX,h-G);ctx.fillStyle='#b9cf9a';ctx.beginPath();ctx.moveTo(SX-10,G);ctx.lineTo(w*.7,G);ctx.lineTo(w*.84,h*.3);ctx.lineTo(w*.92,h*.4);ctx.lineTo(w,h*.36);ctx.lineTo(w,G);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(w*.8,h*.37);ctx.lineTo(w*.84,h*.3);ctx.lineTo(w*.875,h*.36);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#a6c48a';ctx.fillRect(SX,G-4,w-SX,10);
+    // 海
+    const sg=ctx.createLinearGradient(0,G,0,h);sg.addColorStop(0,'#5cc4ef');sg.addColorStop(1,'#0b5f8a');ctx.fillStyle=sg;ctx.beginPath();ctx.moveTo(0,h);ctx.lineTo(0,G);
+    for(let x=0;x<=SX+20;x+=8)ctx.lineTo(x,G+Math.sin(x*.05+t*2)*3);ctx.lineTo(SX+20,G+6);ctx.lineTo(SX+40,h);ctx.closePath();ctx.fill();label(ctx,'海洋',w*.2,G+(h-G)*.55,{size:16,weight:700,col:'rgba(255,255,255,.9)'});
+    // 河流
+    ctx.strokeStyle='#5cc4ef';ctx.lineWidth=Math.max(6,h*.022);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(w*.86,h*.4);ctx.quadraticCurveTo(w*.74,h*.58,w*.62,G+4);ctx.quadraticCurveTo(w*.54,G+10,SX+6,G+4);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.setLineDash([6,14]);ctx.lineDashOffset=-t*30;ctx.stroke();ctx.setLineDash([]);
+    // 下渗 / 地下径流
+    ctx.strokeStyle='rgba(27,143,209,.6)';ctx.lineWidth=2.5;ctx.setLineDash([5,7]);ctx.lineDashOffset=-t*20;ctx.beginPath();ctx.moveTo(w*.86,G+6);ctx.lineTo(w*.86,h*.82);ctx.quadraticCurveTo(w*.7,h*.9,SX+30,h*.86);ctx.stroke();ctx.setLineDash([]);
+    // 树
+    const tx=w*.62,ty=G;ctx.fillStyle='#8a6a45';ctx.fillRect(tx-5,ty-h*.12,10,h*.12);ctx.fillStyle='#4fa86a';[[0,-.17,.07],[-.035,-.13,.055],[.035,-.13,.055]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(tx+dx*w,ty+dy*h,r*h,0,TAU);ctx.fill();});
+    // 云
+    const cxp=(t*.05)%1,cx=w*(.2+.62*ease(cxp<.5?cxp*2:1)),cy=h*.2,raining=cxp>.5;
+    const cloud=(x,y,s,c)=>{ctx.fillStyle=c;[[0,0,1],[-.9,.2,.7],[.9,.2,.75],[.4,-.4,.7]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*s,y+dy*s,r*s,0,TAU);ctx.fill();});};
+    cloud(cx,cy,h*.06,raining?'#b7c6d0':'#ffffff');cloud(w*.3,h*.27,h*.035,'rgba(255,255,255,.9)');
+    if(cxp<.5)label(ctx,'→',(cx+w*.3)/2+20,h*.12,{size:22,weight:700,col:'#1b8fd1'});
+    // 蒸发
+    if(Math.random()<(LOW?.2:.5))vap.push({x:Math.random()*SX*.9+10,y:G-2,s:.5+Math.random()*.5});
+    vap=vap.filter(p=>{p.y-=dt*45*p.s;p.x+=Math.sin(p.y*.05)*.3;const a=Math.max(0,(p.y-h*.22)/(G-h*.22));ctx.fillStyle=`rgba(27,143,209,${.55*a})`;ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,TAU);ctx.fill();return p.y>h*.22;});
+    if(Math.random()<.25)trn.push({x:tx+(Math.random()-.5)*w*.07,y:ty-h*.2});
+    trn=trn.filter(p=>{p.y-=dt*30;ctx.fillStyle=`rgba(79,168,106,${Math.max(0,(p.y-h*.25)/(h*.2))})`;ctx.beginPath();ctx.arc(p.x,p.y,2,0,TAU);ctx.fill();return p.y>h*.25;});
+    if(raining&&Math.random()<.9)for(let i=0;i<2;i++)rain.push({x:cx+(Math.random()-.5)*h*.15,y:cy+h*.05});
+    rain=rain.filter(p=>{p.y+=dt*260;ctx.strokeStyle='rgba(27,143,209,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-2,p.y+8);ctx.stroke();return p.y<h*.45;});
+    // 分子放大镜
+    if(zoom){const lens=(x,y,r,gas,txt)=>{ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle='rgba(255,255,255,.95)';ctx.fill();ctx.clip();
+        const n=gas?5:16;for(let i=0;i<n;i++){const ph=i*2.3;let mx,my;
+          if(gas){mx=x+Math.sin(t*1.7+ph)*r*.7;my=y+Math.cos(t*1.3+ph*1.7)*r*.7;}else{const col=i%4,row=Math.floor(i/4);mx=x-r*.55+col*r*.37+Math.sin(t*6+ph)*2;my=y-r*.55+row*r*.37+Math.cos(t*5+ph)*2;}
+          mol(ctx,mx,my,r*.09,ph+t*(gas?2:.5));}
+        ctx.restore();ctx.strokeStyle='#0e3a50';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();label(ctx,txt,x,y+r+14,{size:13,weight:700,col:'#0e3a50',stroke:'#ffffff'});};
+      const r=Math.min(w,h)*.13;lens(w*.13,G+(h-G)*.42,r,false,'液态水：分子间隔小');lens(w*.34,h*.3,r,true,'水蒸气：分子间隔大');}
+  }
+  return{tick};
+})();
+
+/* ================= 5 水龙头 ================= */
+S.tap=(()=>{
+  const cv=$('#cvTap');let t=0,secs=86400,show=false,run=0,simT=0,drip=0,drops=[];
+  const v=()=>({d:+$('#tpD').value,m:+$('#tpM').value,p:+$('#tpP').value});
+  const fmt=n=>(Math.round(n*100)/100).toLocaleString('zh-CN');
+  const TL={3600:'1 小时',86400:'1 天',2592000:'30 天',31536000:'1 年'};
+  function calc(){const{d,m,p}=v();$('#tpDo').textContent=d+' 滴';$('#tpMo').textContent=m+' 滴';$('#tpPo').textContent=p.toFixed(1)+' L';
+    const drops=d*secs,ml=drops/m,L=ml/1000,ppl=Math.floor(L/p);
+    $('#tpCalc').innerHTML=`<div>题目：水龙头每秒漏 <b>${d}</b> 滴，每 <b>${m}</b> 滴约 1 mL，<b>${TL[secs]}</b> 漏水多少升？够几个人喝一天（每人 ${p.toFixed(1)} L）？</div>
+      <div class="s">${TL[secs]} = <b>${secs.toLocaleString('zh-CN')}</b> s　→　漏水 ${d} × ${secs.toLocaleString('zh-CN')} = <b>${drops.toLocaleString('zh-CN')}</b> 滴</div>
+      <div class="s">${drops.toLocaleString('zh-CN')} ÷ ${m} ≈ <b>${fmt(ml)}</b> mL ≈ <span class="big">${fmt(L)}</span> L</div>
+      <div class="s">${fmt(L)} ÷ ${p.toFixed(1)} ≈ ${fmt(L/p)}，约够 <span class="big">${ppl.toLocaleString('zh-CN')}</span> 人喝一天</div>`;
+    $('#tpCalc').classList.toggle('hide',!show);return L;}
+  ['#tpD','#tpM','#tpP'].forEach(s=>$(s).oninput=()=>{show=false;run=0;simT=0;calc();});
+  $$('#tpT button').forEach(b=>b.onclick=()=>{secs=+b.dataset.s;$$('#tpT button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));show=false;run=0;simT=0;calc();sfx('click');});
+  $('#tpShow').onclick=()=>{show=true;calc();sfx('ok');};
+  $('#tpRun').onclick=()=>{run=1;simT=0;sfx('whoosh');};
+  calc();
+  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const{d}=v();
+    const total=(()=>{const{d,m}=v();return d*secs/m/1000;})();
+    if(run){simT=Math.min(1,simT+dt/3.5);}
+    // 墙与水管
+    ctx.fillStyle='#e8f3f8';ctx.fillRect(0,0,w,h*.12);ctx.fillStyle='#cfdde4';ctx.fillRect(w*.05,h*.06,w*.32,h*.07);
+    const fx=w*.33,fy=h*.18;ctx.fillStyle='#b8c7cf';ctx.strokeStyle='#0e3a50';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(w*.2,h*.08,w*.16,h*.07,10):ctx.rect(w*.2,h*.08,w*.16,h*.07);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx-12,h*.15);ctx.lineTo(fx-12,fy);ctx.lineTo(fx+12,fy);ctx.lineTo(fx+12,h*.15);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#e0524f';ctx.fillRect(w*.26,h*.035,w*.06,h*.045);ctx.strokeRect(w*.26,h*.035,w*.06,h*.045);
+    // 滴水
+    drip+=dt*d*1.2;while(drip>1){drip--;drops.push({x:fx,y:fy+4,vy:0});}
+    const cyl={x0:w*.24,x1:w*.42,y0:h*.42,y1:h*.92};
+    const fill=run?ease(simT):Math.min(.06,t*.002);
+    drops=drops.filter(p=>{p.vy+=dt*900;p.y+=p.vy*dt;ctx.fillStyle='#5cc4ef';ctx.beginPath();ctx.moveTo(p.x,p.y-7);ctx.quadraticCurveTo(p.x+5,p.y,p.x,p.y+4);ctx.quadraticCurveTo(p.x-5,p.y,p.x,p.y-7);ctx.fill();
+      const surf=cyl.y1-(cyl.y1-cyl.y0)*.9*fill;return p.y<=surf;});
+    // 量筒
+    const lvY=cyl.y1-(cyl.y1-cyl.y0)*.9*fill;const g=ctx.createLinearGradient(0,lvY,0,cyl.y1);g.addColorStop(0,'#7fd3f0');g.addColorStop(1,'#1b8fd1');ctx.fillStyle=g;ctx.fillRect(cyl.x0+3,lvY,cyl.x1-cyl.x0-6,cyl.y1-lvY);
+    ctx.strokeStyle='#0e3a50';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cyl.x0-6,cyl.y0-4);ctx.lineTo(cyl.x0,cyl.y0);ctx.lineTo(cyl.x0,cyl.y1);ctx.lineTo(cyl.x1,cyl.y1);ctx.lineTo(cyl.x1,cyl.y0);ctx.stroke();
+    ctx.fillStyle='#0e3a50';ctx.fillRect(cyl.x0-18,cyl.y1,cyl.x1-cyl.x0+36,8);
+    ctx.strokeStyle='rgba(14,58,80,.5)';ctx.lineWidth=1.5;for(let i=1;i<=9;i++){const y=cyl.y1-(cyl.y1-cyl.y0)*.9*i/9;ctx.beginPath();ctx.moveTo(cyl.x1-(i%3?10:20),y);ctx.lineTo(cyl.x1,y);ctx.stroke();}
+    // 读数
+    const shown=total*(run?ease(simT):0);
+    label(ctx,run?`${TL[secs]} 后`:'点“快进看水量”',w*.7,h*.3,{size:16,weight:700,col:'#466b7e'});
+    label(ctx,run?(Math.round(shown*100)/100).toLocaleString('zh-CN')+' L':'? L',w*.7,h*.45,{size:Math.max(30,w*.07),weight:700,col:'#0b5f8a',font:'Quicksand,Fredoka,sans-serif'});
+    if(run&&simT>=1){const bottles=total/0.55;label(ctx,`≈ ${Math.round(bottles).toLocaleString('zh-CN')} 瓶 550 mL 矿泉水`,w*.7,h*.6,{size:15,weight:700,col:'#e0524f'});}
+    label(ctx,`量筒刻度按 ${TL[secs]} 的漏水量缩放`,(cyl.x0+cyl.x1)/2,h*.97,{size:11,col:'#8fb0bf'});
+  }
+  return{tick,enter(){run=0;simT=0;}};
+})();
+
+/* ================= 6 分类游戏 ================= */
+S.sort=(()=>{
+  const IT=[['用淘米水浇花',1,'一水多用，提高了水的利用率。'],['刷牙时一直开着水龙头',0,'应先接一杯水，随手关紧水龙头。'],['农田灌溉改大水漫灌为喷灌、滴灌',1,'农业节水的重要措施。'],
+    ['生活污水不经处理直接排入河流',0,'会污染水体，应集中处理后排放。'],['工业用水循环使用',1,'提高工业用水的重复利用率。'],['用水管长时间冲洗汽车',0,'浪费水，可用水桶、抹布擦洗。'],
+    ['合理施用化肥和农药',1,'减少农业对水体的污染。'],['工业废水处理达标后再排放',1,'防治工业污染。'],['把生活垃圾倒进河里',0,'污染水体，破坏环境。'],
+    ['洗衣服的水用来冲厕所',1,'一水多用。'],['大量开采地下水',0,'可能造成地面沉降，地下水也会枯竭。'],['使用节水龙头、节水马桶',1,'推广使用节水器具。']];
+  let list=[],cur=null,gN=0,bN=0,done=0;
+  const card=$('#wcard');
+  function ico(ok){return `<svg class="ico" viewBox="0 0 64 64"><path d="M32 6 C 22 22, 14 32, 14 42 a18 18 0 0 0 36 0 C 50 32, 42 22, 32 6Z" fill="url(#gi)" stroke="#0e3a50" stroke-width="2"/><defs><linearGradient id="gi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bdeafa"/><stop offset="1" stop-color="#1b8fd1"/></linearGradient></defs><circle cx="25" cy="38" r="4" fill="#fff" opacity=".7"/></svg>`;}
+  function next(){if(!list.length){card.innerHTML=`<b>全部分完！</b><span class="muted" style="font-size:.7em">共 ${IT.length} 张</span>`;cur=null;$('#soLeft').textContent='';FX.confetti();sfx('win');return;}
+    cur=list.pop();card.innerHTML=ico()+`<span>${IT[cur][0]}</span>`;card.classList.remove('in');void card.offsetWidth;card.classList.add('in');card.style.transform='';card.style.opacity='';
+    $('#soLeft').textContent=`还剩 ${list.length+1} 张 · ${tname(TEAM.cur)}作答`;}
+  function put(good){if(cur===null)return;const d=IT[cur],ok=(good?1:0)===d[1];const bin=good?$('#binG'):$('#binB');
+    card.classList.add('fly');card.style.transform=`translateX(${good?-120:120}%) scale(.4)`;card.style.opacity='0';
+    if(ok){teamAdd(5);sfx('drop');burstAt(bin,14,['#7fd3f0','#1b8fd1','#ffffff']);}else{sfx('bad');flash();}
+    const real=d[1]?$('#binG'):$('#binB');const n=d[1]?++gN:++bN;real.querySelector('.cnt').textContent=n;real.querySelector('.lq').style.setProperty('--h',(n/7*100)+'%');
+    const lg=real.querySelector('.log');lg.insertAdjacentHTML('afterbegin',`<span>${d[0]}</span>`);
+    $('#soMsg').className='status '+(ok?'ok':'bad');$('#soMsg').innerHTML=(ok?'✔ 正确！':'✘ 放错了，它应属于“'+(d[1]?'爱护水资源':'不利于保护水资源')+'”。')+' '+d[2];
+    teamNext();setTimeout(()=>{card.classList.remove('fly');next();},450);cur=null;}
+  $('#binG').onclick=()=>put(true);$('#binB').onclick=()=>put(false);
+  [$('#binG'),$('#binB')].forEach(b=>b.onkeydown=e=>{if(e.key==='Enter')b.click();});
+  // 拖动
+  let sx=0,sy=0,drag=false;
+  card.addEventListener('pointerdown',e=>{if(cur===null)return;drag=true;sx=e.clientX;sy=e.clientY;card.setPointerCapture(e.pointerId);card.style.transition='none';});
+  card.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-sx,dy=e.clientY-sy;card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/20}deg)`;
+    const g=$('#binG').getBoundingClientRect(),b=$('#binB').getBoundingClientRect();$('#binG').classList.toggle('over',e.clientX<g.right+20);$('#binB').classList.toggle('over',e.clientX>b.left-20);});
+  card.addEventListener('pointerup',e=>{if(!drag)return;drag=false;card.style.transition='';const g=$('#binG').getBoundingClientRect(),b=$('#binB').getBoundingClientRect();
+    $('#binG').classList.remove('over');$('#binB').classList.remove('over');
+    if(e.clientX<g.right+20)put(true);else if(e.clientX>b.left-20)put(false);else card.style.transform='';});
+  function reset(){list=shuffle(IT.map((_,i)=>i));gN=bN=0;$$('.bin').forEach(b=>{b.querySelector('.cnt').textContent=0;b.querySelector('.lq').style.setProperty('--h','0%');b.querySelector('.log').innerHTML='';});
+    $('#soMsg').className='status';$('#soMsg').textContent=`${tname(TEAM.cur)}先来。拖动卡片，或直接点水池。`;next();}
+  $('#soRe').onclick=reset;reset();
+  return{};
+})();
+
+/* ================= 7 污染侦探 ================= */
+S.river=(()=>{
+  const svg=$('#rivSvg');
+  const SRC=[{k:'fac',n:'工厂排污口',x:285,y:300,t:0,h:'工业废水中可能含有有毒物质、重金属等。',m:'应用新技术、新工艺减少污染物的产生；工业废水处理达标后再排放。'},
+    {k:'farm',n:'农田里的化肥、农药',x:600,y:165,t:1,h:'过量的化肥、农药随雨水流入河中。',m:'合理施用化肥和农药，提倡使用农家肥。'},
+    {k:'pig',n:'养殖场的粪便污水',x:125,y:330,t:1,h:'畜禽粪便直接排放，使水体变浑发臭。',m:'畜禽粪便集中处理、综合利用，不直接排入河流。'},
+    {k:'home',n:'居民区生活污水',x:690,y:470,t:2,h:'洗涤、厨房、厕所污水未经处理就排入河里。',m:'生活污水集中处理后排放。'},
+    {k:'trash',n:'河岸上的生活垃圾',x:470,y:345,t:2,h:'垃圾堆在河边，被雨水冲入河中。',m:'垃圾分类处理，不向河流湖泊乱扔垃圾。'}];
+  const TY=['工业污染','农业污染','生活污染'];const st={};let fixed=0,sel=null;
+  function riverCol(){const k=fixed/SRC.length;const a=[110,118,72],b=[58,168,222];return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*k)).join(',')})`;}
+  function draw(){
+    const rc=riverCol();
+    let s=`<defs><linearGradient id="rsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5f5fb"/><stop offset="1" stop-color="#f4fbf2"/></linearGradient></defs>
+    <rect width="1000" height="560" fill="url(#rsky)"/>
+    <path d="M0 140 L120 60 L220 120 L330 40 L450 130 L560 70 L700 140 L820 60 L1000 130 L1000 0 L0 0Z" fill="#e5f5fb"/>
+    <path d="M0 150 L120 70 L220 130 L330 50 L450 140 L560 80 L700 150 L820 70 L1000 140 L1000 560 L0 560Z" fill="#cfe6b8"/>
+    <path id="rp" d="M40 120 C 200 150, 230 260, 400 265 S 640 290, 700 380 S 820 455, 880 470" fill="none" stroke="${rc}" stroke-width="48" stroke-linecap="round"/>
+    <path d="M40 120 C 200 150, 230 260, 400 265 S 640 290, 700 380 S 820 455, 880 470" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" class="flowr"/>
+    <ellipse cx="900" cy="485" rx="110" ry="58" fill="${rc}"/><text x="900" y="492" text-anchor="middle" font-size="18" font-weight="700" fill="#fff">湖泊</text>`;
+    // 工厂
+    s+=g('fac',`<rect x="220" y="330" width="120" height="70" fill="#c9d3da" stroke="#0e3a50" stroke-width="2"/><path d="M220 330 L250 305 L250 330 L280 305 L280 330 L310 305 L310 330" fill="#c9d3da" stroke="#0e3a50" stroke-width="2"/><rect x="318" y="270" width="16" height="60" fill="#9aa9b2" stroke="#0e3a50" stroke-width="2"/>
+      <text x="280" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#0e3a50">工厂</text><path d="M300 330 L300 300 L315 290" fill="none" stroke="#5b5f4a" stroke-width="8"/><path class="ow" d="M315 290 L345 278" stroke="#5b5f4a" stroke-width="8" stroke-dasharray="6 6"/>`);
+    // 农田
+    s+=g('farm',`<g transform="skewX(-12)">${[0,1,2,3,4].map(i=>`<rect x="${590+i*30}" y="120" width="26" height="80" fill="${i%2?'#9cc96b':'#b7d98a'}"/>`).join('')}</g><rect x="640" y="104" width="34" height="18" rx="4" fill="#e0524f" stroke="#0e3a50" stroke-width="2"/>
+      <text x="610" y="225" text-anchor="middle" font-size="16" font-weight="700" fill="#0e3a50">农田</text><path class="ow" d="M600 205 L585 255" stroke="#8e9a3c" stroke-width="5" stroke-dasharray="6 6"/><path class="ow" d="M650 205 L640 268" stroke="#8e9a3c" stroke-width="5" stroke-dasharray="6 6"/>`);
+    // 养殖场
+    s+=g('pig',`<path d="M70 350 L125 312 L180 350 L180 400 L70 400Z" fill="#e6c9a2" stroke="#0e3a50" stroke-width="2"/><rect x="112" y="368" width="26" height="32" fill="#a4774c"/>
+      <text x="125" y="425" text-anchor="middle" font-size="16" font-weight="700" fill="#0e3a50">养殖场</text><path class="ow" d="M180 380 L225 300" stroke="#7a6a3a" stroke-width="6" stroke-dasharray="6 6"/>`);
+    // 居民区
+    s+=g('home',`${[0,1,2].map(i=>`<path d="M${620+i*55} 470 L${645+i*55} 445 L${670+i*55} 470 L${670+i*55} 515 L${620+i*55} 515Z" fill="${['#ffd9c7','#d6ecff','#fff1c2'][i]}" stroke="#0e3a50" stroke-width="2"/>`).join('')}
+      <text x="700" y="540" text-anchor="middle" font-size="16" font-weight="700" fill="#0e3a50">居民区</text><path d="M760 470 L770 440" stroke="#7d8a8f" stroke-width="8"/><path class="ow" d="M770 440 L770 418" stroke="#6d6a4a" stroke-width="8" stroke-dasharray="6 6"/>`);
+    // 垃圾
+    s+=g('trash',`<path d="M440 340 q10 -22 26 -8 q12 -16 24 4 q14 -6 14 12 q-30 10 -64 -8z" fill="#8f8a7a" stroke="#0e3a50" stroke-width="2"/><rect x="452" y="322" width="12" height="14" fill="#ff7f66" transform="rotate(-15 458 329)"/><rect x="480" y="326" width="10" height="12" fill="#ffd166"/>
+      <text x="470" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#0e3a50">河岸</text><path class="ow" d="M460 320 L450 292" stroke="#6d6a4a" stroke-width="4" stroke-dasharray="4 6"/>`);
+    svg.innerHTML=s;
+    $$('.src',svg).forEach(n=>{n.onclick=()=>open(n.dataset.k);n.onkeydown=e=>{if(e.key==='Enter')open(n.dataset.k);};});
+  }
+  function g(k,inner){const d=SRC.find(x=>x.k===k),c=st[k]||'';return `<g class="src ${c}" data-k="${k}" tabindex="0" role="button" aria-label="${d.n}"><circle class="ring" cx="${d.x}" cy="${d.y}" r="78"/>${inner}<g class="badge"><circle cx="${d.x+52}" cy="${d.y-52}" r="16" fill="#1e9e6a"/><path d="M${d.x+44} ${d.y-52} l6 6 l11 -12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g></g>`;}
+  function open(k){const d=SRC.find(x=>x.k===k);sel=k;sfx('pop');if(!st[k]){st[k]='found';draw();}
+    const p=$('#rvPanel');
+    if(st[k]==='fixed'){p.innerHTML=`<h3>${d.n} ✔ 已治理</h3><p><b>${TY[d.t]}</b>：${d.h}</p><p class="status ok">${d.m}</p>`;return;}
+    p.innerHTML=`<h3>发现：${d.n}</h3><p class="muted">${d.h}</p><p><b>${tname(TEAM.cur)}</b>判断：这属于哪类污染？</p><div class="typ">${TY.map((t,i)=>`<button class="btn" data-t="${i}">${t}</button>`).join('')}</div><div id="rvRes"></div>`;
+    $$('.typ button',p).forEach(b=>b.onclick=()=>{const ok=+b.dataset.t===d.t;$$('.typ button',p).forEach(x=>x.disabled=true);
+      if(ok){teamAdd(5);sfx('ok');}else sfx('bad');
+      $('#rvRes').innerHTML=`<p class="status ${ok?'ok':'bad'}">${ok?'✔ 判断正确！':'✘ 应是“'+TY[d.t]+'”。'} 防治：${d.m}</p><button class="btn pri" id="rvFix" style="margin-top:8px">治理它</button>`;teamNext();
+      $('#rvFix').onclick=()=>{st[k]='fixed';fixed++;draw();sfx('drop');FX.burst(innerWidth*.35,innerHeight*.5,20,['#7fd3f0','#1b8fd1','#ffffff']);
+        $('#rvCnt').textContent=`已治理 ${fixed} / ${SRC.length}`;$('#rvMeter').style.setProperty('--v',fixed/SRC.length*100+'%');
+        p.innerHTML=`<h3>${d.n} ✔ 已治理</h3><p class="status ok">${d.m}</p><p class="muted">继续寻找下一个污染源。</p>`;
+        if(fixed===SRC.length){$('#rvSum').hidden=false;FX.confetti();sfx('win');p.innerHTML='<h3>河水变清了！</h3><p>水体污染主要来自<b>工业、农业、生活</b>三个方面。</p>';}};});}
+  $('#rvMeter').style.setProperty('--v','0%');
+  draw();
+  return{};
+})();
+
+/* ================= 8 节水标志 ================= */
+S.sign=(()=>{
+  const SG=[
+    ['禁止烟火',`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#fff" stroke="#e0524f" stroke-width="8"/><path d="M50 18 C 58 32, 70 40, 67 58 C 65 71, 57 78, 50 78 C 40 78, 32 70, 34 57 C 36 47, 44 45, 44 34 C 48 38, 50 43, 50 48 C 54 39, 53 28, 50 18Z" fill="#ff8a1f" stroke="#c2410c" stroke-width="2"/><path d="M50 52 C 55 58, 57 64, 54 70 C 52 74, 48 74, 46 70 C 44 64, 48 60, 50 52Z" fill="#ffd166"/><path d="M20 22 L80 78" stroke="#e0524f" stroke-width="8"/></svg>`,0],
+    ['国家节水标志',`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#2fa65a"/><path d="M50 16 C 42 30, 37 37, 37 45 a13 13 0 0 0 26 0 C 63 37, 58 30, 50 16Z" fill="#1b8fd1" stroke="#fff" stroke-width="2.5"/><path d="M22 58 C 32 72, 46 76, 60 70 C 70 66, 76 58, 82 50 M30 70 C 40 84, 62 86, 74 72" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg>`,1],
+    ['可回收物',`<svg viewBox="0 0 100 100"><g fill="none" stroke="#1b8fd1" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M38 24 L50 12 L62 24"/><path d="M50 12 L50 40" /><path d="M24 70 L14 52 L30 46"/><path d="M14 52 L38 66"/><path d="M76 70 L86 52 L70 46"/><path d="M86 52 L62 66"/></g><circle cx="50" cy="56" r="10" fill="#1b8fd1"/></svg>`,0],
+    ['当心触电',`<svg viewBox="0 0 100 100"><path d="M50 8 L94 88 L6 88Z" fill="#ffd166" stroke="#0e3a50" stroke-width="6" stroke-linejoin="round"/><path d="M54 30 L38 60 L52 60 L44 80 L64 50 L50 50 L58 30Z" fill="#0e3a50"/></svg>`,0]];
+  const order=[2,0,3,1];let done=false;
+  $('#signs').innerHTML=order.map((i,k)=>`<div class="sign" data-i="${i}" role="button" tabindex="0">${SG[i][1]}<span>${'ABCD'[k]}</span></div>`).join('');
+  $$('#signs .sign').forEach(c=>c.onclick=()=>{if(done)return;const i=+c.dataset.i;
+    if(SG[i][2]){done=true;c.classList.add('right');teamAdd(5);sfx('ok');burstAt(c,20,['#2fa65a','#1b8fd1','#ffffff']);
+      $$('#signs .sign').forEach(x=>x.querySelector('span').textContent+=' · '+SG[+x.dataset.i][0]);
+      $('#sgMsg').className='status ok';$('#sgMsg').innerHTML='✔ 国家节水标志由<b>水滴、人手和地球</b>变形而成（此处为示意图）：绿色圆形代表地球；像一只手托起一滴水，手又像一条蜿蜒的河流，寓意<b>人人动手，节约每一滴水</b>。';}
+    else{c.classList.add('wrong');sfx('bad');setTimeout(()=>c.classList.remove('wrong'),500);$('#sgMsg').className='status bad';$('#sgMsg').textContent='不是这个，再想想。';}});
+  const TP=[['家庭','一水多用：洗菜水浇花、洗衣水冲厕所；使用节水龙头和节水马桶。'],['农业','改大水漫灌为喷灌、滴灌，可节水 40%～70%。'],['工业','提高工业用水的重复利用率，循环使用冷却水。'],
+    ['学校','发现“长流水”及时关闭，报修漏水的水龙头。'],['城市','建设雨水收集系统，使用再生水绿化、冲洗道路。'],['政策','实行阶梯水价，用经济手段引导人们节约用水。']];
+  $('#tips').innerHTML=TP.map(([a,b])=>`<div class="tip" role="button" tabindex="0"><div class="f">${a}</div><div class="b">${b}</div></div>`).join('');
+  $$('#tips .tip').forEach(x=>{x.onclick=()=>{x.classList.toggle('open');sfx('pop');};x.onkeydown=e=>{if(e.key==='Enter')x.click();};});
+  return{};
+})();
+
+/* ================= 9 蓄水大作战 ================= */
+S.race=(()=>{
+  const cv=$('#cvRes'),MAX=8;let lv={r:0,b:0},show={r:0,b:0},t=0,qi=0,ans=false,over=false,splash=[];
+  const Q=[
+    {q:'下列关于地球上水的说法，正确的是',o:['地球表面约 71% 被水覆盖，淡水资源非常丰富','海水约占全球总水量的 96.5%','冰川中的水可以直接方便地利用','地下水取之不尽、用之不竭'],a:1,x:'地球上水多，但<b>淡水少</b>，可直接利用的更少。'},
+    {q:'关于我国水资源的说法，正确的是',o:['水资源总量居世界第一位','人均水量非常丰富','水资源时空分布不均，南多北少','我国不存在缺水问题'],a:2,x:'我国水资源总量较多，但<b>人均少、分布不均</b>。'},
+    {q:'下列做法中，能节约用水的是',o:['用淘米水浇花','洗手时一直开着水龙头','用水管长时间冲洗汽车','发现水管漏水不及时报修'],a:0,x:'一水多用能提高水的利用率。'},
+    {q:'下列做法会造成水体污染的是',o:['工业废水处理达标后排放','生活污水直接排入河流','合理施用农药和化肥','推广使用农家肥'],a:1,x:'生活污水应<b>集中处理</b>后排放。'},
+    {q:'实行“阶梯水价”的主要目的是',o:['增加自来水公司的收入','用经济手段引导人们节约用水','禁止人们使用自来水','提高自来水的水质'],a:1,x:'用水越多单价越高，引导节约用水。'},
+    {q:'水受热变成水蒸气的过程中，发生改变的是',o:['水分子的大小','水分子的种类','水分子之间的间隔','水分子的构成'],a:2,x:'物理变化中分子本身不变，<b>间隔</b>变大。'},
+    {q:'下列关于水的天然循环的说法，<b>错误</b>的是',o:['太阳为水循环提供能量','水循环中水分子本身没有改变','水的天然循环使淡水取之不尽','水循环实现了水资源的重新分配'],a:2,x:'可利用淡水有限，必须爱护。'},
+    {q:'下列关于自然界中的水的说法，正确的是',o:['河水、海水都属于纯净物','雨水是纯净物','自然界中的水大多是混合物','地球上的淡水都能直接饮用'],a:2,x:'天然水中溶有多种物质，属于<b>混合物</b>。'},
+    {q:'农业上节约用水的合理措施是',o:['大水漫灌','改漫灌为喷灌、滴灌','用未经处理的工业废水灌溉','只在中午高温时浇水'],a:1,x:'喷灌、滴灌能大幅减少用水。'},
+    {q:'<span class="dbl">提升</span>某水龙头每秒漏 2 滴水，每 25 滴约 1 mL。一天（24 小时）漏水约',fig:()=>`<svg width="230" height="70" viewBox="0 0 230 70"><rect x="10" y="10" width="70" height="18" rx="6" fill="#b8c7cf" stroke="#0e3a50" stroke-width="2"/><rect x="66" y="26" width="14" height="14" fill="#b8c7cf" stroke="#0e3a50" stroke-width="2"/><path d="M73 48 q5 7 0 10 q-5 -3 0 -10z" fill="#5cc4ef"/><text x="100" y="30" font-size="14" fill="#0e3a50" font-weight="700">2 滴 / 秒</text><text x="100" y="54" font-size="14" fill="#0e3a50" font-weight="700">25 滴 ≈ 1 mL</text></svg>`,o:['0.69 L','6.91 L','69.1 L','691 L'],a:1,lv:2,x:'2 × 86400 ÷ 25 ≈ 6912 mL ≈ <b>6.91 L</b>。'},
+    {q:'<span class="dbl">提升</span>关于“南水北调”工程，下列说法合理的是',o:['增加了我国水资源的总量','缓解了北方部分地区缺水的状况','使南方从此不再发生洪涝','说明水资源可以无限调用'],a:1,lv:2,x:'只是重新分配，<b>不能增加</b>总量。'},
+    {q:'<span class="dbl">提升</span>下列有关爱护水资源的说法，正确的是',o:['爱护水资源只需要节约用水','防治水体污染只要治理工业污染','既要节约用水，又要防治水体污染','水在不断循环，不用担心水资源'],a:2,lv:2,x:'爱护水资源 = <b>节约用水 + 防治水体污染</b>。'}];
+  const pos=()=>{const{w,h}=fit(cv);return{w,h};};
+  function render(){ans=false;const d=Q[qi];$('#rqCat').textContent=`第 ${qi+1} / ${Q.length} 题 · ${tname(TEAM.cur)}答题`;$('#rqT').innerHTML=d.q+'（　）';$('#rqFig').innerHTML=d.fig?d.fig():'';$('#rqExp').hidden=true;
+    $('#rqOps').innerHTML=d.o.map((o,i)=>`<button data-i="${i}"><b>${'ABCD'[i]}</b><span>${o}</span></button>`).join('');
+    $$('#rqOps button').forEach(b=>b.onclick=()=>{if(ans||over)return;ans=true;const i=+b.dataset.i,ok=i===d.a;$$('#rqOps button')[d.a].classList.add('right');if(!ok)b.classList.add('wrong');
+      const tm=TEAM.cur;if(ok){const k=d.lv||1;lv[tm]=Math.min(MAX,lv[tm]+k);teamAdd(10*k);sfx('drop');setTimeout(()=>sfx('ok'),120);splash.push({tm,a:0});}else{sfx('bad');}
+      $('#rqExp').hidden=false;$('#rqExp').className='status '+(ok?'ok':'bad');$('#rqExp').innerHTML=(ok?'✔ 答对了！':'✘ 正确答案是 '+'ABCD'[d.a]+'。')+' '+d.x;
+      $('#rqNext').textContent=qi===Q.length-1?'看结果':'下一题 →';teamNext();
+      if(lv[tm]>=MAX)setTimeout(finish,700);});}
+  function finish(){if(over)return;over=true;const r=lv.r,b=lv.b;const w=r===b?(TEAM.sc.r===TEAM.sc.b?'平局！':TEAM.sc.r>TEAM.sc.b?'水位相同，红队积分更高，红队胜！':'水位相同，蓝队积分更高，蓝队胜！'):r>b?'红队水库蓄得更多，红队胜！':'蓝队水库蓄得更多，蓝队胜！';
+    $('#rqCat').textContent='比赛结束';$('#rqT').innerHTML=`<span style="font:400 1.6em var(--f-display)">${w}</span>`;$('#rqOps').innerHTML='';$('#rqFig').innerHTML='';$('#rqExp').hidden=true;FX.confetti();sfx('win');}
+  $('#rqNext').onclick=()=>{if(over)return;if(qi>=Q.length-1){finish();return;}qi++;$('#rqNext').textContent='下一题 →';render();sfx('click');};
+  $('#rqRe').onclick=()=>{qi=0;over=false;lv={r:0,b:0};$('#rqNext').textContent='下一题 →';render();};
+  render();
+  function tick(dt){t+=dt;const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);
+    ['r','b'].forEach((tm,k)=>{show[tm]+=(lv[tm]-show[tm])*Math.min(1,dt*3);
+      const x0=w*(k?.54:.08),x1=w*(k?.92:.46),y0=h*.16,y1=h*.86,top=y1-(y1-y0)*show[tm]/MAX,col=tm==='r'?'#ff7f66':'#1b8fd1';
+      // 坝体
+      ctx.fillStyle='#e8f3f8';ctx.fillRect(x0,y0,x1-x0,y1-y0);
+      ctx.save();ctx.beginPath();ctx.rect(x0,y0,x1-x0,y1-y0);ctx.clip();
+      const g=ctx.createLinearGradient(0,top,0,y1);g.addColorStop(0,'#7fd3f0');g.addColorStop(1,'#0b5f8a');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x0,y1);
+      for(let x=x0;x<=x1+6;x+=6)ctx.lineTo(x,top+Math.sin(x*.05+t*2.4+k)*(show[tm]>.05?4:0));ctx.lineTo(x1,y1);ctx.fill();ctx.restore();
+      ctx.strokeStyle='rgba(14,58,80,.25)';ctx.lineWidth=1;for(let i=1;i<MAX;i++){const y=y1-(y1-y0)*i/MAX;ctx.beginPath();ctx.moveTo(x1-(i%3?8:16),y);ctx.lineTo(x1,y);ctx.stroke();}
+      ctx.strokeStyle='#0e3a50';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y1);ctx.lineTo(x1,y1);ctx.lineTo(x1,y0);ctx.stroke();
+      ctx.fillStyle=col;ctx.beginPath();ctx.roundRect?ctx.roundRect((x0+x1)/2-46,y0-38,92,28,14):ctx.rect((x0+x1)/2-46,y0-38,92,28);ctx.fill();
+      label(ctx,(tm==='r'?'红队':'蓝队')+'水库',(x0+x1)/2,y0-24,{size:14,weight:700,col:'#fff'});
+      label(ctx,Math.round(show[tm]/MAX*100)+'%',(x0+x1)/2,y1+20,{size:16,weight:700,col:'#0e3a50',font:'Quicksand,Fredoka,sans-serif'});
+      if(TEAM.cur===tm&&!over){ctx.strokeStyle=col;ctx.lineWidth=3;ctx.setLineDash([6,6]);ctx.strokeRect(x0-8,y0-46,x1-x0+16,y1-y0+80);ctx.setLineDash([]);}
+    });
+    splash=splash.filter(s=>{s.a+=dt;const k=s.tm==='r'?0:1,x=w*(k?.73:.27);for(let i=0;i<8;i++){const a=-Math.PI*(i+.5)/8,r=s.a*120;ctx.fillStyle=`rgba(127,211,240,${1-s.a})`;ctx.beginPath();ctx.arc(x+Math.cos(a)*r,h*.5+Math.sin(a)*r+s.a*s.a*200,4,0,TAU);ctx.fill();}return s.a<1;});
+  }
+  return{tick};
+})();
+
+/* ================= 10 小结 ================= */
+S.sum=(()=>{
+  const P=['刷牙、洗手时随手关紧水龙头','一水多用：淘米水浇花','看到漏水的水龙头及时报修','不向河里乱扔垃圾','提醒家人使用节水器具','向身边的人宣传节水知识'];let n=0;
+  $('#pledge').innerHTML=P.map(p=>`<button><span class="dp"></span>${p}</button>`).join('');
+  $$('#pledge button').forEach(b=>b.onclick=()=>{b.classList.toggle('on');n+=b.classList.contains('on')?1:-1;$('#jar').style.setProperty('--h',n/P.length*100+'%');$('#jar b').textContent=`${n} / ${P.length}`;sfx(b.classList.contains('on')?'drop':'click');
+    if(n===P.length){FX.confetti();sfx('win');}});
+  return{};
+})();
+
+/* ================= 翻页框架 ================= */
+const slides=$$('.slide');let idx=-1;
+const dots=$('#dots'),ml=$('#menuList');
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label',`第 ${i+1} 页：${s.dataset.title}`);b.onclick=()=>goTo(i);dots.appendChild(b);
+  const li=document.createElement('li');li.innerHTML=`<button><b>${String(i+1).padStart(2,'0')}</b><span>${s.dataset.title}</span><small>${s.dataset.opt?'<span class="opt-tag">可选</span> · ':''}${s.dataset.min} 分钟</small></button>`;
+  li.firstChild.onclick=()=>{goTo(i);closeMenu();};ml.appendChild(li);
+});
+function goTo(i){
+  i=clamp(i,0,slides.length-1);if(i===idx)return;
+  const old=slides[idx];if(old){S[old.dataset.id]?.leave?.();}
+  idx=i;slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i);s.inert=k!==i;s.setAttribute('aria-hidden',String(k!==i));});
+  S[slides[i].dataset.id]?.enter?.();
+  $$('.dot').forEach((d,k)=>d.classList.toggle('on',k===i));
+  $('#pg').textContent=`${i+1} / ${slides.length}`;$('#prog').style.width=((i+1)/slides.length*100)+'%';
+  $('#btnPrev').disabled=i===0;$('#btnNext').disabled=i===slides.length-1;
+  try{history.replaceState(null,'','#p'+(i+1));}catch(e){}
+  if(old)sfx('click');
+}
+const openMenu=()=>{$('#menu').hidden=false;},closeMenu=()=>{$('#menu').hidden=true;};
+$('#btnPrev').onclick=()=>goTo(idx-1);$('#btnNext').onclick=()=>goTo(idx+1);
+$('#btnMenu').onclick=openMenu;$('#menuX').onclick=closeMenu;$('#menu').onclick=e=>{if(e.target.id==='menu')closeMenu();};
+$('#btnSnd').onclick=e=>{SND.on=!SND.on;e.currentTarget.textContent='音效：'+(SND.on?'开':'关');if(SND.on)sfx('ok');};
+$('#btnFxq').onclick=e=>{LOW=!LOW;e.currentTarget.textContent='特效：'+(LOW?'低':'高');};
+if(LOW)$('#btnFxq').textContent='特效：低';
+function toggleFs(){try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.().catch(()=>{});}catch(e){}}
+$('#btnFs').onclick=toggleFs;
+$$('[data-go="next"]').forEach(b=>b.onclick=()=>goTo(idx+1));
+addEventListener('keydown',e=>{
+  const tg=e.target.tagName||'';if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();goTo(idx-1);}
+  else if(e.key===' '&&tg!=='BUTTON'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='Home')goTo(0);else if(e.key==='End')goTo(slides.length-1);
+  else if(e.key==='f'||e.key==='F')toggleFs();else if(e.key==='Escape')closeMenu();
+});
+let tx0=null,ty0=null;
+addEventListener('touchstart',e=>{const t=e.touches[0];tx0=t.clientX;ty0=t.clientY;},{passive:true});
+addEventListener('touchend',e=>{if(tx0===null)return;const t=e.changedTouches[0],dx=t.clientX-tx0,dy=t.clientY-ty0;tx0=null;
+  if(e.target.closest('canvas,input,.gal,.bins,.items'))return;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)goTo(idx+(dx<0?1:-1));},{passive:true});
+
+teamRender();
+const m=/^#p(\d+)$/.exec(location.hash||'');goTo(m?(+m[1]-1):0);
+
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  try{BG.tick(dt);const cur=S[slides[idx].dataset.id];cur?.tick?.(dt);FX.tick(dt);}catch(err){console.error(err);}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
