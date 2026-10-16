@@ -119,3 +119,7 @@
 | 10 | 小结与节水承诺 | 知识结构图；点亮 6 条节水承诺 |
 
 素材来源：地球贴图 Solar System Scope（CC BY 4.0）；3D 模型 Kenney、KayKit、creativetrio（CC0，取自 pmndrs/market-assets 与 KayKit-Game-Assets）；图标几何 Material Design Icons（Apache 2.0）；three.js（MIT）。
+
+## 互动课件制作技能
+
+`.claude/skills/interactive-courseware/` 是从以上 6 套课件的制作过程中沉淀出来的 Claude 技能：记录了老师的偏好与每次被纠正的问题，常用视觉风格、竞赛玩法、小游戏和互动方式（并注明哪些已用过），单文件课件框架、3D 场景手册、素材来源与授权、出题规范、自检与发布流程，以及可直接复用的脚本和模块。之后在本仓库里制作新课件时会自动用到它。
