@@ -420,9 +420,10 @@ p{margin:0}
 
 .rxbox{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
 .rxbox svg{width:100%;height:auto;border:var(--bd);border-radius:16px;background:#fff;box-shadow:var(--sh)}
-@media (min-width:861px){.rxbox{grid-template-columns:auto auto auto;justify-content:center}.rxbox svg{width:auto;height:clamp(140px,calc(100vh - 560px),300px);aspect-ratio:3/2}}
-.rxbox .arr{font:400 1.2em var(--f-display);text-align:center}
-.rxbox .arr b{display:block;font-size:2em;line-height:1}
+@media (min-width:861px){.rxbox{max-width:calc(3 * clamp(140px,calc(100vh - 560px),300px) + 130px);margin-inline:auto;width:100%}}
+.rxbox .arr{width:96px;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:14px;white-space:nowrap;color:var(--ink)}
+.rxbox .arr svg{width:86px;height:18px;border:0;box-shadow:none;background:none;border-radius:0}
+.lg{display:inline-block;vertical-align:-3px;width:34px;height:16px}
 .tfl{display:flex;flex-direction:column;gap:8px}
 .tfl .it{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border:2px solid var(--ink);border-radius:12px;background:#fff;padding:6px 10px;box-shadow:2px 2px 0 var(--ink)}
 .tfl .it.ok{background:#c9f0dd}.tfl .it.no{background:#fbd0d0}
@@ -564,8 +565,8 @@ p{margin:0}
 <section class="slide" data-id="rx" data-title="重难点三：化学变化的实质" data-min="5">
   <div class="wrap">
     <header class="head"><span class="tag">重难点三 · 化学变化的微观实质</span><h2>读懂反应微观示意图</h2>
-      <p class="lede"><span class="cm">●</span>● 表示甲分子，○○ 表示乙分子。先找出<b>没有参加反应</b>的分子并把它划掉，再判断说法对错。</p></header>
-    <div class="rxbox"><svg id="rxA" viewBox="0 0 300 200"></svg><div class="arr"><b>→</b>一定条件</div><svg id="rxB" viewBox="0 0 300 200"></svg></div>
+      <p class="lede"><svg class="lg" viewBox="0 0 34 16"><circle cx="9" cy="8" r="7" fill="#1f2a44" stroke="#1f2a44" stroke-width="2"/><circle cx="25" cy="8" r="7" fill="#1f2a44" stroke="#1f2a44" stroke-width="2"/></svg> 表示甲分子，<svg class="lg" viewBox="0 0 34 16"><circle cx="9" cy="8" r="7" fill="#fff" stroke="#1f2a44" stroke-width="2"/><circle cx="25" cy="8" r="7" fill="#fff" stroke="#1f2a44" stroke-width="2"/></svg> 表示乙分子。先找出<b>没有参加反应</b>的分子并把它划掉，再判断说法对错。</p></header>
+    <div class="rxbox"><svg id="rxA" viewBox="0 0 300 200"></svg><div class="arr">一定条件<svg viewBox="0 0 86 18"><path d="M2 9 H80 M70 2 L82 9 L70 16" fill="none" stroke="#1f2a44" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><svg id="rxB" viewBox="0 0 300 200"></svg></div>
     <div class="cols">
       <div class="tfl" id="rxTF"></div>
       <div class="side"><button class="btn pri" id="rxCross" style="align-self:flex-start">划掉未参加反应的分子</button><div class="status" id="rxMsg">反应后还剩下的乙分子，没有参加反应——这是这类题最大的陷阱。</div></div>
