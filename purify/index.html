@@ -1043,6 +1043,14 @@ function tiltBeaker(ctx,lx,ly,ang,w,h,lv,col){ctx.save();ctx.translate(lx,ly);ct
 function stream(ctx,pts,col,w,t){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
   ctx.setLineDash([6,14]);ctx.lineDashOffset=-t*80;ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=Math.max(1,w*.35);ctx.stroke();ctx.restore();}
 function drop(ctx,x,y,r,col){ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y-r*1.8);ctx.bezierCurveTo(x+r*.9,y-r*.6,x+r,y+r*.2,x,y+r);ctx.bezierCurveTo(x-r,y+r*.2,x-r*.9,y-r*.6,x,y-r*1.8);ctx.fill();ctx.fillStyle='rgba(255,255,255,.6)';ctx.beginPath();ctx.arc(x-r*.3,y-r*.1,r*.25,0,TAU);ctx.fill();ctx.restore();}
+/* 泥沙颗粒：不规则多边形 + 明暗 */
+function grain(ctx,x,y,r,seed=1,col='#8a6a43'){const R=rng(seed*97+13);ctx.save();ctx.beginPath();for(let i=0;i<7;i++){const a=i/7*TAU,rr2=r*(.7+.35*R());ctx.lineTo(x+Math.cos(a)*rr2,y+Math.sin(a)*rr2*.85);}ctx.closePath();
+  const g=ctx.createRadialGradient(x-r*.35,y-r*.35,r*.1,x,y,r*1.1);g.addColorStop(0,shade(col,.35));g.addColorStop(1,shade(col,-.35));ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=shade(col,-.5);ctx.lineWidth=.8;ctx.stroke();ctx.restore();}
+/* 细菌：杆菌 + 鞭毛 */
+function bacterium(ctx,x,y,L,ang,t,col='#5f9e74'){const W=L*.42;ctx.save();ctx.translate(x,y);ctx.rotate(ang);
+  ctx.strokeStyle=shade(col,-.45);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(L/2,0);for(let k=0;k<=10;k++)ctx.lineTo(L/2+k*1.6,Math.sin(k*1.2+t*14)*W*.35);ctx.stroke();
+  rr(ctx,-L/2,-W/2,L,W,W/2);const g=ctx.createLinearGradient(0,-W/2,0,W/2);g.addColorStop(0,shade(col,.4));g.addColorStop(1,shade(col,-.25));ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=shade(col,-.45);ctx.lineWidth=1.2;ctx.stroke();
+  ctx.fillStyle=shade(col,-.4);[-.25,0,.22].forEach(f=>{ctx.beginPath();ctx.arc(f*L,(f*7%1)*W*.2,W*.12,0,TAU);ctx.fill();});ctx.restore();}
 /* 引线标注 */
 function callout(ctx,x,y,tx,ty,s,{col=INK,size=17,align=null,bg=true,font=BODY,weight=700}={}){ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(tx,ty);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,3.2,0,TAU);ctx.fill();
   align=align||(tx<x?'right':'left');ctx.font=`${weight} ${size}px ${font}`;const m=ctx.measureText(s).width,px=align==='right'?tx-6-m:tx+6;
@@ -1053,21 +1061,27 @@ function callout(ctx,x,y,tx,ty,s,{col=INK,size=17,align=null,bg=true,font=BODY,w
    o: {rod,rodSingle,pour,lipTouch,tipAway,liquidHigh,paperHigh,flow,lv,turb,fil,filTurb,mud,labels,t,tear} */
 function filterRig(ctx,ox,oy,k,o){
   const t=o.t||0;ctx.save();ctx.translate(ox,oy);ctx.scale(k,k);
-  const px=110,base=572,F=funnelGeo(300,188,74,100,150,7);
+  const px=110,base=572,F=funnelGeo(300,176,96,128,140,8);
   const bw=128,bh=168,bcx=o.tipAway?300:300-(bw/2-F.sr-2),bby=base-18;
   stand(ctx,px,base,70,250,40);
-  ironRing(ctx,px,202,300,64,false);
+  ironRing(ctx,px,195,300,82,false);
   const fil=o.fil||0;ctx.save();ctx.globalAlpha=o.balpha??1;beaker(ctx,bcx,bby,bw,bh,{lv:fil*.55,col:waterCol(o.filTurb??0.06),ticks:4});ctx.restore();
   funnelBack(ctx,F);
   const ptop=o.paperHigh?F.ry-16:F.ry+16;
   // 液体先画（在滤纸内部）
   const lv=o.lv||0;let ly=null;
-  if(lv>0){ly=o.liquidHigh?ptop-6:lerp(F.cy-14,ptop+30,lv);}
+  if(lv>0){ly=o.liquidHigh?F.ry+3:lerp(F.cy-14,ptop+30,lv);}
   const pc=paperCone(ctx,F,ptop,{wet:1,mud:o.mud||0,tear:o.tear});
-  if(ly!==null){funnelLiquid(ctx,F,ly,waterCol(o.turb??.8,{a:.9}));
-    if(o.liquidHigh){ctx.save();ctx.fillStyle=waterCol(o.turb??.8,{a:.8});ctx.beginPath();ctx.moveTo(F.cx-F.R*.96,F.ry+4);ctx.lineTo(F.cx-pc.rw*.98,ptop+3);ctx.lineTo(F.cx-pc.rw*.86,ptop+30);ctx.closePath();ctx.fill();ctx.restore();}}
+  if(ly!==null){funnelLiquid(ctx,F,ly,waterCol(o.turb??.8,{a:o.liquidHigh?.62:.9}));
+    if(o.liquidHigh){const mc=waterCol(o.turb??.8,{a:1.25});ctx.save();
+      // 浑水从滤纸与漏斗壁之间的缝隙流下
+      [-1,1].forEach(sd=>{ctx.strokeStyle=mc;ctx.lineWidth=6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(F.cx+sd*pc.rw*1.0,ptop+2);ctx.lineTo(F.cx+sd*(F.sr+1),F.cy-2);ctx.stroke();
+        ctx.setLineDash([7,7]);ctx.lineDashOffset=-t*40;ctx.strokeStyle='#5e4325';ctx.lineWidth=3.5;ctx.stroke();ctx.setLineDash([]);});
+      ctx.strokeStyle=mc;ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(F.cx,F.cy-4);ctx.lineTo(F.cx,F.sy);ctx.stroke();
+      // 被淹没的滤纸边缘（透过液体可见）
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(F.cx,ptop,pc.rw,pc.rw*.2,0,0,TAU);ctx.stroke();ctx.strokeStyle='rgba(120,100,70,.8)';ctx.lineWidth=1;ctx.stroke();ctx.restore();}}
   funnelBody(ctx,F);
-  ironRing(ctx,px,202,300,64,true);
+  ironRing(ctx,px,195,300,82,true);
   // 漏斗下端与烧杯内壁
   const tipX=F.cx+F.sr,tipY=F.sy+6;
   // 滤液沿内壁流下 / 滴落
@@ -1076,21 +1090,21 @@ function filterRig(ctx,ox,oy,k,o){
     else{const ph=(t*1.6)%1;drop(ctx,F.cx,lerp(tipY+6,bby-bh*fil*.55-4,ph*ph),4,fc);if(ph>.85&&!LOW){ctx.strokeStyle='rgba(120,160,190,.7)';ctx.lineWidth=1.3;ctx.beginPath();ctx.ellipse(F.cx,bby-bh*fil*.55,10*(ph-.8)*6,2.5,0,0,TAU);ctx.stroke();}}}
   // 玻璃棒与倾倒烧杯
   const rodTip=o.rodSingle?[F.cx-pc.rw*.42,ptop+48]:[F.cx+pc.rw*.4,ptop+50];
-  const rodTop=[rodTip[0]+(o.rodSingle?50:70),rodTip[1]-210];
+  const rodTop=[rodTip[0]-70,rodTip[1]-240];
   if(o.rod)rod(ctx,rodTop[0],rodTop[1],rodTip[0],rodTip[1],8);
-  if(o.pour){const lip=o.rod?(o.lipTouch===false?[rodTop[0]+40,rodTop[1]+32]:[lerp(rodTop[0],rodTip[0],.22)+4,lerp(rodTop[1],rodTip[1],.22)]):[F.cx+30,F.ry-58];
+  if(o.pour){const lip=o.rod?(o.lipTouch===false?[rodTop[0]+60,rodTop[1]+30]:[lerp(rodTop[0],rodTip[0],.28)+5,lerp(rodTop[1],rodTip[1],.28)]):[F.cx+48,F.ry-95];
     const pc2=waterCol(o.turb??.8,{a:.92});
     if(o.flow>0){if(o.rod&&o.lipTouch!==false)stream(ctx,[lip,[rodTip[0]+3,rodTip[1]-4]],pc2,5,t);
       else{stream(ctx,[lip,[lip[0]-6,lip[1]+40],[o.rod?rodTip[0]:F.cx+12,(ly??F.cy-14)]],pc2,6,t);
         if(!LOW&&!o.rod){for(let i=0;i<4;i++){const a=t*6+i*1.6;ctx.fillStyle=pc2;ctx.beginPath();ctx.arc(F.cx+12+Math.cos(a)*16,(ly??F.cy)-6-Math.abs(Math.sin(a))*14,2.5,0,TAU);ctx.fill();}}}}
-    tiltBeaker(ctx,lip[0],lip[1],-1.02,96,128,o.pourLv??.5,pc2);}
+    tiltBeaker(ctx,lip[0],lip[1],-.8,96,128,o.pourLv??.5,pc2);}
   // 标注
   const L=o.labels;
   if(L){if(L.includes('一贴'))callout(ctx,F.cx-pc.rw*.7,ptop+30,F.cx-200,ptop+10,'一贴：滤纸紧贴漏斗内壁',{col:NAVY});
     if(L.includes('二低')){ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle=CIN;ctx.lineWidth=1.5;[[F.ry,'漏斗边缘',-9],[ptop,'滤纸边缘',9]].forEach(([y,s,dy])=>{ctx.beginPath();ctx.moveTo(F.cx-F.R-20,y);ctx.lineTo(F.cx-F.R-110,y);ctx.stroke();txt(ctx,s,F.cx-F.R-116,y+dy,{align:'right',size:15,col:CIN,weight:700});});
       if(ly!==null){ctx.strokeStyle='#2f6fb0';ctx.beginPath();ctx.moveTo(F.cx-F.R-20,ly);ctx.lineTo(F.cx-F.R-110,ly);ctx.stroke();txt(ctx,'液面',F.cx-F.R-116,ly+4,{align:'right',size:15,col:'#2f6fb0',weight:700});}ctx.restore();
       hand(ctx,'二低',F.cx-F.R-150,(ly??ptop+30)+44,{size:32,col:CIN});}
-    if(L.includes('三靠')){callout(ctx,lerp(rodTop[0],rodTip[0],.22),lerp(rodTop[1],rodTip[1],.22),540,rodTop[1]+4,'① 烧杯口靠玻璃棒',{col:MOSS});
+    if(L.includes('三靠')){callout(ctx,lerp(rodTop[0],rodTip[0],.28)+5,lerp(rodTop[1],rodTip[1],.28),540,rodTop[1]+40,'① 烧杯口靠玻璃棒',{col:MOSS});
       callout(ctx,rodTip[0],rodTip[1],545,ptop+66,'② 玻璃棒靠三层滤纸',{col:MOSS});
       callout(ctx,tipX,tipY-6,545,tipY-30,'③ 漏斗下端靠烧杯内壁',{col:MOSS});}}
   ctx.restore();
@@ -1177,10 +1191,10 @@ S.plant=(()=>{const cv=$('#cvPlant');let t=0,step=0,front=0;
     const wy=G-6;ctx.save();ctx.beginPath();ctx.rect(l,wy,w,d+6);ctx.clip();
     ctx.fillStyle=waterCol(turb,{a:1.05});ctx.fillRect(l,wy,w,d+6);
     if(kind==='settle'){ctx.fillStyle='#7d6040';ctx.beginPath();ctx.moveTo(l,G+d);for(let k=0;k<=8;k++)ctx.lineTo(l+w*k/8,G+d-14-4*Math.sin(k*1.9));ctx.lineTo(l+w,G+d);ctx.fill();
-      for(let k=0;k<10;k++){const fx=l+10+((k*37)%(w-20)),fy=wy+((t*18+k*23)%(d-10));ctx.fillStyle='rgba(110,82,50,.75)';ctx.beginPath();ctx.arc(fx,fy,3+k%3,0,TAU);ctx.fill();}}
+      for(let k=0;k<10;k++){const fx=l+10+((k*37)%(w-20)),fy=wy+((t*18+k*23)%(d-10));grain(ctx,fx,fy,4+k%3*1.5,k+1);}}
     if(kind==='filter'){const ly=[[.55,'#d8c49a',3],[.72,'#b5a27c',5],[.86,'#8f8170',8]];ly.forEach(([f,c,r],k)=>{ctx.fillStyle=c;ctx.fillRect(l,G+d*f,w,d*.18);ctx.fillStyle='rgba(0,0,0,.12)';for(let q=0;q<w/(r*2.2);q++){ctx.beginPath();ctx.arc(l+q*r*2.2+r,G+d*f+d*.09+(q%2)*3,r*.8,0,TAU);ctx.fill();}});}
     if(kind==='carbon'){ctx.fillStyle='#2b2b2e';ctx.fillRect(l,G+d*.5,w,d*.5);ctx.fillStyle='#45464b';for(let q=0;q<26;q++){ctx.beginPath();ctx.arc(l+((q*29)%w),G+d*.55+((q*17)%(d*.42)),3+q%3,0,TAU);ctx.fill();}}
-    if(kind==='settle'||kind==='clear'||kind==='carbon'){if(i<5)for(let k=0;k<4;k++){const bx2=l+12+((k*41+t*14)%(w-24)),by2=wy+16+((k*29)%(d*.4));ctx.fillStyle='#6fae86';rr(ctx,bx2-5,by2-2.5,10,5,2.5);ctx.fill();}}
+    if(i<5){const nb2=i===2?4:3;for(let k=0;k<nb2;k++){const bx2=l+16+((k*41+t*12)%(w-32)),by2=wy+18+((k*29)%(d*.38));bacterium(ctx,bx2,by2,16,Math.sin(t+k)*.6+k,t+k);}}
     ctx.restore();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();for(let xx=l;xx<=l+w;xx+=5)ctx.lineTo(xx,wy+Math.sin(xx*.08+t*2)*1.3);ctx.stroke();}
   function tick(dt){t+=dt;front=lerp(front,step,1-Math.exp(-dt*2.2));const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
     const G=h*.56,d=Math.min(150,h*.22),tw=Math.min(118,w*.105);
@@ -1189,9 +1203,9 @@ S.plant=(()=>{const cv=$('#cvPlant');let t=0,step=0,front=0;
     // 管道
     const py=G+d*.32;ctx.fillStyle=metal(ctx,0,py-9,0,py+9);ctx.fillRect(ST[0].x*w,py-9,(ST[6].x-ST[0].x)*w,18);
     const fx=lerp(ST[0].x,ST[6].x,front/6)*w;
-    for(let k=0;k<40;k++){const xx=ST[0].x*w+((k*36+t*90)%((ST[6].x-ST[0].x)*w));if(xx>fx)continue;const seg=clamp(Math.floor((xx/w-ST[0].x)/((ST[6].x-ST[0].x)/6)),0,6);ctx.fillStyle=waterCol(TURB[seg],{a:1.3});ctx.beginPath();ctx.arc(xx,py,4.5,0,TAU);ctx.fill();}
+    for(let k=0;k<40;k++){const xx=ST[0].x*w+((k*36+t*90)%((ST[6].x-ST[0].x)*w));if(xx>fx)continue;const seg=clamp(Math.floor((xx/w-ST[0].x)/((ST[6].x-ST[0].x)/6)),0,6);if(seg<2)grain(ctx,xx,py,4,k);else{ctx.fillStyle='rgba(150,205,230,.95)';ctx.beginPath();ctx.arc(xx,py,3.5,0,TAU);ctx.fill();}}
     // 河流
-    ctx.save();const rw=ST[0].x*w+tw*.5;ctx.beginPath();ctx.moveTo(0,G+8);for(let xx=0;xx<=rw;xx+=6)ctx.lineTo(xx,G+8+Math.sin(xx*.05+t*1.6)*3);ctx.lineTo(rw,h-70);ctx.lineTo(0,h-70);ctx.closePath();ctx.fillStyle=waterCol(.9,{a:1.1});ctx.fill();ctx.restore();
+    ctx.save();const rw=ST[0].x*w+tw*.5;ctx.beginPath();ctx.moveTo(0,G+8);for(let xx=0;xx<=rw;xx+=6)ctx.lineTo(xx,G+8+Math.sin(xx*.05+t*1.6)*3);ctx.lineTo(rw,h-70);ctx.lineTo(0,h-70);ctx.closePath();ctx.fillStyle=waterCol(.9,{a:1.1});ctx.fill();ctx.clip();for(let k=0;k<9;k++)grain(ctx,8+((k*23+t*6)%(rw-16)),G+24+((k*37)%(h-G-110)),3.5+k%3*1.5,k+3);for(let k=0;k<3;k++)bacterium(ctx,14+((k*40+t*9)%(rw-28)),G+40+k*42,15,k+Math.sin(t+k)*.5,t+k);ctx.restore();
     mdiDraw(ctx,'water-pump',ST[0].x*w,G-30,46,'#5a6270');
     tank(ctx,ST[2].x*w,G,tw,d,TURB[2],'settle',2,t,front>1.6);
     tank(ctx,ST[3].x*w,G,tw,d,TURB[3],'filter',3,t,front>2.6);
@@ -1212,6 +1226,7 @@ S.plant=(()=>{const cv=$('#cvPlant');let t=0,step=0,front=0;
     ctx.fillStyle=CIN;ctx.fillRect(cx0,cy0,6,96);hand(ctx,`${step+1}. ${s.n}`,cx0+22,cy0+32,{size:32,align:'left',col:'#23262f'});txt(ctx,s.d,cx0+22,cy0+70,{size:16,align:'left',col:'#4a4f5c'});
     // 水质条
     const qx=w-250,qy=34;txt(ctx,'水质（浑浊度）',qx,qy,{size:13,align:'left',col:'#6f7480',weight:700});const q=TURB[Math.round(front)];rr(ctx,qx,qy+14,210,16,8);ctx.fillStyle='#ece6da';ctx.fill();rr(ctx,qx,qy+14,210*q,16,8);ctx.fillStyle=waterCol(q,{a:1.4});ctx.fill();
+    grain(ctx,qx+8,qy+48,6,2);txt(ctx,'泥沙等不溶性杂质',qx+22,qy+48,{size:13,align:'left',col:'#4a4f5c',weight:700});bacterium(ctx,qx+10,qy+72,16,0,t);txt(ctx,'细菌等微生物',qx+30,qy+72,{size:13,align:'left',col:'#4a4f5c',weight:700});
     txt(ctx,q>.6?'很浑浊':q>.3?'较浑浊':q>.1?'较清':'清澈',qx+210,qy,{size:13,align:'right',col:'#4a4f5c',weight:700});
     // 当前站高亮
     const hx=s.x*w;ctx.save();ctx.strokeStyle=CIN;ctx.lineWidth=2;ctx.setLineDash([6,5]);rr(ctx,hx-tw*.5-22,G-190,tw+44,d+260,10);ctx.stroke();ctx.restore();
@@ -1305,7 +1320,7 @@ S.kit=(()=>{
 const FSTEP=[
   {t:'折滤纸',d:'圆形滤纸<b>对折</b>，再<b>对折</b>，打开成圆锥形：<b>一边一层，一边三层</b>。',
    k:[['要点','折好的滤纸一侧 3 层、一侧 1 层'],['注意','滤纸边缘要比漏斗口略低']],lab:'把圆形滤纸对折、再对折，打开成圆锥形（一边三层）。'},
-  {t:'放入漏斗，润湿',d:'把滤纸放进漏斗，用少量水<b>润湿</b>，用手指轻压，使滤纸<b>紧贴漏斗内壁</b>，中间不留气泡。',
+  {t:'放入漏斗，润湿',d:'把滤纸放进漏斗，用少量水<b>润湿</b>，用<b>玻璃棒</b>轻压，使滤纸<b>紧贴漏斗内壁</b>，中间不留气泡。',
    k:[['一贴','滤纸紧贴漏斗内壁'],['二低①','滤纸边缘低于漏斗边缘'],['注意','留有气泡会使过滤变慢']],lab:'放入漏斗，用少量水润湿，轻压使滤纸紧贴漏斗内壁，不留气泡。'},
   {t:'组装装置',d:'漏斗放在铁圈上，下方放烧杯，使漏斗<b>下端管口紧靠烧杯内壁</b>。',
    k:[['三靠③','漏斗下端紧靠烧杯内壁'],['作用','滤液沿内壁流下，防止溅出']],lab:'漏斗放上铁圈，下端管口紧靠烧杯内壁。'},
@@ -1342,13 +1357,13 @@ function drawFStep(ctx,ox,oy,k,i,p,t,{labels=true}={}){
     if(p>.28&&p<.55){const ph=(t*1.8)%1;// 洗瓶滴水
       ctx.save();ctx.translate(420,40);ctx.rotate(-.5);rr(ctx,-30,-20,60,90,14);ctx.fillStyle='rgba(225,238,246,.6)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='rgba(150,200,225,.5)';ctx.fillRect(-28,20,56,46);ctx.strokeStyle='#5a6270';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,-40);ctx.lineTo(-30,-60);ctx.stroke();ctx.restore();
       drop(ctx,370+ph*-40,40+ph*120,6,waterCol(0,{a:1.6}));}
-    if(press>0&&press<1){const yy=lerp(F.ry+40,F.cy-20,(Math.sin(press*Math.PI*3)+1)/2);mdiDraw(ctx,'hand-pointing-up',F.cx-F.R*(1-(yy-F.ry)/(F.cy-F.ry))*.6-8,yy+26,54,'#d8a27a');}
-    if(labels){if(drop0>=1&&press<1)callout(ctx,F.cx+F.R*.5,F.ry+60,F.cx+190,F.ry+30,'有气泡 → 过滤慢',{col:CIN,size:18});
+    if(press>0&&press<1){const sd=press<.5?1:-1,ph=(press%.5)/.5,yy=lerp(F.ry+36,F.cy-30,(Math.sin(ph*Math.PI*2-Math.PI/2)+1)/2),wx=F.cx+sd*F.R*(F.cy-yy)/(F.cy-F.ry)*.9;rod(ctx,wx+sd*150,yy-230,wx,yy,8);}
+    if(labels){if(drop0>=1&&press<1)callout(ctx,F.cx+F.R*.5,F.ry+60,F.cx+190,F.ry+30,'有气泡 → 过滤慢',{col:CIN,size:18});if(press>0)callout(ctx,F.cx-F.R*.4,F.ry+90,F.cx-220,F.ry+130,'用玻璃棒轻压，赶走气泡',{col:NAVY,size:18});
       if(press>=1)callout(ctx,F.cx-F.R*.55,F.ry+60,F.cx-210,F.ry+30,'紧贴漏斗内壁',{col:MOSS,size:18});}
   }
   else if(i===2){const a=ease(clamp(p/.35,0,1)),b=ease(clamp((p-.35)/.4,0,1));ctx.globalAlpha=1;
     filterRig(ctx,0,0,1,{balpha:b,lv:0,fil:0,t});
-    if(labels&&b>=1){ctx.save();ctx.strokeStyle=MOSS;ctx.lineWidth=3;ctx.beginPath();ctx.arc(307,442,22,0,TAU);ctx.stroke();ctx.restore();callout(ctx,328,446,450,420,'下端紧靠烧杯内壁',{col:MOSS,size:18});}
+    if(labels&&b>=1){ctx.save();ctx.strokeStyle=MOSS;ctx.lineWidth=3;ctx.beginPath();ctx.arc(308,446,22,0,TAU);ctx.stroke();ctx.restore();callout(ctx,329,450,450,420,'下端紧靠烧杯内壁',{col:MOSS,size:18});}
   }
   else if(i===3){filterRig(ctx,0,0,1,{rod:true,pour:true,flow:1,lv:.55,fil:clamp(p,0,1)*.6,t,pourLv:.55-.25*p,labels:labels?(p<.45?['三靠']:['三靠','二低']):null});}
   else{const r=filterRig(ctx,0,0,1,{rod:false,lv:0,fil:.7,mud:1,t});
@@ -1394,7 +1409,7 @@ S.lab=(()=>{const cv=$('#cvLab');let total=240,left=240,run=false,cur=0,p=0,t=0,
 /* ================= 7 找茬 + 故障诊断 ================= */
 S.spot=(()=>{const cv=$('#cvSpot'),wrap=$('#spWrap');let sc=0,t=0,marks=[[],[]],judged=[false,false],geo=null;
   const SC=[{o:{rod:false,pour:true,flow:1,lv:.5,fil:.3,tipAway:true},err:[['没有用玻璃棒引流',g=>[g.F.cx+40,g.F.ry-40]],['漏斗下端没有紧靠烧杯内壁',g=>g.tip]]},
-            {o:{rod:true,rodSingle:true,pour:true,flow:1,liquidHigh:true,lv:1,fil:.3},err:[['液面高于滤纸边缘',g=>[g.F.cx-g.F.R*.82,g.ptop+2]],['玻璃棒靠在一层滤纸一侧',g=>g.rodTip]]}];
+            {o:{rod:true,rodSingle:true,pour:true,flow:1,liquidHigh:true,lv:1,fil:.6,filTurb:.75},err:[['液面高于滤纸边缘',g=>[g.F.cx-g.F.R*.82,g.ptop+2]],['玻璃棒靠在一层滤纸一侧',g=>g.rodTip]]}];
   const st=$('#spSt');
   function rings(){$$('.ring2',wrap).forEach(e=>e.remove());if(!geo)return;
     if(judged[sc]){SC[sc].err.forEach(([n,f])=>{const[x,y]=geo.map(...f(geo));const hit=marks[sc].some(([mx,my])=>Math.hypot(mx-x,my-y)<70);addRing(x,y,hit?'right':'miss',(hit?'✓ ':'漏找：')+n);});
