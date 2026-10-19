@@ -85,26 +85,27 @@ S.comp=(()=>{
 
 /* ================= 8 书写诊所：找出化学式的“病因” ================= */
 S.clinic=(()=>{
+  // 每个选项都是“病因 + 写法”，只有一个选项能得到正确的化学式
   const P=[
-    ['铜','Cu2','Cu',['金属由原子直接构成，直接用元素符号表示','数字应该写在左边，写成 2Cu','没有病，铜原子总是两两成对'],0],
-    ['二氧化碳','O2C','CO2',['应写成 C₂O，数字跟着碳','两种元素的先后顺序可以随意','氧化物中氧元素应写在右边'],2],
-    ['氯化钠','ClNa','NaCl',['应写成 Na₂Cl₂，要标出个数','一般金属元素写在左边、非金属写在右边','没有病，化学式从左往右读就是氯化钠'],1],
-    ['氧化镁','Mg1O1','MgO',['没有病，把 1 写出来更清楚','应写成 OMg，氧要写在左边','原子个数为 1 时省略不写'],2],
-    ['氦气','He2','He',['稀有气体由原子直接构成，用元素符号表示','没有病，和氧气 O₂ 一样写法','应写成 2He'],0],
-    ['氮气','n2','N2',['应写成 N，气体不写数字','元素符号的第一个字母要大写','没有病，大小写都可以'],1]];
+    ['铜','Cu2','Cu',['没有病，铜原子总是两两成对',`金属由原子直接构成，直接用元素符号表示，应写成 ${fmB('Cu')}`,`数字应该写在左边，写成 ${fmB('2Cu')}`,`两个字母都要大写，写成 ${fmB('CU')}`],1],
+    ['二氧化碳','O2C','CO2',[`数字要跟着碳，写成 ${fmB('C2O')}`,'没有病，两种元素的先后顺序可以随意',`数字多余，写成 ${fmB('CO')}`,`氧化物中氧元素写在右边，1 个分子中有 2 个氧原子，应写成 ${fmB('CO2')}`],3],
+    ['氯化钠','ClNa','NaCl',[`要标出原子个数，写成 ${fmB('Na2Cl2')}`,'没有病，从左往右读就是氯化钠',`一般金属元素写在左边、非金属写在右边，应写成 ${fmB('NaCl')}`,`第二个字母要大写，写成 ${fmB('NaCL')}`],2],
+    ['氧化镁','Mg1O1','MgO',[`原子个数为 1 时省略不写，应写成 ${fmB('MgO')}`,'没有病，把 1 写出来更清楚',`氧要写在左边，写成 ${fmB('OMg')}`,`只省略后一个 1，写成 ${fmB('Mg1O')}`],0],
+    ['氦气','He2','He',[`没有病，和氧气 ${fmB('O2')} 的写法一样`,`稀有气体由原子直接构成，用元素符号表示，应写成 ${fmB('He')}`,`数字应该写在左边，写成 ${fmB('2He')}`,`两个字母都要大写，写成 ${fmB('HE')}`],1],
+    ['氮气','n2','N2',[`气体不写数字，写成 ${fmB('N')}`,'没有病，大小写都可以',`数字应该写在左边，写成 ${fmB('2N')}`,`元素符号的第一个字母要大写，应写成 ${fmB('N2')}`],3]];
   const grid=$('#clGrid'),opts=$('#clOpts'),sub=$('#clSub'),st=$('#clSt');let cur=-1,pick=null;const state=P.map(()=>0);
   function render(){grid.innerHTML=P.map(([n,bad,good],i)=>{const s=state[i];return`<div class="patient${s===1?' cured':s===2?' failed':''}${i===cur?' sel':''}" data-i="${i}"><span class="who">${i+1} 号 · 我是${n}</span><span class="band"></span>
       <span class="fm" style="${s?'text-decoration:line-through;text-decoration-thickness:3px;font-size:40px;opacity:.55':''}">${fm(bad)}</span><span class="face">${s===1?'康复啦！':s===2?'误诊了…':'哎哟，我写错了'}</span><span class="fix">${s?'正确写法：'+fmB(good):''}</span></div>`;}).join('');
     $$('.patient',grid).forEach(p=>p.onclick=()=>{const i=+p.dataset.i;if(state[i])return;cur=i;pick=null;sfx('pop');render();ask();});}
   function ask(){if(cur<0){$('#clTitle').textContent='先点一位“病号”';opts.innerHTML='';sub.disabled=true;return;}const[n,bad,,O]=P[cur];
     $('#clTitle').innerHTML=`${cur+1} 号：${n}写成了 ${fmB(bad)}`;
-    opts.innerHTML=O.map((o,k)=>`<button class="opt" data-v="${k}"><i>${'ABC'[k]}</i><span>${o}</span></button>`).join('');sub.disabled=false;
+    opts.innerHTML=O.map((o,k)=>`<button class="opt" data-v="${k}"><i>${'ABCD'[k]}</i><span>${o}</span></button>`).join('');sub.disabled=false;
     $$('.opt',opts).forEach(b=>b.onclick=()=>{pick=+b.dataset.v;$$('.opt',opts).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
-    setSt(st,'',`${tname(TEAM.cur)}诊断：选出病因后提交。`);}
+    setSt(st,'',`${tname(TEAM.cur)}诊断：选出“病因 + 正确写法”后提交。`);}
   sub.onclick=()=>{if(cur<0)return;if(pick===null){setSt(st,'warn','请先选出病因');return;}const i=cur,[n,,good,,ans]=P[i],tm=TEAM.cur;
     $$('.opt',opts).forEach(x=>{const v=+x.dataset.v;x.disabled=true;if(v===ans)x.classList.add('right');else if(v===pick)x.classList.add('wrong');});sub.disabled=true;
     if(pick===ans){state[i]=1;teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}诊断正确 +5</b>　${n}的化学式是 ${fmB(good)}。`);}
-    else{state[i]=2;sfx('bad');setSt(st,'bad',`<b>${tname(tm)}误诊，不加分</b>　绿框才是病因，${n}应写作 ${fmB(good)}。`);}
+    else{state[i]=2;sfx('bad');setSt(st,'bad',`<b>${tname(tm)}误诊，不加分</b>　绿框才是正确诊断，${n}应写作 ${fmB(good)}。`);}
     cur=-1;render();const el=$$('.patient',grid)[i];if(state[i]===1)burstAt(el,26,[TEAL,SUN,CORAL]);
     teamNext();if(state.every(Boolean)){setTimeout(()=>{FX.confetti();sfx('win');setSt(st,'ok',`6 位病号都看完了！康复 ${state.filter(x=>x===1).length} 位。`);},900);}};
   $('#clReset').onclick=()=>{state.fill(0);cur=-1;pick=null;render();ask();setSt(st,'','红蓝两队轮流接诊，诊断正确 +5，病号康复。');};
