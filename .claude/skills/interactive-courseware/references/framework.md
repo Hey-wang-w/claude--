@@ -102,3 +102,14 @@
 - 页码这类短文本加 `white-space:nowrap`，防止换行。
 - 标签、按钮的文字不能被截断：审计脚本会报告 `h-clip`。
 - 移动端或窄窗不再单独适配：固定画布会整体缩放。
+
+## 7. 统一工具栏与画布直接操作（水的净化课件起）
+
+- **工具栏**：舞台内所有操作按钮放在 `<div class="ctlbar">`（绝对定位在舞台底部中间，纸白底、描边、错位投影），纯文字按钮，最多一个 `.pri`。画布内容要给底部留出约 70 px。页眉 `.tools` 只放“重新开始”。
+- **直接操作** `canvasUI(cv,{tools,hots,onDrop})`（见 `purify/index.html` 的 draw 部分）：
+  - `tools()` 返回可拖动的小仪器 `{id,x,y,r,on,draw}`，拖动时跟随指针并带阴影，原位留半透明占位；用过（`on:false`）变淡。
+  - `hots()` 返回可点击区域 `{hit(x,y),act()}`；悬停时光标变手形。
+  - `onDrop(id,x,y)` 判断是否落在目标容器内，成功就 `$('#按钮').click()`——**直接操作和按钮走同一套校验逻辑**，避免两套结果不一致。
+  - 配套小图形：`jarIcon`（试剂瓶）、`dropperIcon`（滴瓶）、`dishIcon`（表面皿）、`cupIcon`（小烧杯）、`trayHint`（“拖进烧瓶”之类提示）。
+- 画布坐标用版面像素（`fitS` / `ptIn`），注意整体缩放：**屏幕宽 ≠ 版面宽**，自动化测试换算坐标时要用 `getBoundingClientRect().width / offsetWidth`。
+- **字体内嵌**：`scripts/font_subset.py <源文件...> -o fonts.css`，从 npm 包 `@fontsource/zcool-kuaile`、`@fontsource/noto-sans-sc` 的 latin 与 chinese-simplified 子集里按用字裁剪（需要 `pip install fonttools brotli`），三套字形合计约 400 KB。构建脚本每次自动重新裁剪，并删掉 Google Fonts 外链。
