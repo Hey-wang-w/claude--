@@ -677,7 +677,7 @@ b,strong{font-weight:700}
     <div class="body two">
       <div class="stage" style="padding:22px 24px"><span class="tape tl"></span>
         <table class="sumtab" id="suTab"></table>
-        <canvas id="cvSum" style="display:block;width:100%;height:230px;margin-top:22px"></canvas>
+        <canvas id="cvSum" style="position:relative;inset:auto;display:block;width:100%;height:230px;margin-top:22px"></canvas>
         <p class="credit" style="position:absolute;left:24px;bottom:10px">图标几何：Material Design Icons（Apache 2.0）；实验装置与动画均为代码绘制。</p>
       </div>
       <aside class="side">
@@ -1577,22 +1577,40 @@ function drawDistill(ctx,ox,oy,k,s){const t=s.t||0;ctx.save();ctx.translate(ox,o
   const thT=40,thB=armY+4;rr(ctx,fcx-5,thT,10,thB-thT,5);ctx.fillStyle='rgba(240,248,252,.95)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=1.5;ctx.stroke();
   for(let i=0;i<10;i++){ctx.strokeStyle='rgba(60,70,80,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fcx+5,thT+10+i*9);ctx.lineTo(fcx+(i%5?2:-1),thT+10+i*9);ctx.stroke();}
   const tt=clamp(((s.temp||20)-0)/110,0,1),colTop=lerp(thB-14,thT+8,tt);ctx.fillStyle='#d23b35';ctx.fillRect(fcx-1.6,colTop,3.2,thB-8-colTop);ctx.beginPath();ctx.ellipse(fcx,thB-6,4.5,7,0,0,TAU);ctx.fill();
-  // 冷凝管：外套管 + 内管
-  const jf0=.07,jf1=.86,JR=17,IR=6;
-  const tube=(f0,f1,r)=>{const a=at(f0,-r),b=at(f1,-r),c=at(f1,r),d=at(f0,r);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.lineTo(...c);ctx.lineTo(...d);ctx.closePath();};
-  // 进、出水口小管
-  const inP=at(jf1-.05,JR),outP=at(jf0+.05,-JR);
-  ctx.save();ctx.lineCap='round';[[inP,[inP[0]+nx*20-ux*4,inP[1]+ny*20]],[outP,[outP[0]-nx*20+ux*4,outP[1]-ny*20]]].forEach(([a,b])=>{ctx.strokeStyle=GL_S;ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();ctx.strokeStyle='rgba(236,246,251,.95)';ctx.lineWidth=6;ctx.stroke();});
-  // 橡胶管
-  ctx.strokeStyle='#8a3b2c';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(inP[0]+nx*18,inP[1]+ny*18);ctx.quadraticCurveTo(inP[0]+nx*40,inP[1]+ny*60,inP[0]+nx*20+40,inP[1]+90);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(outP[0]-nx*18,outP[1]-ny*18);ctx.quadraticCurveTo(outP[0]-nx*40,outP[1]-ny*60,outP[0]+40,outP[1]-70);ctx.stroke();ctx.restore();
-  tube(jf0,jf1,JR);ctx.fillStyle=s.cool?'rgba(150,205,235,.55)':'rgba(225,238,246,.35)';ctx.fill();
-  if(s.cool){ctx.save();tube(jf0,jf1,JR);ctx.clip();ctx.setLineDash([10,14]);ctx.lineDashOffset=t*60;ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=2;for(const off of[-11,11]){ctx.beginPath();ctx.moveTo(...at(jf1,off));ctx.lineTo(...at(jf0,off));ctx.stroke();}ctx.restore();}
-  tube(jf0,jf1,JR);ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();
-  tube(0,1,IR);ctx.fillStyle='rgba(240,248,252,.9)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=1.6;ctx.stroke();
+  // 冷凝管（局部坐标：x 沿管轴，y>0 为下侧）：玻璃外套两端收口，内管贯穿；冷水下口进、上口出
+  const jf0=.07,jf1=.86,JR=18,IR=6,ang=Math.atan2(dy,dx),x0=jf0*CL,x1=jf1*CL,nxo=x0+34,nxi=x1-34;
+  const inP=at(nxi/CL,JR+22),outP=at(nxo/CL,-JR-22);
+  ctx.save();ctx.translate(C0[0],C0[1]);ctx.rotate(ang);
+  const jacket=()=>{ctx.beginPath();ctx.moveTo(x0,-IR-1.5);ctx.bezierCurveTo(x0+4,-JR,x0+10,-JR,x0+18,-JR);ctx.lineTo(x1-18,-JR);ctx.bezierCurveTo(x1-10,-JR,x1-4,-JR,x1,-IR-1.5);ctx.lineTo(x1,IR+1.5);ctx.bezierCurveTo(x1-4,JR,x1-10,JR,x1-18,JR);ctx.lineTo(x0+18,JR);ctx.bezierCurveTo(x0+10,JR,x0+4,JR,x0,IR+1.5);ctx.closePath();};
+  const nub=(x,sd)=>{ctx.beginPath();ctx.rect(x-5,sd>0?JR-2:-JR-20,10,22);};
+  const hose=(pts,water)=>{ctx.lineCap='round';ctx.lineJoin='round';const pth=()=>{ctx.beginPath();ctx.moveTo(...pts[0]);ctx.bezierCurveTo(...pts[1],...pts[2],...pts[3]);};
+    pth();ctx.strokeStyle='#6e2b1f';ctx.lineWidth=13;ctx.stroke();pth();ctx.strokeStyle='#9c4532';ctx.lineWidth=9;ctx.stroke();
+    if(water){pth();ctx.setLineDash([8,10]);ctx.lineDashOffset=water*t*40;ctx.strokeStyle='rgba(170,220,245,.95)';ctx.lineWidth=3;ctx.stroke();ctx.setLineDash([]);}
+    pth();ctx.strokeStyle='rgba(255,255,255,.28)';ctx.lineWidth=2;ctx.translate(0,-2.5);ctx.stroke();ctx.translate(0,2.5);};
+  // 橡胶管：进水管从下方接入下口，出水管从上口引出
+  hose([[nxi,JR+20],[nxi+6,JR+70],[nxi-30,JR+100],[nxi-70,JR+128]],s.cool?1:0);
+  hose([[nxo,-JR-20],[nxo-4,-JR-70],[nxo+40,-JR-90],[nxo+70,-JR-118]],s.cool?-1:0);
+  // 进出水口小管（带接头）
+  [[nxi,1],[nxo,-1]].forEach(([x,sd])=>{nub(x,sd);ctx.fillStyle='rgba(225,240,248,.85)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=1.6;ctx.stroke();
+    ctx.fillStyle='#7d3527';rr(ctx,x-7,sd>0?JR+10:-JR-22,14,12,3);ctx.fill();});
+  // 外套管（玻璃 + 冷水）
+  jacket();let g=ctx.createLinearGradient(0,-JR,0,JR);
+  if(s.cool){g.addColorStop(0,'rgba(120,185,225,.75)');g.addColorStop(.35,'rgba(185,225,245,.6)');g.addColorStop(1,'rgba(110,175,220,.8)');}
+  else{g.addColorStop(0,'rgba(190,212,228,.55)');g.addColorStop(.35,'rgba(245,250,253,.3)');g.addColorStop(1,'rgba(180,205,222,.6)');}
+  ctx.fillStyle=g;ctx.fill();
+  if(s.cool){ctx.save();jacket();ctx.clip();const span=x1-x0;ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2.2;
+    for(let k=0;k<12;k++){const x=x1-((t*45+k*span/6)%span),y=(k%2?1:-1)*(IR+6);ctx.beginPath();ctx.moveTo(x+5,y-4);ctx.lineTo(x,y);ctx.lineTo(x+5,y+4);ctx.stroke();}ctx.restore();}
+  jacket();ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();
+  // 内管
+  ctx.beginPath();ctx.rect(-6,-IR,CL+12,IR*2);g=ctx.createLinearGradient(0,-IR,0,IR);g.addColorStop(0,'rgba(200,220,232,.9)');g.addColorStop(.4,'rgba(250,253,255,.95)');g.addColorStop(1,'rgba(190,212,226,.9)');ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle=GL_S;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-6,-IR);ctx.lineTo(CL+6,-IR);ctx.moveTo(-6,IR);ctx.lineTo(CL+6,IR);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x0+20,-JR+4);ctx.lineTo(x1-20,-JR+4);ctx.stroke();ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(4,-IR+2);ctx.lineTo(CL-4,-IR+2);ctx.stroke();
+  // 水流方向箭头（管外）
+  if(s.cool){ctx.fillStyle='#2f6fb0';const arr=(x,y,a)=>{ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-6,-6);ctx.lineTo(-6,6);ctx.closePath();ctx.fill();ctx.restore();};
+    arr(nxi-84,JR+138,-.61);arr(nxo+82,-JR-130,-.75);}
+  ctx.restore();
   if(s.boil>.6&&s.lit){ctx.save();ctx.setLineDash([3,14]);ctx.lineDashOffset=-t*110;ctx.strokeStyle='#ffffff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(fcx,armY-4);ctx.lineTo(fcx+nw,armY);ctx.lineTo(...at(0));ctx.lineTo(...at(s.cool?.45:1));ctx.stroke();ctx.restore();
     if(s.cool)for(let i=0;i<5;i++){const f=.5+((t*.35+i*.11)%.5);const p=at(f,IR-2.5);ctx.fillStyle='rgba(120,180,210,.9)';ctx.beginPath();ctx.arc(p[0],p[1],2.4,0,TAU);ctx.fill();}}
-  glassHi(ctx,...at(jf0+.03,-JR+4),...at(jf1-.03,-JR+4),2.5,.7);
   // 冷凝管夹（右侧铁架台）
   const cp=at(.57);ctx.strokeStyle='#3a3f47';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(560,cp[1]);ctx.lineTo(cp[0],cp[1]);ctx.stroke();ctx.fillStyle='#55504a';ctx.save();ctx.translate(cp[0],cp[1]);ctx.rotate(Math.atan2(dy,dx));rr(ctx,-10,-JR-5,20,8,2);ctx.fill();rr(ctx,-10,JR-3,20,8,2);ctx.fill();ctx.restore();
   rr(ctx,551,cp[1]-10,18,20,3);ctx.fillStyle=metal(ctx,551,0,569,0,true);ctx.fill();
@@ -1606,11 +1624,11 @@ function drawDistill(ctx,ox,oy,k,s){const t=s.t||0;ctx.save();ctx.translate(ox,o
     if(s.drip){const ph=(t*2.2)%1;drop(ctx,fx,lerp(mouthY+28,ly-4,ph*ph),3.5,waterCol(0,{a:1.6}));}}
   cone();ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();glassHi(ctx,fx+fw*.28,fb-20,fx+mw*.3,mouthY+40,3,.7);
   const ad=new Path2D(`M${C1[0]-ux*4} ${C1[1]-uy*4} L${C1[0]+ux*34} ${C1[1]+uy*34} Q${fx} ${C1[1]+uy*34+10} ${fx} ${mouthY+26}`);
-  ctx.save();ctx.lineCap='round';ctx.strokeStyle=GL_S;ctx.lineWidth=13;ctx.stroke(ad);ctx.strokeStyle='rgba(236,246,251,.95)';ctx.lineWidth=9;ctx.stroke(ad);ctx.restore();
+  ctx.save();ctx.lineCap='round';ctx.strokeStyle=GL_S;ctx.lineWidth=16;ctx.stroke(ad);ctx.strokeStyle='rgba(236,246,251,.97)';ctx.lineWidth=12;ctx.stroke(ad);ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.translate(-3,-2);ctx.stroke(ad);ctx.restore();
   if(s.escape&&!LOW){for(let i=0;i<6;i++){const ph=(t*.5+i/6)%1;ctx.fillStyle=`rgba(255,255,255,${.7*(1-ph)})`;ctx.beginPath();ctx.arc(fx+Math.sin(t*2+i)*14,mouthY-ph*90,8+ph*16,0,TAU);ctx.fill();ctx.strokeStyle=`rgba(150,170,190,${.4*(1-ph)})`;ctx.stroke();}}
   // 标注
   if(s.labels!==false){const lab=(p,tx,ty,str,col)=>callout(ctx,p[0],p[1],tx,ty,str,{col,size:15});
-    lab(inP,inP[0]+80,inP[1]+40,'进水口（下）','#2f6fb0');lab(outP,outP[0]+60,outP[1]-62,'出水口（上）','#2f6fb0');
+    lab(inP,inP[0]+70,inP[1]+50,'冷水进（下口）','#2f6fb0');lab(outP,outP[0]+120,outP[1]-20,'水出（上口）','#2f6fb0');
     lab([fcx+5,thT+20],fcx+70,thT,'温度计',INK);lab([fcx,armY],fcx-110,armY-40,'水银球在支管口处',INK);lab(at(.3,JR),at(.3)[0]-10,at(.3)[1]+110,'冷凝管',INK);lab([fx+fw*.3,fb-30],fx+fw*.5+10,fb-90,'锥形瓶',INK);lab([fcx-FR*.8,fcy+20],fcx-130,fcy+60,'沸石防暴沸',INK);}
   ctx.restore();}
 
@@ -1782,12 +1800,11 @@ S.sum=(()=>{const tab=$('#suTab');
   $$('.cv',tab).forEach(c=>c.onclick=()=>{c.classList.toggle('hide');sfx('pop');});
   $('#suAll').onclick=()=>{$$('.cv',tab).forEach(c=>c.classList.remove('hide'));sfx('whoosh');};$('#suHide').onclick=()=>{$$('.cv',tab).forEach(c=>c.classList.add('hide'));sfx('click');};
   const cv=$('#cvSum');let t=0;
-  function tick(dt){t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);if(h<60)return;const st=['沉降','过滤','吸附','蒸馏'],tb=[.6,.25,.1,0],n=4,sw=w/(n+.6),sh=Math.min(46,(h-70)/n);
+  function tick(dt){t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);if(h<60)return;const st=['沉降','过滤','吸附','蒸馏'],tb=[.6,.25,.1,0],n=4,sw=w/(n+.6),sh=Math.min(32,(h-110)/n);
     hand(ctx,'净化程度阶梯',16,22,{size:26,align:'left',col:NAVY});
     for(let i=0;i<n;i++){const x=20+i*sw,y=h-10-(i+1)*sh;ctx.fillStyle='#e9e1d0';ctx.fillRect(x,y,sw-6,h-10-y);ctx.strokeStyle='#b7ab92';ctx.lineWidth=1.5;ctx.strokeRect(x,y,sw-6,h-10-y);
-      const bh=Math.min(sh*1.9,70);beaker(ctx,x+sw*.3,y-2,46,bh,{lv:.7,col:waterCol(tb[i])});hand(ctx,st[i],x+sw*.62,y-bh*.4,{size:26,align:'left'});}
-    ctx.save();ctx.strokeStyle=CIN;ctx.lineWidth=2.5;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(30,h-10-sh*.4);ctx.lineTo(20+(n-1)*sw+sw*.8,h-10-n*sh-Math.min(sh*1.9,70)*.5);ctx.stroke();ctx.restore();
-    hand(ctx,'越来越纯 →',w-24,h-20,{size:24,align:'right',col:CIN});}
+      const bh=Math.min(sh*1.8,58);beaker(ctx,x+sw*.28,y-2,44,bh,{lv:.7,col:waterCol(tb[i])});hand(ctx,st[i],x+sw*.55,y-22,{size:26,align:'left'});}
+    hand(ctx,'越往上越纯 →',w-24,22,{size:24,align:'right',col:CIN});}
   return{tick,enter(){const r=TEAM.sc.r,b=TEAM.sc.b;$('#suScore').innerHTML=`<span style="color:#c4492f">红队 ${r}</span>　:　<span style="color:#2f6fb0">蓝队 ${b}</span><div style="font-size:24px;color:#4a4f5c">${r===b?'平局，握手言和！':(r>b?'红队':'蓝队')+'领先，继续保持！'}</div>`;}};})();
 /* ================= 翻页框架 ================= */
 const slides=$$('.slide');let idx=-1;
