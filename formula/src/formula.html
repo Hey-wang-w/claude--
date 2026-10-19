@@ -1,0 +1,250 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 青蒿素的密码" data-min="2">
+  <div class="cov">
+    <div>
+      <span class="unit">人教版 · 九年级化学上册 · 第四单元 课题3</span>
+      <h1><span>化学式</span></h1>
+      <p class="sub">物质组成的表示 · 课时1</p>
+      <p class="lead">屠呦呦团队发现的青蒿素，救治了全世界数百万疟疾患者。它的组成，只用一串符号就能写清楚——<b class="fm" style="font-size:1.25em">C<sub>15</sub>H<sub>22</sub>O<sub>5</sub></b></p>
+      <div class="qs">
+        <p style="--i:0"><b>1</b>这串符号叫什么？它告诉了我们什么？</p>
+        <p style="--i:1"><b>2</b>符号里的数字，写在不同位置有什么不同？</p>
+        <p style="--i:2"><b>3</b>怎样正确地书写、读出一种物质的化学式？</p>
+      </div>
+      <div class="row" style="margin-top:24px"><button class="btn pri big" data-go="next">开始探索 →</button></div>
+    </div>
+    <div class="mol3d"><canvas id="cvCover"></canvas>
+      <div class="legend" id="covLegend"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 什么是化学式 -->
+<section class="slide" data-id="what" data-title="什么是化学式" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">概念 · 化学式</p><h2>用符号写出物质的组成</h2></div>
+      <div class="tools"><button class="btn sm" id="whReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="fwall">
+          <div class="defn"><span>用<span class="kc">元素符号</span>和<span class="kt">数字</span>的组合表示物质组成的式子</span><span class="eq">叫作</span><span class="hand" style="font-size:34px">化学式</span></div>
+          <div class="cards" id="whCards"></div>
+        </div>
+        <div class="ctlbar"><button class="btn pri" id="whAll">全部翻开</button><button class="btn" id="whHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="lightbulb-on-outline"></span>判一判 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">每句选“对”或“错”，全部选好后提交。</p>
+          <div class="tflist" id="whTF"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="whSub">提交</button><button class="btn sm" id="whRedo">重做</button></div>
+          <div class="status" id="whSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3 化学式的意义 -->
+<section class="slide" data-id="mean" data-title="化学式的意义" data-min="6">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">重点 · 化学式的意义</p><h2>一个化学式，四层意义</h2></div>
+      <div class="tools"><button class="btn sm" id="meReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="decoder">
+          <div class="chips" id="meChips"></div>
+          <div class="dgrid" id="meGrid">
+            <svg class="lines" id="meLines"></svg>
+            <div class="bub mac hide" data-k="0"><span class="tag c lvl">宏观</span><span class="txt"></span></div>
+            <div class="core" id="meCore"><span class="fm" id="meFm"></span><span class="nm" id="meNm"></span><canvas id="cvMean"></canvas></div>
+            <div class="bub mic hide" data-k="1"><span class="tag s lvl">微观</span><span class="txt"></span></div>
+            <div class="bub mac hide" data-k="2"><span class="tag c lvl">宏观</span><span class="txt"></span></div>
+            <div class="bub mic hide" data-k="3"><span class="tag s lvl">微观</span><span class="txt"></span></div>
+          </div>
+        </div>
+        <div class="ctlbar"><button class="btn pri" id="meAll">全部揭晓</button><button class="btn" id="meHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="magnify"></span>表述诊所 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">“组成”说元素，“构成”说粒子。每句判对错，再提交。</p>
+          <div class="tflist" id="meTF"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="meSub">提交</button><button class="btn sm" id="meRedo">重做</button></div>
+          <div class="status" id="meSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 数字的意义 -->
+<section class="slide" data-id="digit" data-title="符号中数字的意义" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">重点 · 数字的位置</p><h2>“2”写在哪里，意义就不同</h2></div>
+      <div class="tools"><button class="btn sm" id="diReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="symbench"><canvas id="cvDigit"></canvas></div>
+        <div class="ctlbar" id="diBar"></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="clipboard-check-outline"></span>标红的“2”表示什么？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="qmatch" id="diQ"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="diSub">提交</button><button class="btn sm" id="diRedo">重做</button></div>
+          <div class="status" id="diSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 分子工坊 -->
+<section class="slide" data-id="lab" data-title="分子工坊：搭模型写化学式" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">动手 · 分子工坊</p><h2>搭一个分子，读出它的化学式</h2></div>
+      <div class="tools"><button class="btn sm" id="laReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="fill"><canvas id="cvLab"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="laFree" aria-pressed="true">自由搭</button><button class="btn" id="laChal" aria-pressed="false">搭建挑战</button><span class="sep"></span><button class="btn" id="laClear">清空工作台</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow" id="laPanel">
+          <h3><span data-i="molecule"></span><span id="laTitle">自由搭</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div id="laBody"></div>
+          <div class="status" id="laSt" style="margin-top:10px">把左边的原子拖到工作台上（也可以直接点原子）。点工作台上的原子可以拿走。</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 单质的化学式 -->
+<section class="slide" data-id="elem" data-title="单质化学式的书写" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">书写 · 单质</p><h2>单质的化学式怎么写？</h2></div>
+      <div class="tools"><button class="btn sm" id="elReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="sorter">
+          <div class="tray" id="elTray" data-drag></div>
+          <div class="bins" id="elBins"></div>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="hand-pointing-up"></span>拖一拖 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint">把上方的单质卡片拖进对应的类别（也可以先点卡片、再点类别），全部放好后提交。</p>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="elSub">提交</button><button class="btn sm" id="elRedo">重做</button></div>
+          <div class="status" id="elSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+        <div class="panel grow" id="elFe" hidden>
+          <h3><span data-i="lightbulb-on-outline"></span>想一想：Fe 表示什么？</h3>
+          <div class="tflist">
+            <div class="sitem hide" data-rv><span class="q">宏观 ①</span> <span class="a">表示铁这种物质</span></div>
+            <div class="sitem hide" data-rv><span class="q">宏观 ②</span> <span class="a">表示铁元素</span></div>
+            <div class="sitem hide" data-rv><span class="q">微观</span> <span class="a">表示 1 个铁原子</span></div>
+          </div>
+          <p class="hint" style="margin-top:8px">由原子直接构成的物质，元素符号就是它的化学式。点一点揭晓。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 7 化合物：书写与读法 -->
+<section class="slide" data-id="comp" data-title="化合物化学式的书写与读法" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">书写 · 化合物</p><h2>三条规则 + 从右往左读</h2></div>
+      <div class="tools"><button class="btn sm" id="coReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="rules7">
+          <div class="rcards" id="coRules"></div>
+          <div class="reader">
+            <h4>读法转换器：由两种元素组成的化合物，一般读作“某化某”</h4>
+            <div style="display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:0">
+              <div class="stagefm" id="coFm"></div>
+              <div class="say" id="coSay"></div>
+            </div>
+            <div class="chips" id="coChips"></div>
+          </div>
+        </div>
+        <div class="ctlbar"><button class="btn pri" id="coPlay">演示读法</button><button class="btn" id="coRuleAll">演示三条规则</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="pencil"></span>按名称拼化学式 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="comp">
+            <div class="target" id="coTarget"></div>
+            <div class="slots" id="coSlots"></div>
+            <div class="ttray" id="coTray"></div>
+            <div class="row"><button class="btn pri sm" id="coSub">提交</button><button class="btn sm" id="coBack">退格</button><button class="btn sm" id="coNext">换一题</button></div>
+          </div>
+          <div class="status" id="coSt" style="margin-top:8px">点符号和数字拼出化学式（数字自动写成右下角的小字）。答对 +5</div>
+        </div>
+        <div class="panel grow">
+          <h3><span data-i="star-four-points"></span>这些化学式要记住</h3>
+          <div class="memo" id="coMemo"></div>
+          <p class="hint" style="margin-top:6px">先说一说，再点开核对。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 书写诊所 -->
+<section class="slide" data-id="clinic" data-title="书写诊所：给化学式看病" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">纠错 · 书写诊所</p><h2>这些化学式“病”在哪里？</h2></div>
+      <div class="tools"><button class="btn sm" id="clReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage grid"><div class="clinic" id="clGrid"></div></div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="magnify"></span><span id="clTitle">先点一位“病号”</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="opts" id="clOpts"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="clSub" disabled>提交</button></div>
+          <div class="status" id="clSt" style="margin-top:10px">红蓝两队轮流接诊，诊断正确 +5，病号康复。</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 宾果 -->
+<section class="slide" data-id="bingo" data-title="竞赛：化学式宾果" data-min="10">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">竞赛 · 红蓝对抗</p><h2>化学式宾果</h2></div>
+      <div class="tools"><button class="btn sm" id="biReset">重新开始</button></div></header>
+    <div class="body q">
+      <div class="stage grid"><div class="bingo" id="biGrid"></div></div>
+      <aside class="side">
+        <div class="panel grow"><div class="qcard" id="biCard"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 化学式一张图" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">小结</p><h2>化学式，一张图带走</h2></div>
+      <div class="tools"></div></header>
+    <div class="body two">
+      <div class="stage grid">
+        <div class="sumgrid" id="suGrid"></div>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部揭晓</button><button class="btn" id="suHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div class="score" id="suScore"></div></div>
+        <div class="panel grow"><h3><span data-i="lightbulb-on-outline"></span>说一说</h3>
+          <p style="line-height:1.8">1. 你能用 <b class="fm">H<sub>2</sub>O</b> 说出化学式的四层意义吗？<br>2. <b class="fm">2H</b>、<b class="fm">H<sub>2</sub></b>、<b class="fm">2H<sub>2</sub></b>、<b class="fm">2H<sup>+</sup></b> 有什么不同？<br>3. 写出五氧化二磷、四氧化三铁的化学式。</p>
+          <p class="credit" style="margin-top:auto;padding-top:10px">图标几何：Material Design Icons（Apache 2.0）；字体：站酷快乐体、思源黑体（SIL OFL）；分子模型与动画均为代码绘制。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
