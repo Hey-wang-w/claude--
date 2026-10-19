@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>水的净化</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="gf" rel="stylesheet" media="print" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Kalam:wght@700&display=swap">
+<style>/* ========== 实验记录本 主题 ==========
+   暖色书桌底 + 方格纸舞台 + 胶带 / 印章 / 手写标题；黄色横线便签承载“笔记”。 */
+:root{
+  color-scheme:light;--vw:16px;--vh:9px;
+  --desk:#ece3d3;--desk2:#e2d5bf;--paper:#fbf9f4;--grid:#dfe6ec;--grid2:#c9d5df;
+  --ink:#23262f;--ink2:#4a4f5c;--dim:#6f7480;--faint:#9a9ca3;
+  --navy:#1f4e79;--navy2:#2f6fb0;--cinna:#c4492f;--moss:#3f7d5a;--mustard:#d9a62e;--mud:#8a6a43;--clear:#8cc9de;
+  --tape:rgba(232,206,128,.72);--tape2:rgba(170,206,214,.7);
+  --sticky:#fff4c2;--stickyLine:#eadf9e;
+  /* 供公共脚本读取（必须为 6 位十六进制） */
+  --proton:#c4492f;--neutron:#8a6a43;--electron:#2f6fb0;--gold:#d9a62e;--line:#c9d5df;--ok:#3f7d5a;--bad:#c4492f;--void:#ece3d3;--panel:#fbf9f4;--deep:#e2d5bf;
+  --f-hand:"Ma Shan Zheng","STKaiti","KaiTi","楷体",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --f-num:"Kalam","Segoe Print","Noto Sans SC",sans-serif;
+  --r:6px;
+  --shadow:0 1px 0 rgba(0,0,0,.04),0 14px 28px -18px rgba(60,40,10,.45);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;color:var(--ink);font:400 18px/1.6 var(--f-body);background:var(--desk)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--navy2);outline-offset:2px}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:59;opacity:0;background:var(--bad)}
+#flash.go{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:.16}100%{opacity:0}}
+#app{position:fixed;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;z-index:1;font-size:18px}
+#deck{position:absolute;inset:0;z-index:1}
+#deck.shaking{animation:quake .4s}
+@keyframes quake{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,-2px)}80%{transform:translate(2px,2px)}}
+
+/* ---------- 页面骨架 ---------- */
+.slide{position:absolute;inset:0;overflow:hidden;padding:clamp(14px,calc(var(--vh)*3),34px) 52px 86px;
+  opacity:0;visibility:hidden;transform:translateX(26px) rotate(.4deg);transition:opacity .45s,transform .7s cubic-bezier(.2,.8,.2,1),visibility 0s linear .7s}
+.slide.past{transform:translateX(-26px) rotate(-.4deg)}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.frame{max-width:1496px;height:100%;margin-inline:auto;display:grid;grid-template-rows:auto minmax(0,1fr);gap:clamp(10px,calc(var(--vh)*1.8),18px)}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 6px;padding:2px 10px;border:1.5px solid var(--cinna);color:var(--cinna);border-radius:4px;font:700 13px/1.4 var(--f-body);letter-spacing:.18em;transform:rotate(-1.5deg);background:rgba(196,73,47,.05)}
+h1,h2,h3{margin:0;font-weight:700;line-height:1.2}
+h2{font:400 clamp(34px,calc(var(--vw)*2.9),48px)/1.1 var(--f-hand);letter-spacing:.04em;color:var(--ink);display:inline;background:linear-gradient(transparent 62%,rgba(217,166,46,.38) 62%,rgba(217,166,46,.38) 92%,transparent 92%)}
+h3{font:700 19px/1.3 var(--f-body)}
+p{margin:0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.body{min-height:0;display:grid;gap:20px}
+.body.two{grid-template-columns:minmax(0,1fr) 430px}
+.body.q{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+/* 方格纸舞台 + 胶带 */
+.stage{position:relative;min-height:0;border-radius:var(--r);background:
+  linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--paper);
+  box-shadow:var(--shadow);border:1px solid #e3dccd}
+.stage>canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:var(--r)}
+.tape{position:absolute;width:110px;height:28px;background:var(--tape);z-index:3;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.08);clip-path:polygon(0 8%,3% 0,7% 10%,11% 0,100% 0,97% 12%,100% 24%,97% 38%,100% 52%,97% 66%,100% 80%,97% 92%,100% 100%,0 100%,3% 86%,0 72%,3% 58%,0 44%,3% 30%,0 18%)}
+.tape.tl{left:-24px;top:10px;transform:rotate(-38deg)}
+.tape.tr{right:-24px;top:10px;transform:rotate(38deg)}
+.tape.tc{left:50%;top:-12px;transform:translateX(-50%) rotate(-2deg)}
+.tape.blue{background:var(--tape2)}
+.side{min-height:0;display:flex;flex-direction:column;gap:14px}
+.panel{position:relative;background:var(--paper);border:1px solid #e3dccd;border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+.panel h3{margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.panel h3 .ico{width:26px;height:26px}
+.grow{flex:1;min-height:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--dim)}
+.hint{font-size:13.5px;color:var(--dim)}
+.ico{display:inline-block;width:1.6em;height:1.6em;vertical-align:-.45em;flex:none}
+.ico svg{width:100%;height:100%;display:block}
+.num{font-family:var(--f-num);font-weight:700}
+.k{color:var(--navy);font-weight:700}
+.kr{color:var(--cinna);font-weight:700}
+b,strong{font-weight:700}
+.hand{font-family:var(--f-hand);font-weight:400}
+
+/* ---------- 便签笔记 ---------- */
+.note{position:relative;min-height:0;overflow:hidden;background:
+  linear-gradient(transparent calc(1.86em - 1px),var(--stickyLine) calc(1.86em - 1px),var(--stickyLine) 1.86em,transparent 1.86em) 0 2.5em/100% 1.86em,var(--sticky);
+  color:var(--ink);border-radius:2px 2px 18px 2px;padding:10px 16px 10px 30px;box-shadow:0 16px 26px -18px rgba(90,70,10,.7),0 1px 0 rgba(0,0,0,.05);font-size:16.5px;line-height:1.86em;transform:rotate(.35deg)}
+.note::before{content:"";position:absolute;left:14px;top:0;bottom:0;width:1.5px;background:rgba(196,73,47,.5)}
+.note::after{content:"";position:absolute;left:50%;top:-11px;width:96px;height:24px;transform:translateX(-50%) rotate(-3deg);background:var(--tape2)}
+.note h4{margin:0;display:flex;align-items:center;gap:6px;font:400 1.35em/1.85em var(--f-hand);color:var(--navy)}
+.note h4 .ico{width:1.2em;height:1.2em}
+.note ol,.note ul{margin:0;padding-left:1.2em}
+.note li{margin:0}
+.note mark{background:linear-gradient(transparent 52%,rgba(240,150,90,.5) 52%,rgba(240,150,90,.5) 92%,transparent 92%);color:inherit;font-weight:700;padding:0 .1em}
+.note .to{color:var(--cinna);font-weight:700}
+.note small{font-size:.86em;color:var(--ink2)}
+
+/* ---------- 按钮 ---------- */
+.btn{appearance:none;border:1.5px solid var(--ink);background:#fff;color:var(--ink);padding:.42em 1em;border-radius:8px;cursor:pointer;font-weight:700;font-size:.9em;line-height:1.35;display:inline-flex;align-items:center;gap:.45em;white-space:nowrap;box-shadow:2px 2px 0 var(--ink);transition:transform .1s,box-shadow .1s,background .2s}
+.btn:hover{background:#f4efe4}
+.btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:2px 2px 0 #12304b}
+.btn.pri:hover{background:#245b8c}
+.btn.warm{background:var(--mustard);border-color:#8c6514;box-shadow:2px 2px 0 #8c6514;color:#2d2006}
+.btn.red{background:var(--cinna);border-color:#7d2b19;box-shadow:2px 2px 0 #7d2b19;color:#fff}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:2px 2px 0 var(--ink)}
+.btn.sm{font-size:.8em;padding:.3em .75em}
+.btn.big{font-size:1.15em;padding:.6em 1.4em}
+.btn .ico{width:1.3em;height:1.3em}
+.status{padding:9px 13px;border-radius:6px;background:#f4f1ea;border:1.5px dashed var(--grid2);min-height:2.9em;font-size:.93em;line-height:1.55}
+.status.ok{background:#e9f3ec;border:1.5px solid var(--moss)}
+.status.bad{background:#fbece7;border:1.5px solid var(--cinna)}
+.status.warn{background:#fbf3dc;border:1.5px solid var(--mustard)}
+
+/* 印章 */
+.stamp{position:absolute;z-index:6;pointer-events:none;font:400 30px/1 var(--f-hand);color:var(--cinna);border:3.5px double var(--cinna);border-radius:10px;padding:6px 14px;transform:rotate(-12deg) scale(2.4);opacity:0;mix-blend-mode:multiply;white-space:nowrap}
+.stamp.on{animation:stampIn .45s cubic-bezier(.3,1.6,.5,1) forwards}
+.stamp.ok{color:var(--moss);border-color:var(--moss)}
+@keyframes stampIn{to{transform:rotate(-12deg) scale(1);opacity:.9}}
+
+/* ---------- 底栏 ---------- */
+.prog{position:fixed;top:0;left:0;height:4px;width:0;z-index:45;background:repeating-linear-gradient(90deg,var(--cinna) 0 14px,var(--mustard) 14px 28px);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:45;display:flex;align-items:center;gap:4px;padding:5px 10px;background:#fbf9f4;border:1.5px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);max-width:calc(100% - 24px)}
+.dock .ic{width:38px;height:38px;border-radius:8px;border:0;background:transparent;cursor:pointer;font-size:24px;line-height:1;display:grid;place-items:center;color:var(--ink)}
+.dock .ic:hover{background:#efe8da}
+.dock .ic:disabled{opacity:.3}
+.dock .tx{border:0;background:transparent;cursor:pointer;padding:8px 10px;border-radius:8px;font-size:13.5px;color:var(--ink2);white-space:nowrap;font-weight:700}
+.dock .tx:hover{background:#efe8da;color:var(--ink)}
+.dots{display:flex;gap:6px;padding-inline:6px}
+.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink2);padding:0;background:transparent;cursor:pointer;transition:all .3s}
+.dot.on{background:var(--cinna);border-color:var(--cinna);width:24px;border-radius:999px}
+.dock .pg{font:700 15px var(--f-num);color:var(--ink2);min-width:4.4em;text-align:center;white-space:nowrap}
+.tm{white-space:nowrap;border:1.5px solid transparent;background:transparent;cursor:pointer;border-radius:8px;padding:3px 12px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink2)}
+.tm b{font:700 21px var(--f-num);min-width:1.8em;text-align:center}
+.tm.r b{color:var(--cinna)}.tm.b b{color:var(--navy2)}
+.tm.on.r{border-color:var(--cinna);background:#fbe9e3;color:var(--ink)}
+.tm.on.b{border-color:var(--navy2);background:#e5eef8;color:var(--ink)}
+.tm.bump b{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.7)}}
+.menu{position:fixed;inset:0;z-index:55;background:rgba(40,30,15,.35);display:grid;place-items:center;padding:16px}
+.menu .card{width:min(820px,100%);max-height:calc(var(--vh)*84);overflow:auto;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:20px;box-shadow:5px 5px 0 var(--ink)}
+.menu ol{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.menu li button{width:100%;text-align:left;border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:baseline;font-weight:700}
+.menu li button:hover{border-color:var(--ink)}
+.menu li button b{font:700 15px var(--f-num);color:var(--cinna);min-width:2em}
+.menu li button small{margin-left:auto;color:var(--dim);font-size:12px;white-space:nowrap;font-weight:400}
+.menu .opt-tag{color:var(--mustard)}
+.cm{color:var(--cinna);font-weight:700}
+
+/* ---------- 通用：选项按钮 ---------- */
+.opts{display:grid;gap:8px}
+.opts.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:9px 12px;cursor:pointer;font-weight:500;line-height:1.45;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--ink2)}
+.opt>i{font:700 16px/1.45 var(--f-num);font-style:normal;color:var(--navy);min-width:1.1em}
+.opt[aria-pressed="true"]{border-color:var(--navy);background:#e8f0f8;box-shadow:inset 0 0 0 1.5px var(--navy)}
+.opt.right{border-color:var(--moss);background:#e5f2e8;box-shadow:inset 0 0 0 1.5px var(--moss)}
+.opt.wrong{border-color:var(--cinna);background:#fbe8e2;box-shadow:inset 0 0 0 1.5px var(--cinna)}
+.opt:disabled{cursor:default}
+.tag{display:inline-block;padding:0 8px;border-radius:4px;font-size:12.5px;font-weight:700;line-height:1.7;border:1.2px solid currentColor}
+.tag.p{color:var(--moss)}.tag.c{color:var(--cinna)}.tag.n{color:var(--navy)}.tag.y{color:#9a6f10}
+
+/* ---------- 1 封面 ---------- */
+.cov{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 640px;gap:40px;align-items:center}
+.cov .book{position:relative;padding:44px 48px 40px 70px;background:var(--paper);border-radius:4px 14px 14px 4px;box-shadow:var(--shadow),inset 26px 0 0 -12px #e4dccd;border:1px solid #e3dccd}
+.cov .book::before{content:"";position:absolute;left:34px;top:0;bottom:0;width:1.5px;background:rgba(196,73,47,.45)}
+.cov .unit{font:700 15px var(--f-body);letter-spacing:.3em;color:var(--dim)}
+.cov h1{font:400 112px/1.05 var(--f-hand);margin:.12em 0 .1em;color:var(--ink);letter-spacing:.06em}
+.cov h1 span{color:var(--navy)}
+.cov .sub{font:400 30px var(--f-hand);color:var(--ink2)}
+.cov .meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-top:22px;font-size:16px}
+.cov .meta dt{color:var(--dim)}.cov .meta dd{margin:0;border-bottom:1.5px dotted var(--grid2);font-family:var(--f-hand);font-size:22px;line-height:1.2}
+.cov .qs{margin-top:22px;display:flex;flex-direction:column;gap:8px}
+.cov .qs p{display:flex;gap:10px;align-items:center;font-weight:500;opacity:0;transform:translateX(-12px);animation:qin .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.4s + var(--i)*.16s)}
+.cov .qs p b{font:700 18px var(--f-num);color:#fff;background:var(--cinna);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none}
+@keyframes qin{to{opacity:1;transform:none}}
+.cov .glass{position:relative;height:min(660px,calc(var(--vh)*100 - 180px))}
+.cov .glass canvas{position:absolute;inset:0;width:100%;height:100%}
+.cov .polaroid{position:absolute;background:#fff;padding:12px 12px 44px;box-shadow:var(--shadow);border:1px solid #e9e3d6}
+.cov .chips{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.imp{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:5px 14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);display:inline-flex;gap:6px;align-items:center}
+.imp i{font-style:normal;font-size:12px;font-weight:700;padding:0 6px;border-radius:4px;color:#fff}
+.imp.done{background:#f4efe4}
+
+/* ---------- 2 自来水厂 ---------- */
+.plantWrap{position:absolute;inset:0}
+.plantCtl{position:absolute;left:18px;right:18px;bottom:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;z-index:4}
+.seq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.seqc{position:relative;border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:8px 10px 8px 40px;cursor:pointer;font-weight:700;text-align:left;line-height:1.35;min-height:52px}
+.seqc small{display:block;font-weight:400;font-size:12.5px;color:var(--dim)}
+.seqc em{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:1.5px dashed var(--grid2);font:700 15px/21px var(--f-num);font-style:normal;text-align:center;color:#fff}
+.seqc.on em{background:var(--navy);border:1.5px solid var(--navy)}
+.seqc.right{border-color:var(--moss);background:#e9f4ec}.seqc.right em{background:var(--moss);border-color:var(--moss)}
+.seqc.wrong{border-color:var(--cinna);background:#fbeae5}.seqc.wrong em{background:var(--cinna);border-color:var(--cinna)}
+
+/* ---------- 3 明矾 ---------- */
+.duo{position:absolute;inset:0}
+.ctlbar{position:absolute;left:16px;right:16px;bottom:14px;z-index:4;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cap{position:absolute;z-index:3;font:400 24px var(--f-hand);color:var(--ink);background:rgba(251,249,244,.85);padding:0 8px;border-radius:4px;transform:translateX(-50%);white-space:nowrap}
+.mag{position:absolute;z-index:3;font-size:13px;color:var(--ink2);white-space:nowrap}
+
+/* ---------- 4 器材 ---------- */
+.kit{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;padding:26px 24px 20px}
+.tool{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;border:1.5px solid transparent;border-radius:10px;cursor:pointer;padding:10px 6px 12px;background:transparent;transition:background .2s,border-color .2s}
+.tool:hover{background:rgba(255,255,255,.7);border-color:var(--grid2)}
+.tool.on{background:#fff;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.tool svg{width:100%;height:auto;max-height:330px;overflow:visible}
+.tool .nm{font:400 27px/1.1 var(--f-hand)}
+.tool .cnt{position:absolute;top:8px;right:10px;font:700 15px var(--f-num);color:var(--cinna)}
+.tool .use{font-size:14px;line-height:1.45;text-align:center;color:var(--ink2);min-height:4.4em;opacity:0;transition:opacity .3s}
+.tool.on .use{opacity:1}
+.mix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mixc{border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700;text-align:left;line-height:1.35}
+.mixc small{display:block;font-weight:400;font-size:12.5px;color:var(--dim)}
+.mixc[aria-pressed="true"]{border-color:var(--navy);background:#e8f0f8;box-shadow:inset 0 0 0 1.5px var(--navy)}
+.mixc.right{border-color:var(--moss);background:#e5f2e8}
+.mixc.miss{border-color:var(--mustard);background:#fbf3dc}
+.mixc.wrong{border-color:var(--cinna);background:#fbe8e2}
+
+/* ---------- 5 步骤拆解 ---------- */
+.steps5{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr);padding:14px 18px 16px;gap:10px}
+.stepTabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.stepTabs button{border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:6px 8px;cursor:pointer;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.stepTabs button em{font:700 17px/24px var(--f-num);font-style:normal;width:26px;height:26px;border-radius:50%;background:#efe8da;text-align:center;flex:none}
+.stepTabs button.on{border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.stepTabs button.on em{background:var(--cinna);color:#fff}
+.stepTabs button.done em{background:var(--moss);color:#fff}
+.stepView{position:relative;min-height:0}
+.stepView canvas{position:absolute;inset:0;width:100%;height:100%}
+.stepCap{position:absolute;left:10px;top:4px;z-index:3;max-width:46%;background:rgba(251,249,244,.9);padding:4px 10px 8px;border-radius:6px}
+.stepCap .t{font:400 36px/1.15 var(--f-hand);color:var(--ink)}
+.stepCap .d{margin-top:8px;font-size:17px;line-height:1.6;color:var(--ink2)}
+.stepCap .d b{color:var(--cinna)}
+.stepCtl{position:absolute;left:12px;bottom:6px;z-index:3;display:flex;gap:8px}
+.keypt{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.keypt li{display:flex;gap:9px;align-items:flex-start;line-height:1.5;font-size:16px}
+.keypt li i{flex:none;font-style:normal;font:700 13px/22px var(--f-body);color:#fff;background:var(--navy);border-radius:4px;padding:0 6px;margin-top:2px}
+.keypt li.warn i{background:var(--cinna)}
+
+/* ---------- 6 实验模式 ---------- */
+.lab{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:0}
+.labMain{position:relative;padding:22px 26px;display:flex;flex-direction:column;gap:14px;min-height:0}
+.clock{display:flex;align-items:center;gap:18px}
+.clock .big{font:700 92px/1 var(--f-num);color:var(--ink);letter-spacing:.02em;min-width:3.4em}
+.clock .big.low{color:var(--cinna)}
+.clock .ring{width:96px;height:96px}
+.nowstep{flex:1;min-height:0;position:relative;border:2px dashed var(--grid2);border-radius:12px;background:rgba(255,255,255,.75);padding:18px 22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:center}
+.nowstep .n{font:400 26px var(--f-hand);color:var(--cinna)}
+.nowstep .t{font:400 46px/1.15 var(--f-hand);margin:4px 0 10px}
+.nowstep .d{font-size:18px;line-height:1.7;color:var(--ink2)}
+.nowstep .d b{color:var(--cinna)}
+.nowstep canvas{width:100%;height:100%;min-height:0}
+.labCtl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.inspect{border-left:1.5px dashed var(--grid2);padding:20px 20px;display:flex;flex-direction:column;gap:10px;min-height:0;background:rgba(255,255,255,.55)}
+.inspect h3{display:flex;gap:8px;align-items:center}
+.chk{display:flex;flex-direction:column;gap:7px}
+.chk button{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer;line-height:1.35;font-size:15.5px}
+.chk button i{font-style:normal;font:700 12.5px/20px var(--f-body);padding:0 6px;border-radius:4px;background:#efe8da}
+.chk button em{font-style:normal;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--grid2);display:grid;place-items:center;font-weight:700}
+.chk button.ok{border-color:var(--moss)}.chk button.ok em{background:var(--moss);color:#fff;border-color:var(--moss)}
+.chk button.ng{border-color:var(--cinna)}.chk button.ng em{background:var(--cinna);color:#fff;border-color:var(--cinna)}
+.obs{font-size:15px;line-height:1.6}
+
+/* ---------- 7 找茬 / 诊断 ---------- */
+.tabs{display:flex;gap:6px}
+.spotWrap{position:absolute;inset:0}
+.spotWrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.ring2{position:absolute;z-index:4;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;border:3px solid var(--navy);pointer-events:none;animation:pinIn .3s cubic-bezier(.3,1.6,.5,1)}
+.ring2.right{border-color:var(--moss);box-shadow:0 0 0 4px rgba(63,125,90,.18)}
+.ring2.wrong{border-color:var(--cinna);border-style:dashed}
+.ring2.miss{border-color:var(--mustard);border-style:dashed}
+.ring2 b{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:4px;white-space:nowrap;font-size:13.5px;background:#fff;border:1.2px solid currentColor;padding:0 6px;border-radius:4px;color:var(--ink)}
+@keyframes pinIn{from{transform:scale(1.8);opacity:0}}
+.diag{position:absolute;inset:0;padding:22px 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.case{display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.85);border:1.5px solid var(--grid2);border-radius:10px;padding:14px 16px}
+.case h4{margin:0;font:400 30px/1.1 var(--f-hand);display:flex;align-items:center;gap:10px}
+.case .cs{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- 8 吸附消毒 ---------- */
+.sorter{display:flex;flex-direction:column;gap:7px}
+.srow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;font-weight:700;font-size:15.5px}
+.srow .btn{font-size:.82em;padding:.28em .7em}
+
+/* ---------- 9 简易净水器 ---------- */
+.bottleWrap{position:absolute;inset:0}
+.layers{display:flex;flex-direction:column;gap:7px}
+.layer{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;border:1.5px solid var(--grid2);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;text-align:left;font-weight:700}
+.layer canvas{width:40px;height:28px;border-radius:4px}
+.layer small{display:block;font-weight:400;font-size:12.5px;color:var(--dim)}
+.layer em{font-style:normal;font:700 15px var(--f-num);color:var(--navy);min-width:1.4em;text-align:center}
+.layer:disabled{opacity:.45;cursor:default}
+
+/* ---------- 10 蒸馏 ---------- */
+.distWrap{position:absolute;inset:0}
+.distCtl{position:absolute;left:14px;top:14px;z-index:4;display:flex;flex-direction:column;gap:8px;width:186px}
+.distCtl .btn{justify-content:flex-start}
+.gauge{position:absolute;left:14px;top:300px;z-index:4;display:flex;flex-direction:column;gap:8px;align-items:flex-start;font-size:14px}
+.gauge .pill{background:#fff;border:1.5px solid var(--ink);border-radius:999px;padding:2px 12px;font-weight:700;box-shadow:2px 2px 0 var(--ink);white-space:nowrap}
+.gauge .pill b{font-family:var(--f-num);font-size:18px}
+.dlog{display:flex;flex-direction:column;gap:5px;font-size:15px}
+.dlog li{list-style:none;display:flex;gap:8px;align-items:baseline;line-height:1.45}
+.dlog li em{font-style:normal;flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--grid2);display:inline-grid;place-items:center;font-size:12px;font-weight:700;transform:translateY(3px)}
+.dlog li.ok em{background:var(--moss);border-color:var(--moss);color:#fff}
+.dlog li.ng em{background:var(--cinna);border-color:var(--cinna);color:#fff}
+.dlog{margin:0;padding:0}
+
+/* ---------- 11 硬水软水 ---------- */
+.hardWrap{position:absolute;inset:0}
+
+/* ---------- 12 密室逃脱 ---------- */
+.escape{position:absolute;inset:0}
+.escape canvas{position:absolute;inset:0;width:100%;height:100%}
+.qcard{display:flex;flex-direction:column;gap:12px;height:100%}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qtext{font-size:20px;line-height:1.6;font-weight:500}
+.qfig{display:flex;justify-content:center}
+.qfig svg{display:block}
+.qex{font-size:15.5px;line-height:1.6}
+.teamTag{display:inline-flex;align-items:center;gap:6px;padding:2px 12px;border-radius:999px;font-weight:700;color:#fff;font-size:14px}
+.teamTag.r{background:var(--cinna)}.teamTag.b{background:var(--navy2)}
+.roomList{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- 13 小结 ---------- */
+.sumtab{width:100%;border-collapse:separate;border-spacing:0;font-size:17px;background:rgba(255,255,255,.88)}
+.sumtab th,.sumtab td{border-bottom:1.5px dashed var(--grid2);padding:9px 14px;font-size:18px;text-align:left;vertical-align:middle}
+.sumtab th{font:400 22px var(--f-hand);color:var(--navy);border-bottom:2px solid var(--ink)}
+.sumtab td.m{font:400 26px var(--f-hand);white-space:nowrap}
+.sumtab .cv{cursor:pointer;position:relative;min-width:6em}
+.sumtab .cv.hide{color:transparent}
+.sumtab .cv.hide::after{content:"点我";position:absolute;inset:6px 8px;display:grid;place-items:center;background:repeating-linear-gradient(45deg,#efe5cc 0 8px,#f6efdc 8px 16px);border-radius:4px;color:var(--dim);font-size:13px}
+.purity{display:flex;align-items:flex-end;gap:6px;height:26px}
+.purity i{display:block;width:16px;border-radius:2px;background:var(--clear)}
+.credit{font-size:12px;color:var(--dim)}
+.plantWrap canvas,.duo canvas,.bottleWrap canvas,.distWrap canvas,.hardWrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.hd>div:first-child{display:flex;flex-direction:column;align-items:flex-start}
+.kit{align-items:center}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="prog" id="prog"></div>
+<div id="app">
+<main id="deck">
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 一杯河水" data-min="2">
+  <div class="cov">
+    <div class="book">
+      <span class="tape tc"></span>
+      <p class="unit">第四单元 自然界的水 · 课题2</p>
+      <h1>水的<span>净化</span></h1>
+      <p class="sub">实验记录本 · 从一杯浑浊的河水出发</p>
+      <dl class="meta"><dt>实验员</dt><dd>九年级 全体同学</dd><dt>样品</dt><dd>取自小河的浑浊河水</dd><dt>任务</dt><dd>让它变清、变干净</dd></dl>
+      <div class="qs">
+        <p style="--i:0"><b>1</b>河水里藏着哪些杂质？</p>
+        <p style="--i:1"><b>2</b>自来水厂用了哪些方法净水？</p>
+        <p style="--i:2"><b>3</b>怎样动手过滤、怎样制取蒸馏水？</p>
+      </div>
+      <div class="row" style="margin-top:22px"><button class="btn pri big" data-go="next">开始记录 <span data-i="arrow-right-bold"></span></button></div>
+    </div>
+    <div class="glass" id="covGlass">
+      <canvas id="cvCover"></canvas>
+      <div class="chips" id="covChips">
+        <button class="imp" data-k="0">泥沙 <i style="background:#8a6a43">不溶性</i></button>
+        <button class="imp" data-k="1">色素、异味 <i style="background:#1f4e79">可溶性</i></button>
+        <button class="imp" data-k="2">细菌等微生物 <i style="background:#3f7d5a">微生物</i></button>
+        <button class="imp" data-k="3">钙、镁化合物 <i style="background:#1f4e79">可溶性</i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 自来水厂 -->
+<section class="slide" data-id="plant" data-title="自来水厂净水流程" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">观察 · 自来水厂</p><h2>一滴水的“净化之旅”</h2></div>
+      <div class="tools"><button class="btn sm" id="plReset">重新演示</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="plantWrap"><canvas id="cvPlant"></canvas></div>
+        <div class="plantCtl"><span class="hint" id="plHint">点击“下一站”，跟着水流走一遍</span><span class="row"><button class="btn" id="plPrev">上一站</button><button class="btn pri" id="plNext">下一站</button></span></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="clipboard-text-outline"></span>先排一排 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">按自来水厂的先后顺序依次点击（再点一次可撤销），排好后提交。</p>
+          <div class="seq" id="plSeq"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="plSub">提交顺序</button><button class="btn sm" id="plRedo">重排</button></div>
+          <div class="status" id="plSt" style="margin-top:8px">排好后提交，正确 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 自来水厂</h4><ol>
+          <li><mark>沉淀 → 过滤 → 吸附 → 消毒</mark></li>
+          <li>絮凝剂（如<mark>明矾</mark>）：使悬浮杂质沉降</li>
+          <li>活性炭：吸附<mark>色素和异味</mark></li>
+          <li>投药消毒：杀灭细菌 <span class="to">→ 化学变化</span></li>
+          <li>自来水仍含可溶性杂质 <span class="to">→ 是混合物</span></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3 沉降 -->
+<section class="slide" data-id="alum" data-title="方法一：沉降（明矾）" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 · 沉降</p><h2>静置沉淀 vs 加明矾</h2></div>
+      <div class="tools"><button class="btn sm" id="alReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="duo"><canvas id="cvAlum"></canvas></div>
+        <div class="ctlbar"><button class="btn warm" id="alAdd">向右杯加入明矾</button><button class="btn" id="alStir">搅拌</button><button class="btn pri" id="alWait">静置 3 分钟</button><button class="btn" id="alZoom" aria-pressed="false"><span data-i="magnify"></span>放大看微观</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="lightbulb-on-outline"></span>先猜一猜 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p style="margin-bottom:8px">静置同样时间，哪一杯上层的水更澄清？</p>
+          <div class="opts c2" id="alOpts"><button class="opt" data-v="0"><i>A</i>左杯（只静置）</button><button class="opt" data-v="1"><i>B</i>右杯（加明矾）</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="alSub">提交</button></div>
+          <div class="status" id="alSt" style="margin-top:8px">选好后提交，再做实验验证</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 沉降</h4><ol>
+          <li>静置沉淀：除去<mark>较大</mark>的不溶性颗粒</li>
+          <li><mark>明矾</mark>溶于水生成<mark>胶状物</mark>，吸附悬浮杂质，使其沉降</li>
+          <li>明矾<span class="to">不能</span>杀菌消毒，也不能除去可溶性杂质</li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 过滤：原理与器材 -->
+<section class="slide" data-id="kit" data-title="过滤 ① 原理与器材" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 准备</p><h2>过滤要用哪些器材？</h2></div>
+      <div class="tools"><button class="btn sm" id="kitAll">全部翻开</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="kit" id="kit"></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="filter"></span>哪些能用过滤分开？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">多选，选完点“检查”</p>
+          <div class="mix" id="kitMix"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="kitSub">检查</button><button class="btn sm" id="kitRedo">重做</button></div>
+          <div class="status" id="kitSt" style="margin-top:8px">全对 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤</h4><ol>
+          <li>过滤：把<mark>不溶性固体</mark>与液体分离</li>
+          <li>器材：铁架台（带铁圈）、漏斗、滤纸、烧杯、<mark>玻璃棒</mark></li>
+          <li>玻璃棒的作用：<mark>引流</mark></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 过滤：步骤拆解 -->
+<section class="slide" data-id="steps" data-title="过滤 ② 步骤拆解" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 步骤</p><h2>五步完成过滤</h2></div>
+      <div class="tools"><button class="btn sm" id="stReplay">重播本步</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tr"></span>
+        <div class="steps5">
+          <div class="stepTabs" id="stTabs"></div>
+          <div class="stepView"><canvas id="cvSteps"></canvas>
+            <div class="stepCap"><div class="t" id="stT"></div><div class="d" id="stD"></div></div>
+            <div class="stepCtl"><button class="btn" id="stPrev">上一步</button><button class="btn pri" id="stNext">下一步</button></div>
+          </div>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="alert-circle-outline"></span>本步要点</h3><ul class="keypt" id="stKeys"></ul></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤操作</h4><ol>
+          <li><mark>一贴</mark>：滤纸紧贴漏斗内壁</li>
+          <li><mark>二低</mark>：滤纸边缘低于漏斗边缘；液面低于滤纸边缘</li>
+          <li><mark>三靠</mark>：烧杯口靠玻璃棒；玻璃棒靠三层滤纸；漏斗下端靠烧杯内壁</li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 学生演示 -->
+<section class="slide" data-id="lab" data-title="过滤 ③ 学生动手演示" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 动手</p><h2>请一位同学上台：过滤泥沙水</h2></div>
+      <div class="tools"><span class="hint">时长</span><button class="btn sm" data-lt="180">3 分钟</button><button class="btn sm" data-lt="240" aria-pressed="true">4 分钟</button><button class="btn sm" data-lt="300">5 分钟</button></div></header>
+    <div class="body" style="grid-template-columns:minmax(0,1fr)">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="lab">
+          <div class="labMain">
+            <div class="clock"><svg class="ring" viewBox="0 0 100 100" id="labRing"><circle cx="50" cy="50" r="44" fill="none" stroke="#e3dccd" stroke-width="9"/><circle id="labArc" cx="50" cy="50" r="44" fill="none" stroke="#c4492f" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="0" transform="rotate(-90 50 50)"/></svg>
+              <div class="big" id="labClock">4:00</div>
+              <div class="labCtl"><button class="btn pri" id="labGo">开始计时</button><button class="btn" id="labPause">暂停</button><button class="btn" id="labReset">重置</button></div></div>
+            <div class="nowstep"><div><div class="n" id="labN">第 1 步 / 共 5 步</div><div class="t" id="labT"></div><div class="d" id="labD"></div>
+              <div class="row" style="margin-top:14px"><button class="btn" id="labPrev">上一步</button><button class="btn pri" id="labNext">下一步</button></div></div>
+              <canvas id="cvLab"></canvas></div>
+          </div>
+          <div class="inspect">
+            <h3><span data-i="eye-outline"></span>台下同学当“质检员”</h3>
+            <p class="hint">边看边判：做到了点“✓”所在处，没做到再点一次变“✗”</p>
+            <div class="chk" id="labChk"></div>
+            <div class="status" id="labSt">演示结束后，点“质检结果”</div>
+            <button class="btn warm" id="labRes">质检结果</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 找茬与诊断 -->
+<section class="slide" data-id="spot" data-title="过滤 ④ 找茬与故障诊断" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 总结</p><h2 id="spH">操作找茬：哪里错了？</h2></div>
+      <div class="tools tabs"><button class="btn sm" id="spTab1" aria-pressed="true">操作找茬</button><button class="btn sm" id="spTab2">故障诊断</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="spotWrap" id="spWrap"><canvas id="cvSpot"></canvas></div>
+        <div class="diag" id="spDiag" hidden></div>
+        <div class="ctlbar" id="spBar"><span class="row"><button class="btn sm" data-sc="0" aria-pressed="true">装置甲</button><button class="btn sm" data-sc="1">装置乙</button></span><button class="btn pri" id="spSub">提交</button><button class="btn" id="spRedo">重做</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="magnify"></span><span id="spTitle">在图中点出错误</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" id="spTip">每套装置藏着 2 处错误，点出位置后提交；全部找对 +5 分。</p>
+          <div class="status" id="spSt" style="margin-top:8px">已标记 0 处</div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤总结</h4><ol>
+          <li>一贴二低三靠，<mark>玻璃棒引流</mark></li>
+          <li>滤液浑浊：<mark>滤纸破损</mark>、<mark>液面高于滤纸边缘</mark>、仪器不干净 <span class="to">→ 查明原因，重新过滤</span></li>
+          <li>过滤太慢：滤纸没紧贴、有气泡；泥沙多 <span class="to">→ 先静置再过滤</span></li>
+          <li>过滤后的水仍含<mark>可溶性杂质</mark></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 吸附与消毒 -->
+<section class="slide" data-id="carbon" data-title="方法三、四：吸附与消毒" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">观察 · 活性炭</p><h2>活性炭为什么能“吸”走颜色？</h2></div>
+      <div class="tools"><button class="btn sm" id="caAdd">滴入红墨水</button><button class="btn sm pri" id="caCarb">加入活性炭</button><button class="btn sm" id="caReset">重做</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="duo"><canvas id="cvCarbon"></canvas></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="clipboard-check-outline"></span>物理变化还是化学变化？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="sorter" id="caSort"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="caSub">检查</button><button class="btn sm" id="caRedo">重做</button></div>
+          <div class="status" id="caSt" style="margin-top:8px">全对 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 吸附与消毒</h4><ol>
+          <li>活性炭<mark>疏松多孔</mark>，有<mark>吸附性</mark>：除去色素和异味 <span class="to">→ 物理变化</span></li>
+          <li>投药消毒（如<mark>二氧化氯</mark>）杀灭细菌 <span class="to">→ 化学变化</span></li>
+          <li>生活中常用<mark>煮沸</mark>的方法杀菌</li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 简易净水器 -->
+<section class="slide" data-id="bottle" data-title="动手想：自制简易净水器" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">设计 · 简易净水器</p><h2>用塑料瓶做一个净水器</h2></div>
+      <div class="tools"><button class="btn sm" id="boReset">重新搭建</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="bottleWrap"><canvas id="cvBottle"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="boPour" disabled>倒入浑浊河水</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="layers-triple-outline"></span>从瓶底往上依次装填 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="layers" id="boLayers"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="boSub">提交装填顺序</button></div>
+          <div class="status" id="boSt" style="margin-top:8px">瓶口朝下，水从上往下流。正确 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 简易净水器</h4><ol>
+          <li>自上而下：<mark>小卵石 → 石英砂 → 活性炭 → 蓬松棉</mark></li>
+          <li>先粗后细：卵石、石英砂起<mark>过滤</mark>作用；活性炭<mark>吸附</mark></li>
+          <li>得到的水仍含可溶性杂质，<span class="to">不是纯水</span></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 蒸馏 -->
+<section class="slide" data-id="distill" data-title="方法五：制取蒸馏水（互动实验）" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 · 制取蒸馏水</p><h2>蒸馏：净化程度最高的方法</h2></div>
+      <div class="tools"><button class="btn sm" id="diReset">重新实验</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tr blue"></span>
+        <div class="distWrap"><canvas id="cvDist"></canvas></div>
+        <div class="distCtl" id="diCtl">
+          <button class="btn" id="diWater"><span data-i="cup-water"></span>① 加自来水</button>
+          <button class="btn" id="diStone"><span data-i="grain"></span>② 加几粒沸石</button>
+          <button class="btn" id="diCool"><span data-i="water"></span>③ 通冷凝水</button>
+          <button class="btn red" id="diFire"><span data-i="fire"></span>④ 点燃酒精灯</button>
+          <button class="btn" id="diDump"><span data-i="flask"></span>⑤ 弃去初馏液</button>
+          <button class="btn" id="diStop"><span data-i="fire"></span>⑥ 停止加热</button>
+        </div>
+        <div class="gauge"><span class="pill">温度计 <b id="diTemp">20</b> ℃</span><span class="pill">收集蒸馏水 <b id="diVol">0.0</b> mL</span><span class="pill">冷凝水 <b id="diCold">未通</b></span></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="clipboard-check-outline"></span>实验记录</h3>
+          <ul class="dlog" id="diLog"></ul>
+          <div class="status" id="diSt" style="margin-top:8px">按 ①→⑥ 操作。</div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 蒸馏</h4><ol>
+          <li>加<mark>沸石</mark>（或碎瓷片）：<mark>防止暴沸</mark></li>
+          <li>冷凝管中冷水<mark>下进上出</mark>；先通冷凝水，再加热</li>
+          <li><mark>弃去开始馏出的液体</mark>（含杂质）</li>
+          <li>蒸馏水是<mark>纯净物</mark>；净化程度：沉降 &lt; 过滤 &lt; 吸附 &lt; <mark>蒸馏</mark></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 11 硬水软水 -->
+<section class="slide" data-id="hard" data-title="认识硬水和软水" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">认识 · 硬水与软水</p><h2>用肥皂水区分硬水和软水</h2></div>
+      <div class="tools"><button class="btn sm" id="haReset">重做</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="hardWrap"><canvas id="cvHard"></canvas></div>
+        <div class="ctlbar"><button class="btn warm" id="haSoap">各滴入等量肥皂水</button><button class="btn pri" id="haShake">振荡</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="lightbulb-on-outline"></span>判断一下 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p style="margin-bottom:8px">振荡后，哪支试管里是<b class="kr">硬水</b>？</p>
+          <div class="opts c2" id="haOpts"><button class="opt" data-v="0" disabled><i>A</i>甲试管</button><button class="opt" data-v="1" disabled><i>B</i>乙试管</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="haSub" disabled>提交</button></div>
+          <div class="status" id="haSt" style="margin-top:8px">先滴肥皂水、振荡，再观察判断</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 硬水与软水</h4><ol>
+          <li><mark>硬水</mark>：含较多可溶性钙、镁化合物</li>
+          <li><mark>软水</mark>：不含或含较少可溶性钙、镁化合物</li>
+          <li>加<mark>肥皂水</mark>振荡：泡沫多、浮渣少 → 软水；泡沫少、浮渣多 → 硬水</li>
+          <li>过滤、吸附不能除去钙镁化合物 <span class="to">→ 自来水不一定是软水</span></li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 12 密室逃脱 -->
+<section class="slide" data-id="escape" data-title="竞赛：净水密室逃脱" data-min="10">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">竞赛 · 红蓝对抗</p><h2>净水密室逃脱</h2></div>
+      <div class="tools"><button class="btn sm" id="esReset">重新开始</button></div></header>
+    <div class="body q" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="escape"><canvas id="cvEscape"></canvas></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow"><div class="qcard" id="esCard"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 13 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 净水方法对比" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">记录本 · 总结</p><h2>五种净水方法，一张表记住</h2></div>
+      <div class="tools"><button class="btn sm" id="suAll">全部揭晓</button><button class="btn sm" id="suHide">全部盖住</button></div></header>
+    <div class="body two">
+      <div class="stage" style="padding:22px 24px"><span class="tape tl"></span>
+        <table class="sumtab" id="suTab"></table>
+        <canvas id="cvSum" style="display:block;width:100%;height:230px;margin-top:22px"></canvas>
+        <p class="credit" style="position:absolute;left:24px;bottom:10px">图标几何：Material Design Icons（Apache 2.0）；实验装置与动画均为代码绘制。</p>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div id="suScore" class="hand" style="font-size:30px"></div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 本课要点</h4><ol>
+          <li>净水：沉降、过滤、吸附、消毒、蒸馏</li>
+          <li>过滤：<mark>一贴二低三靠</mark>，玻璃棒引流</li>
+          <li>活性炭吸附是<mark>物理变化</mark>；投药消毒是<mark>化学变化</mark></li>
+          <li>蒸馏：沸石防暴沸，弃去初馏液，得到<mark>纯净物</mark></li>
+          <li>肥皂水区分硬水和软水</li>
+        </ol></div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<nav class="dock" aria-label="翻页与积分">
+  <button class="ic" id="btnPrev" aria-label="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="pg" id="pg">1 / 13</span>
+  <button class="ic" id="btnNext" aria-label="下一页">›</button>
+  <button class="tm r on" id="tmR" title="设为红队答题"><span>红队</span><b id="tsR">0</b></button>
+  <button class="tm b" id="tmB" title="设为蓝队答题"><b id="tsB">0</b><span>蓝队</span></button>
+  <button class="tx" id="btnMenu">目录</button>
+  <button class="tx opt" id="btnSnd">音效：开</button>
+  <button class="tx opt" id="btnFxq">特效：高</button>
+  <button class="tx opt" id="btnFs">全屏</button>
+</nav>
+<div class="menu" id="menu" hidden><div class="card">
+  <div class="row" style="justify-content:space-between"><h3>课件目录 <small class="muted" style="font-size:.6em">建议用时合计约 45 分钟</small></h3><button class="btn sm" id="menuX">关闭</button></div>
+  <ol id="menuList"></ol>
+  <div class="row" style="margin-top:14px;justify-content:space-between"><span class="muted">积分调整</span>
+    <span class="row"><span class="cm">红队</span><button class="btn sm" data-adj="r" data-v="10">+10</button><button class="btn sm" data-adj="r" data-v="-10">−10</button>
+    <span style="color:var(--electron);font-weight:700">蓝队</span><button class="btn sm" data-adj="b" data-v="10">+10</button><button class="btn sm" data-adj="b" data-v="-10">−10</button>
+    <button class="btn sm" id="adjZero">清零</button></span></div>
+</div></div>
+</div>
+<div id="flash"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+(()=>{
+'use strict';
+/* ================= 基础工具 ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let LOW=reduce;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={p:css('--proton')||'#ff5d77',n:css('--neutron')||'#b3bdd9',e:css('--electron')||'#3fd8ff',g:css('--gold')||'#ffc457',ink:css('--ink')||'#ecf0ff',dim:css('--dim')||'#a2acd8',faint:css('--faint')||'#606c9e',line:css('--line')||'#2a3768',ok:css('--ok')||'#47e0a0',bad:css('--bad')||'#ff6a6a',void:css('--void')||'#080c1c',panel:css('--panel')||'#111938',deep:css('--deep')||'#0d1430'};
+const MONO='"JetBrains Mono",Consolas,monospace',BODY='"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif',DISP='"Noto Serif SC","Songti SC","SimSun",serif';
+const rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgba=(h,a)=>{const[r,g,b]=rgb(h);return`rgba(${r},${g},${b},${a})`;};
+const shade=(h,k)=>{const[r,g,b]=rgb(h);const f=v=>Math.round(k<0?v*(1+k):v+(255-v)*k);return`rgb(${f(r)},${f(g)},${f(b)})`;};
+const gf=$('#gf');if(gf)gf.media='all';
+
+function fit(cv){
+  const dpr=Math.min(LOW?1:2,window.devicePixelRatio||1);const r=cv.getBoundingClientRect();
+  const w=Math.max(1,r.width),h=Math.max(1,r.height);const W=Math.round(w*dpr),H=Math.round(h*dpr);
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return{ctx,w,h,dpr};
+}
+function ball(ctx,x,y,r,col,a=1){
+  if(r<=.2)return;ctx.globalAlpha=a;
+  if(LOW){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.globalAlpha=1;return;}
+  const g=ctx.createRadialGradient(x-r*.38,y-r*.42,r*.08,x,y,r);
+  g.addColorStop(0,shade(col,.75));g.addColorStop(.38,col);g.addColorStop(1,shade(col,-.55));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.globalAlpha=1;
+}
+function glow(ctx,x,y,r,col,a=1){
+  if(r<=.5||a<=0)return;if(LOW&&r>40)return;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+}
+function elec(ctx,x,y,r,a=1,col=C.e){
+  ctx.globalCompositeOperation='lighter';glow(ctx,x,y,r*3.4,col,.5*a);ctx.globalCompositeOperation='source-over';ball(ctx,x,y,r,col,a);
+}
+function label(ctx,txt,x,y,{size=14,col=C.ink,align='center',weight=500,font=BODY,a=1,base='middle',stroke=null}={}){
+  ctx.globalAlpha=a;ctx.font=`${weight} ${size}px ${font}`;ctx.textAlign=align;ctx.textBaseline=base;
+  if(stroke){ctx.lineWidth=size*.35;ctx.strokeStyle=stroke;ctx.lineJoin='round';ctx.strokeText(txt,x,y);}
+  ctx.fillStyle=col;ctx.fillText(txt,x,y);ctx.globalAlpha=1;
+}
+function ring(ctx,x,y,R,col,a=.3,dash=true,lw=1.3){ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.lineWidth=lw;if(dash)ctx.setLineDash([4,7]);ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
+function mixPN(p,n){const o=[];let a=0,b=0;for(let i=0;i<p+n;i++){if(b>=n||(a<p&&a/(p||1)<=b/(n||1))){o.push('p');a++;}else{o.push('n');b++;}}return o;}
+function nucPos(i,br){if(i===0)return[0,0];const r=br*1.12*Math.sqrt(i+.3),a=i*2.39996;return[Math.cos(a)*r,Math.sin(a)*r];}
+function nucRadius(N,br){return N<=1?br:br*1.12*Math.sqrt(N-.7)+br;}
+function drawNucleus(ctx,x,y,types,br,t=0,jit=.05){
+  for(let i=types.length-1;i>=0;i--){const[px,py]=nucPos(i,br);const j=br*jit;
+    ball(ctx,x+px+Math.sin(t*9+i*1.7)*j,y+py+Math.cos(t*8+i*2.3)*j,br,types[i]==='p'?C.p:C.n);}
+}
+// 闪电：中点位移
+function bolt(ctx,x1,y1,x2,y2,col,a=1,jag=26){
+  let pts=[[x1,y1],[x2,y2]];
+  for(let k=0;k<5;k++){const np=[];for(let i=0;i<pts.length-1;i++){const[ax,ay]=pts[i],[bx,by]=pts[i+1];const mx=(ax+bx)/2,my=(ay+by)/2,dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy)||1;
+    const off=(Math.random()-.5)*jag*Math.pow(.55,k);np.push([ax,ay],[mx-dy/L*off,my+dx/L*off]);}np.push(pts[pts.length-1]);pts=np;}
+  ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';ctx.lineCap='round';
+  [[LOW?0:10,.15],[4,.45],[1.6,1]].forEach(([lw,al])=>{if(!lw)return;ctx.strokeStyle=rgba(col,al*a);ctx.lineWidth=lw;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();});
+  ctx.globalCompositeOperation='source-over';
+}
+
+/* ================= 元素与离子数据 ================= */
+const EL=[['H','氢',0],['He','氦',2],['Li','锂',4],['Be','铍',5],['B','硼',6],['C','碳',6],['N','氮',7],['O','氧',8],['F','氟',10],['Ne','氖',10],
+ ['Na','钠',12],['Mg','镁',12],['Al','铝',14],['Si','硅',14],['P','磷',16],['S','硫',16],['Cl','氯',18],['Ar','氩',22],['K','钾',20],['Ca','钙',20]]
+ .map((d,i)=>({z:i+1,s:d[0],n:d[1],nn:d[2]}));
+const shellsOf=e=>{const caps=[2,8,8,2],o=[];let r=e;for(const c of caps){if(r<=0)break;const k=Math.min(c,r);o.push(k);r-=k;}return o;};
+const METAL=[3,4,11,12,13,19,20],GAS=[2,10,18];
+const catOf=z=>GAS.includes(z)?'gas':METAL.includes(z)?'metal':'non';
+const supTxt=q=>q===0?'':(Math.abs(q)>1?Math.abs(q):'')+(q>0?'+':'−');
+const ionHTML=(s,q)=>`${s}<sup>${supTxt(q)}</sup>`;
+const SUPU={'+':'⁺','−':'⁻','1':'¹','2':'²','3':'³'};
+const ionU=(s,q)=>s+supTxt(q).split('').map(c=>SUPU[c]||c).join('');
+const outerOf=z=>{const s=shellsOf(z);return s[s.length-1];};
+
+/* 原子结构示意图 SVG */
+function schematic(p,shells,{hide=false,err=[],errNuc=false,show=null}={}){
+  const r=26,g=24,ang=40*Math.PI/180,n=shells.length,maxR=r+g*Math.max(n,1);
+  const ext=Math.max(r,maxR*Math.sin(ang))+6,cx=r+8,cy=ext,W=cx+maxR+16,H=cy+ext;
+  let s=`<svg class="sch" style="--w:${W.toFixed(0)}" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="核内 ${p} 个质子，核外电子排布 ${shells.join('、')}">`;
+  s+=`<circle class="nuc${errNuc?' err':''}" cx="${cx}" cy="${cy}" r="${r}"/><text class="nz${errNuc?' err':''}" x="${cx}" y="${cy}">+${p}</text>`;
+  shells.forEach((k,i)=>{const R=r+g*(i+1),x1=cx+R*Math.cos(ang),y1=cy-R*Math.sin(ang),y2=cy+R*Math.sin(ang);const e=err.includes(i)?' err':'';
+    s+=`<path class="arc${e}" style="--i:${i}" pathLength="1" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}"/>`;
+    s+=`<text class="en${e}" style="--i:${i}" x="${cx+R}" y="${cy}">${hide&&!(show&&show.includes(i))?'?':k}</text>`;});
+  return s+'</svg>';
+}
+
+/* ================= 音效 ================= */
+const SND={on:true,ctx:null};
+addEventListener('pointerdown',()=>{try{SND.ctx&&SND.ctx.state==='suspended'&&SND.ctx.resume();}catch(e){}},{capture:true});
+function sfx(type){
+  if(!SND.on)return;
+  try{
+    SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx;if(a.state==='suspended')a.resume();const t=a.currentTime;
+    const tone=(f,d,typ='sine',v=.1,dl=0,f2)=>{const o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.setValueAtTime(f,t+dl);
+      if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dl+d);g.gain.setValueAtTime(0,t+dl);g.gain.linearRampToValueAtTime(v,t+dl+.012);
+      g.gain.exponentialRampToValueAtTime(.0001,t+dl+d);o.connect(g).connect(a.destination);o.start(t+dl);o.stop(t+dl+d+.03);};
+    const noise=(d,v=.2,dl=0,hp=200)=>{const b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),ch=b.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*Math.pow(1-i/ch.length,2);
+      const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='highpass';f.frequency.value=hp;g.gain.value=v;s.connect(f).connect(g).connect(a.destination);s.start(t+dl);};
+    ({click:()=>tone(700,.07,'triangle',.05),
+      pop:()=>tone(380,.14,'sine',.09,0,900),
+      drop:()=>tone(900,.12,'sine',.07,0,300),
+      ok:()=>{tone(660,.14,'triangle',.09);tone(990,.22,'triangle',.09,.1);},
+      bad:()=>tone(230,.28,'sawtooth',.05,0,130),
+      win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.3,'triangle',.08,i*.1)),
+      whoosh:()=>tone(160,.45,'sine',.06,0,700),
+      tick:()=>tone(1200,.04,'square',.02),
+      zap:()=>{noise(.35,.12,0,1500);tone(1800,.3,'sawtooth',.03,0,200);},
+      boom:()=>{noise(.6,.3,0,60);tone(120,.5,'sine',.15,0,40);},
+      stamp:()=>{noise(.15,.25,0,100);tone(90,.2,'square',.08,0,50);},
+      laser:()=>tone(2000,.35,'sawtooth',.04,0,300),
+      scan:()=>tone(500,.8,'sine',.04,0,1500),
+      shield:()=>{tone(440,.4,'sine',.07);tone(880,.4,'sine',.05,.05);}})[type]?.();
+  }catch(e){}
+}
+
+/* ================= 特效层 ================= */
+const FX=(()=>{
+  const cv=$('#fx');let ps=[],dirty=false;
+  function burst(x,y,n=26,cols=[C.g,C.e,C.p],spd=6){
+    n=LOW?Math.ceil(n/3):n;
+    for(let i=0;i<n;i++){const a=Math.random()*TAU,s=spd*(.3+Math.random());
+      ps.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,dec:.016+Math.random()*.02,r:1.5+Math.random()*3,c:cols[i%cols.length],g:.1,sh:0});}
+  }
+  function confetti(){
+    const w=innerWidth,cols=[C.g,C.e,C.p,C.ok,C.n];
+    for(let i=0;i<(LOW?40:170);i++)ps.push({x:Math.random()*w,y:-20-Math.random()*240,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,life:1,dec:.0035+Math.random()*.004,
+      r:4+Math.random()*4,c:cols[i%5],g:.04,sh:1,rot:Math.random()*TAU,vr:(Math.random()-.5)*.3});
+  }
+  function tick(dt){
+    if(!ps.length){if(dirty){const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);dirty=false;}return;}
+    const{ctx,w,h}=fit(cv);ctx.clearRect(0,0,w,h);const k=dt*60;dirty=true;
+    ps=ps.filter(p=>{p.vy+=p.g*k;p.vx*=.99;p.x+=p.vx*k;p.y+=p.vy*k;p.life-=p.dec*k;
+      ctx.globalAlpha=clamp(p.life,0,1);
+      if(p.sh){p.rot+=p.vr*k;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r*.4,p.r*2,p.r*.8);ctx.restore();}
+      else if(LOW){ctx.fillStyle=p.c;ctx.fillRect(p.x-p.r/2,p.y-p.r/2,p.r,p.r);}
+      else{ctx.globalCompositeOperation='lighter';glow(ctx,p.x,p.y,p.r*3,p.c,.9);ctx.globalCompositeOperation='source-over';}
+      return p.life>0&&p.y<h+40;});
+    ctx.globalAlpha=1;
+  }
+  return{burst,confetti,tick};
+})();
+const burstAt=(el,n,cols)=>{const r=el.getBoundingClientRect();FX.burst(r.left+r.width/2,r.top+r.height/2,n,cols);};
+const cvPt=(cv,x,y)=>{const r=cv.getBoundingClientRect();return[r.left+x,r.top+y];};
+function shake(){if(LOW)return;const d=$('#deck');d.classList.remove('shaking');void d.offsetWidth;d.classList.add('shaking');}
+function flash(col){const f=$('#flash');f.style.background=col||C.bad;f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
+
+/* ================= 红蓝队积分（全课共用） ================= */
+const TEAM={cur:'r',sc:{r:0,b:0}};
+function teamRender(){$('#tsR').textContent=TEAM.sc.r;$('#tsB').textContent=TEAM.sc.b;$('#tmR').classList.toggle('on',TEAM.cur==='r');$('#tmB').classList.toggle('on',TEAM.cur==='b');$$('[data-teamlbl]').forEach(e=>e.textContent=(TEAM.cur==='r'?'红队':'蓝队')+'答题');}
+function teamAdd(v,tm=TEAM.cur){TEAM.sc[tm]=Math.max(0,TEAM.sc[tm]+v);teamRender();const el=$(tm==='r'?'#tmR':'#tmB');el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');if(v>0)burstAt(el,22,[tm==='r'?C.p:C.e,C.g]);}
+function teamSet(tm){TEAM.cur=tm;teamRender();}
+function teamNext(){teamSet(TEAM.cur==='r'?'b':'r');}
+$('#tmR').onclick=()=>{teamSet('r');sfx('click');};$('#tmB').onclick=()=>{teamSet('b');sfx('click');};
+$$('[data-adj]').forEach(b=>b.onclick=()=>teamAdd(+b.dataset.v,b.dataset.adj));
+$('#adjZero').onclick=()=>{TEAM.sc={r:0,b:0};teamRender();};
+
+/* ================= 背景粒子 ================= */
+const BG=(()=>{
+  const cv=$('#bg');let sw=0,sh=0;
+  function paint(){const{ctx,w,h}=fit(cv);sw=innerWidth;sh=innerHeight;
+    const g=ctx.createRadialGradient(w/2,h*.45,Math.min(w,h)*.2,w/2,h/2,Math.max(w,h)*.75);g.addColorStop(0,'#f1e9db');g.addColorStop(1,'#ddcfb6');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+    let s=7;const rnd=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+    for(let i=0;i<(w*h)/900;i++){const x=rnd()*w,y=rnd()*h,l=4+rnd()*14,a=rnd()*TAU;ctx.strokeStyle=`rgba(${rnd()<.5?'120,90,50':'255,255,255'},${.05+rnd()*.07})`;ctx.lineWidth=.6+rnd()*.6;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);ctx.stroke();}}
+  function tick(){if(innerWidth!==sw||innerHeight!==sh)paint();}
+  return{tick};
+})();
+
+const S={};
+
+
+/* ================= 元素周期表数据（前 4 周期 + 常见元素） ================= */
+const RAW=[[1,'H','氢','1.008','non'],[2,'He','氦','4.003','gas'],[3,'Li','锂','6.941','metal'],[4,'Be','铍','9.012','metal'],[5,'B','硼','10.81','non'],[6,'C','碳','12.01','non'],[7,'N','氮','14.01','non'],[8,'O','氧','16.00','non'],[9,'F','氟','19.00','non'],[10,'Ne','氖','20.18','gas'],
+ [11,'Na','钠','22.99','metal'],[12,'Mg','镁','24.31','metal'],[13,'Al','铝','26.98','metal'],[14,'Si','硅','28.09','non'],[15,'P','磷','30.97','non'],[16,'S','硫','32.06','non'],[17,'Cl','氯','35.45','non'],[18,'Ar','氩','39.95','gas'],[19,'K','钾','39.10','metal'],[20,'Ca','钙','40.08','metal'],
+ [21,'Sc','钪','44.96','metal'],[22,'Ti','钛','47.87','metal'],[23,'V','钒','50.94','metal'],[24,'Cr','铬','52.00','metal'],[25,'Mn','锰','54.94','metal'],[26,'Fe','铁','55.85','metal'],[27,'Co','钴','58.93','metal'],[28,'Ni','镍','58.69','metal'],[29,'Cu','铜','63.55','metal'],[30,'Zn','锌','65.38','metal'],
+ [31,'Ga','镓','69.72','metal'],[32,'Ge','锗','72.63','metal'],[33,'As','砷','74.92','non'],[34,'Se','硒','78.97','non'],[35,'Br','溴','79.90','non'],[36,'Kr','氪','83.80','gas'],
+ [47,'Ag','银','107.9','metal'],[53,'I','碘','126.9','non'],[56,'Ba','钡','137.3','metal'],[58,'Ce','铈','140.1','metal'],[79,'Au','金','197.0','metal'],[80,'Hg','汞','200.6','metal']];
+const SH={21:[2,8,9,2],22:[2,8,10,2],23:[2,8,11,2],24:[2,8,13,1],25:[2,8,13,2],26:[2,8,14,2],27:[2,8,15,2],28:[2,8,16,2],29:[2,8,18,1],30:[2,8,18,2],31:[2,8,18,3],32:[2,8,18,4],33:[2,8,18,5],34:[2,8,18,6],35:[2,8,18,7],36:[2,8,18,8]};
+const PT=RAW.map(([z,s,n,ar,cat])=>({z,s,n,ar,cat,sh:z<=20?shellsOf(z):SH[z]||null}));
+const BYZ=Object.fromEntries(PT.map(e=>[e.z,e])),BYS=Object.fromEntries(PT.map(e=>[e.s,e]));
+const colOf=z=>z===1?1:z===2?18:z<=4?z-2:z<=10?z+8:z<=12?z-10:z<=18?z:z<=20?z-18:z-18;
+const perOf=z=>z<=2?1:z<=10?2:z<=18?3:4;
+const GL={1:'ⅠA',2:'ⅡA',13:'ⅢA',14:'ⅣA',15:'ⅤA',16:'ⅥA',17:'ⅦA',18:'0'};
+const ARR={H:1,C:12,N:14,O:16,Na:23,Mg:24,Al:27,S:32,Cl:35.5,K:39,Ca:40,Mn:55,Fe:56,Cu:64,Zn:65,Ag:108,Ba:137};
+const elHTML=(e,{num=true,ar=false,name=true}={})=>`<div class="el ${e.cat}" data-z="${e.z}">${num?`<i>${e.z}</i>`:''}<b>${e.s}</b>${name?`<span>${e.n}</span>`:''}${ar?`<em>${e.ar}</em>`:''}</div>`;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const tname=k=>k==='r'?'红队':'蓝队';
+function note(f,d=.18,type='triangle',v=.09){if(!SND.on)return;try{SND.ctx=SND.ctx||new(window.AudioContext||window.webkitAudioContext)();const a=SND.ctx;if(a.state==='suspended')a.resume();const t=a.currentTime,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02);}catch(e){}}
+
+
+/* ================= 屏幕适配：以 1600 宽的固定画布排版，整体等比缩放到任意屏幕 ================= */
+let SCALE=1;
+(()=>{const app=$('#app');
+  function lay(){const vw=innerWidth,vh=innerHeight,W=1600;const H=clamp(Math.round(W*vh/vw),900,1200);const s=Math.min(vw/W,vh/H);SCALE=s;
+    app.style.height=H+'px';app.style.setProperty('--vh',(H/100)+'px');app.style.transform=`translate(${(vw-W*s)/2}px,${(vh-H*s)/2}px) scale(${s})`;
+    try{if(R3.cur)R3.attach(R3.cur);}catch(e){}}
+  addEventListener('resize',lay);lay();})();
+/* ================= 图标：几何取自 Material Design Icons（Apache 2.0），按记录本配色渐变填充 ================= */
+const ICDEFS=`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f7fbf"/><stop offset="1" stop-color="#1f4e79"/></linearGradient>
+<linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd3e6"/><stop offset="1" stop-color="#2f7fb0"/></linearGradient>
+<linearGradient id="gC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8775a"/><stop offset="1" stop-color="#b03a22"/></linearGradient>
+<linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fae86"/><stop offset="1" stop-color="#2f6a49"/></linearGradient>
+<linearGradient id="gY" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c75e"/><stop offset="1" stop-color="#b9861b"/></linearGradient>
+<linearGradient id="gM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b48f5e"/><stop offset="1" stop-color="#6e5232"/></linearGradient>
+<linearGradient id="gW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe8f1"/></linearGradient>
+</defs></svg>`;
+const MDI={"flask": ["M6,22A3,3 0 0,1 3,19C3,18.4 3.18,17.84 3.5,17.37L9,7.81V6A1,1 0 0,1 8,5V4A2,2 0 0,1 10,2H14A2,2 0 0,1 16,4V5A1,1 0 0,1 15,6V7.81L20.5,17.37C20.82,17.84 21,18.4 21,19A3,3 0 0,1 18,22H6M5,19A1,1 0 0,0 6,20H18A1,1 0 0,0 19,19C19,18.79 18.93,18.59 18.82,18.43L16.53,14.47L14,17L8.93,11.93L5.18,18.43C5.07,18.59 5,18.79 5,19M13,10A1,1 0 0,0 12,11A1,1 0 0,0 13,12A1,1 0 0,0 14,11A1,1 0 0,0 13,10Z", "N"], "filter": ["M14,12V19.88C14.04,20.18 13.94,20.5 13.71,20.71C13.32,21.1 12.69,21.1 12.3,20.71L10.29,18.7C10.06,18.47 9.96,18.16 10,17.87V12H9.97L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L14.03,12H14Z", "N"], "water": ["M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z", "A"], "water-outline": ["M12,3.77L11.25,4.61C11.25,4.61 9.97,6.06 8.68,7.94C7.39,9.82 6,12.07 6,14.23A6,6 0 0,0 12,20.23A6,6 0 0,0 18,14.23C18,12.07 16.61,9.82 15.32,7.94C14.03,6.06 12.75,4.61 12.75,4.61L12,3.77M12,6.9C12.44,7.42 12.84,7.85 13.68,9.07C14.89,10.83 16,13.07 16,14.23C16,16.45 14.22,18.23 12,18.23C9.78,18.23 8,16.45 8,14.23C8,13.07 9.11,10.83 10.32,9.07C11.16,7.85 11.56,7.42 12,6.9Z", "A"], "fire": ["M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10 4.87 12.3 5 14.47C5.06 14.97 5.12 15.47 5.29 15.97C5.43 16.57 5.7 17.17 6 17.7C7.08 19.43 8.95 20.67 10.96 20.92C13.1 21.19 15.39 20.8 17.03 19.32C18.86 17.66 19.5 15 18.56 12.72L18.43 12.46C18.22 12 17.66 11.2 17.66 11.2M14.5 17.5C14.22 17.74 13.76 18 13.4 18.1C12.28 18.5 11.16 17.94 10.5 17.28C11.69 17 12.4 16.12 12.61 15.23C12.78 14.43 12.46 13.77 12.33 13C12.21 12.26 12.23 11.63 12.5 10.94C12.69 11.32 12.89 11.7 13.13 12C13.9 13 15.11 13.44 15.37 14.8C15.41 14.94 15.43 15.08 15.43 15.23C15.46 16.05 15.1 16.95 14.5 17.5H14.5Z", "C"], "beaker": ["M3,3V5A2,2 0 0,1 5,7V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V7A2,2 0 0,1 21,5V3H3M7,9H10V10H7V9M7,11H10V12H7V11M10,16H7V15H10V16M12,14H7V13H12V14M12,8H7V7H12V8Z", "A"], "test-tube": ["M7,2V4H8V18A4,4 0 0,0 12,22A4,4 0 0,0 16,18V4H17V2H7M11,16C10.4,16 10,15.6 10,15C10,14.4 10.4,14 11,14C11.6,14 12,14.4 12,15C12,15.6 11.6,16 11,16M13,12C12.4,12 12,11.6 12,11C12,10.4 12.4,10 13,10C13.6,10 14,10.4 14,11C14,11.6 13.6,12 13,12M14,7H10V4H14V7Z", "N"], "shield-check": ["M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z", "G"], "lock": ["M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z", "Y"], "lock-open-variant": ["M18 1C15.24 1 13 3.24 13 6V8H4C2.9 8 2 8.89 2 10V20C2 21.11 2.9 22 4 22H16C17.11 22 18 21.11 18 20V10C18 8.9 17.11 8 16 8H15V6C15 4.34 16.34 3 18 3C19.66 3 21 4.34 21 6V8H23V6C23 3.24 20.76 1 18 1M10 13C11.1 13 12 13.89 12 15C12 16.11 11.11 17 10 17C8.9 17 8 16.11 8 15C8 13.9 8.9 13 10 13Z", "G"], "door-open": ["M12,3C10.89,3 10,3.89 10,5H3V19H2V21H22V19H21V5C21,3.89 20.11,3 19,3H12M12,5H19V19H12V5M5,11H7V13H5V11Z", "M"], "factory": ["M4,18V20H8V18H4M4,14V16H14V14H4M10,18V20H14V18H10M16,14V16H20V14H16M16,18V20H20V18H16M2,22V8L7,12V8L12,12V8L17,12L18,2H21L22,12V22H2Z", "N"], "magnify": ["M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z", "N"], "clipboard-check-outline": ["M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M7.5,13.5L9,12L11,14L15.5,9.5L17,11L11,17L7.5,13.5Z", "G"], "alert-circle-outline": ["M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z", "C"], "lightbulb-on-outline": ["M20,11H23V13H20V11M1,11H4V13H1V11M13,1V4H11V1H13M4.92,3.5L7.05,5.64L5.63,7.05L3.5,4.93L4.92,3.5M16.95,5.63L19.07,3.5L20.5,4.93L18.37,7.05L16.95,5.63M12,6A6,6 0 0,1 18,12C18,14.22 16.79,16.16 15,17.2V19A1,1 0 0,1 14,20H10A1,1 0 0,1 9,19V17.2C7.21,16.16 6,14.22 6,12A6,6 0 0,1 12,6M14,21V22A1,1 0 0,1 13,23H11A1,1 0 0,1 10,22V21H14M11,18H13V15.87C14.73,15.43 16,13.86 16,12A4,4 0 0,0 12,8A4,4 0 0,0 8,12C8,13.86 9.27,15.43 11,15.87V18Z", "Y"], "check-circle": ["M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z", "G"], "timer-outline": ["M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z", "C"], "water-pump": ["M19,14.5C19,14.5 21,16.67 21,18A2,2 0 0,1 19,20A2,2 0 0,1 17,18C17,16.67 19,14.5 19,14.5M5,18V9A2,2 0 0,1 3,7A2,2 0 0,1 5,5V4A2,2 0 0,1 7,2H9A2,2 0 0,1 11,4V5H19A2,2 0 0,1 21,7V9L21,11A1,1 0 0,1 22,12A1,1 0 0,1 21,13H17A1,1 0 0,1 16,12A1,1 0 0,1 17,11V9H11V18H12A2,2 0 0,1 14,20V22H2V20A2,2 0 0,1 4,18H5Z", "N"], "bacteria-outline": ["M9,2H7V4.1C6.29,4.25 5.73,4.54 5.32,4.91L2.7,2.29L1.29,3.71L4.24,6.65C4,7.39 4,8 4,8H2V10H4.04C4.1,10.63 4.21,11.36 4.4,12.15L1.68,13.05L2.31,14.95L5,14.05C5.24,14.56 5.5,15.08 5.82,15.58L3.44,17.17L4.55,18.83L7.07,17.15C7.63,17.71 8.29,18.21 9.06,18.64L8.1,20.55L9.89,21.45L10.89,19.45L10.73,19.36C11.68,19.68 12.76,19.9 14,19.97V22H16V19.93C16.76,19.84 17.81,19.64 18.77,19.19L20.29,20.71L21.7,19.29L20.37,17.95C20.75,17.44 21,16.8 21,16C21,15.5 20.95,15.08 20.88,14.68L22.45,13.9L21.55,12.1L20.18,12.79C19.63,11.96 18.91,11.5 18.29,11.28L18.95,9.32L17.05,8.68L16.29,10.96C14.96,10.83 14.17,10.32 13.7,9.77L15.45,8.9L14.55,7.1L13,7.89C12.97,7.59 12.86,6.72 12.28,5.87L13.83,3.55L12.17,2.44L10.76,4.56C10.28,4.33 9.7,4.15 9,4.06M15,18C12.06,18 9.81,17.18 8.31,15.56C5.68,12.72 6,8.2 6,8.17V8.11L6,8.03C6,7.1 6.39,6 8,6C10.63,6 10.97,7.43 11,8C11,10 12.6,13 17,13C17.33,13 19,13.15 19,16C19,17.89 15.03,18 15,18M8.5,8A1.5,1.5 0 0,0 7,9.5A1.5,1.5 0 0,0 8.5,11A1.5,1.5 0 0,0 10,9.5A1.5,1.5 0 0,0 8.5,8M11,12A1,1 0 0,0 10,13A1,1 0 0,0 11,14A1,1 0 0,0 12,13A1,1 0 0,0 11,12M15.5,14A1.5,1.5 0 0,0 14,15.5A1.5,1.5 0 0,0 15.5,17A1.5,1.5 0 0,0 17,15.5A1.5,1.5 0 0,0 15.5,14Z", "G"], "flask-round-bottom": ["M19 15C19 18.87 15.87 22 12 22C8.13 22 5 18.87 5 15C5 12.21 6.64 9.8 9 8.67V5C9 4.45 9.45 4 10 4H10.5L9.5 2H14.5L13.5 4H14C14.55 4 15 4.45 15 5V8.67C17.36 9.8 19 12.21 19 15M11 6V10.1C8.72 10.56 7 12.58 7 15L7.08 15.91L9 13.93L13.07 18L16.93 14.14C16.58 12.12 15 10.5 13 10.1V6H11M13.07 12C13.62 12 14.07 12.45 14.07 13C14.07 13.55 13.62 14 13.07 14C12.5 14 12.07 13.55 12.07 13C12.07 12.45 12.5 12 13.07 12Z", "N"], "thermometer": ["M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z", "C"], "trophy": ["M18 2C17.1 2 16 3 16 4H8C8 3 6.9 2 6 2H2V11C2 12 3 13 4 13H6.2C6.6 15 7.9 16.7 11 17V19.08C8 19.54 8 22 8 22H16C16 22 16 19.54 13 19.08V17C16.1 16.7 17.4 15 17.8 13H20C21 13 22 12 22 11V2H18M6 11H4V4H6V11M20 11H18V4H20V11Z", "Y"], "pencil": ["M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z", "C"], "hand-pointing-up": ["M14,3V13L17.2,11.31L17.42,11.28C17.71,11.28 17.97,11.4 18.16,11.6L18.9,12.37L14,16.57C13.74,16.84 13.39,17 13,17H6.5C5.73,17 5,16.3 5,15.5V11.14C5,10.53 5.35,10 5.85,9.8L10.79,7.6L12,7.47V3A1,1 0 0,1 13,2A1,1 0 0,1 14,3M5,19H13V22H5V19Z", "N"], "cup-water": ["M18.32,8H5.67L5.23,4H18.77M12,19A3,3 0 0,1 9,16C9,14 12,10.6 12,10.6C12,10.6 15,14 15,16A3,3 0 0,1 12,19M3,2L5,20.23C5.13,21.23 5.97,22 7,22H17C18,22 18.87,21.23 19,20.23L21,2H3Z", "A"], "water-check": ["M21.75 16.25L17 21L14.25 18L15.41 16.84L17 18.43L20.59 14.84L21.75 16.25M17.62 12C16.31 8.1 12 3.25 12 3.25S6 10 6 14C6 17.31 8.69 20 12 20H12.34C12.12 19.36 12 18.7 12 18C12 14.82 14.5 12.22 17.62 12Z", "A"], "leaf": ["M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z", "G"], "eye-outline": ["M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", "N"], "home-city-outline": ["M10,2V4.26L12,5.59V4H22V19H17V21H24V2H10M7.5,5L0,10V21H15V10L7.5,5M14,6V6.93L15.61,8H16V6H14M18,6V8H20V6H18M7.5,7.5L13,11V19H10V13H5V19H2V11L7.5,7.5M18,10V12H20V10H18M18,14V16H20V14H18Z", "N"], "layers-triple-outline": ["M12 16.54L19.37 10.8L21 12.07L12 19.07L3 12.07L4.62 10.81L12 16.54M12 14L3 7L12 0L21 7L12 14M12 2.53L6.26 7L12 11.47L17.74 7L12 2.53M12 21.47L19.37 15.73L21 17L12 24L3 17L4.62 15.74L12 21.47", "M"], "grain": ["M10,12A2,2 0 0,0 8,14A2,2 0 0,0 10,16A2,2 0 0,0 12,14A2,2 0 0,0 10,12M6,8A2,2 0 0,0 4,10A2,2 0 0,0 6,12A2,2 0 0,0 8,10A2,2 0 0,0 6,8M6,16A2,2 0 0,0 4,18A2,2 0 0,0 6,20A2,2 0 0,0 8,18A2,2 0 0,0 6,16M18,8A2,2 0 0,0 20,6A2,2 0 0,0 18,4A2,2 0 0,0 16,6A2,2 0 0,0 18,8M14,16A2,2 0 0,0 12,18A2,2 0 0,0 14,20A2,2 0 0,0 16,18A2,2 0 0,0 14,16M18,12A2,2 0 0,0 16,14A2,2 0 0,0 18,16A2,2 0 0,0 20,14A2,2 0 0,0 18,12M14,8A2,2 0 0,0 12,10A2,2 0 0,0 14,12A2,2 0 0,0 16,10A2,2 0 0,0 14,8M10,4A2,2 0 0,0 8,6A2,2 0 0,0 10,8A2,2 0 0,0 12,6A2,2 0 0,0 10,4Z", "M"], "molecule": ["M7.27,10L9,7H14.42L15.58,5L15.5,4.5A1.5,1.5 0 0,1 17,3A1.5,1.5 0 0,1 18.5,4.5C18.5,5.21 18,5.81 17.33,5.96L16.37,7.63L17.73,10L18.59,8.5L18.5,8A1.5,1.5 0 0,1 20,6.5A1.5,1.5 0 0,1 21.5,8C21.5,8.71 21,9.3 20.35,9.46L18.89,12L20.62,15C21.39,15.07 22,15.71 22,16.5A1.5,1.5 0 0,1 20.5,18A1.5,1.5 0 0,1 19,16.5V16.24L17.73,14L16.37,16.37L17.33,18.04C18,18.19 18.5,18.79 18.5,19.5A1.5,1.5 0 0,1 17,21A1.5,1.5 0 0,1 15.5,19.5L15.58,19L14.42,17H10.58L9.42,19L9.5,19.5A1.5,1.5 0 0,1 8,21A1.5,1.5 0 0,1 6.5,19.5C6.5,18.79 7,18.19 7.67,18.04L8.63,16.37L4.38,9C3.61,8.93 3,8.29 3,7.5A1.5,1.5 0 0,1 4.5,6A1.5,1.5 0 0,1 6,7.5C6,7.59 6,7.68 6,7.76L7.27,10M10.15,9L8.42,12L10.15,15H14.85L16.58,12L14.85,9H10.15Z", "N"], "spray-bottle": ["M16.72 10.43C14.68 8.39 14.5 4.66 14.5 4H13V6H9V4H7C7 2.9 7.9 2 9 2H16V3C16 3.08 16.04 7.63 17.78 9.37L16.72 10.43M17 2V4H18V2H17M15 12C13 10 13 7 13 7H9V9C9 10 9 10 8 11S7 13 7 13V20C7 21.1 7.9 22 9 22H13C14.1 22 15 21.1 15 20V12Z", "G"], "star-four-points": ["M12,1L9,9L1,12L9,15L12,23L15,15L23,12L15,9L12,1Z", "Y"], "clipboard-text-outline": ["M19,3H14.82C14.25,1.44 12.53,0.64 11,1.2C10.14,1.5 9.5,2.16 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M17,11H7V9H17V11M15,15H7V13H15V15Z", "N"], "book-open-page-variant-outline": ["M19 1L14 6V17L19 12.5V1M21 5V18.5C19.9 18.15 18.7 18 17.5 18C15.8 18 13.35 18.65 12 19.5V6C10.55 4.9 8.45 4.5 6.5 4.5C4.55 4.5 2.45 4.9 1 6V20.65C1 20.9 1.25 21.15 1.5 21.15C1.6 21.15 1.65 21.1 1.75 21.1C3.1 20.45 5.05 20 6.5 20C8.45 20 10.55 20.4 12 21.5C13.35 20.65 15.8 20 17.5 20C19.15 20 20.85 20.3 22.25 21.05C22.35 21.1 22.4 21.1 22.5 21.1C22.75 21.1 23 20.85 23 20.6V6C22.4 5.55 21.75 5.25 21 5M10 18.41C8.75 18.09 7.5 18 6.5 18C5.44 18 4.18 18.19 3 18.5V7.13C3.91 6.73 5.14 6.5 6.5 6.5C7.86 6.5 9.09 6.73 10 7.13V18.41Z", "N"], "arrow-right-bold": ["M4,15V9H12V4.16L19.84,12L12,19.84V15H4Z", "W"]};
+const icon=(k,cls='ico')=>{const m=MDI[k];return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${m?`<path d="${m[0]}" fill="url(#g${m[1]})"/>`:''}</svg>`;};
+document.body.insertAdjacentHTML('afterbegin',ICDEFS);
+$$('[data-i]').forEach(e=>{e.innerHTML=icon(e.dataset.i,'');e.classList.add('ico');});
+/* ================= 绘图库：画布（按版面像素绘制）、玻璃仪器、液体、火焰、过滤装置 ================= */
+const HAND='"Ma Shan Zheng","STKaiti","KaiTi",serif';
+const INK='#23262f',NAVY='#1f4e79',CIN='#c4492f',MOSS='#3f7d5a',MUST='#d9a62e',MUD='#8a6a43';
+/* 画布：坐标用版面像素（不受整体缩放影响），清晰度按真实屏幕像素 */
+function fitS(cv){
+  const r=cv.getBoundingClientRect(),w=Math.max(1,cv.offsetWidth),h=Math.max(1,cv.offsetHeight),s=r.width/w||1;
+  const dpr=Math.min(LOW?1:2,window.devicePixelRatio||1)*s;const W=Math.round(w*dpr),H=Math.round(h*dpr);
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return{ctx,w,h,s};
+}
+const ptIn=(cv,e)=>{const r=cv.getBoundingClientRect(),s=r.width/cv.offsetWidth||1;return[(e.clientX-r.left)/s,(e.clientY-r.top)/s];};
+const txt=(ctx,s,x,y,o={})=>label(ctx,s,x,y,Object.assign({col:INK,font:BODY,weight:500},o));
+const hand=(ctx,s,x,y,o={})=>label(ctx,s,x,y,Object.assign({col:INK,font:HAND,weight:400},o));
+/* 水的颜色：turb 0=澄清 1=浑浊；tint 色素（红） */
+function waterCol(turb,{tint=0,a=1,hard=0}={}){
+  const c0=[196,228,240],c1=[156,123,78],c2=[214,74,84];
+  let c=c0.map((v,i)=>lerp(v,c1[i],turb));c=c.map((v,i)=>lerp(v,c2[i],tint));
+  const al=(.42+turb*.5+tint*.35)*a;return`rgba(${c.map(Math.round).join(',')},${Math.min(.95,al)})`;
+}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h);}
+const GL_S='rgba(66,92,118,.78)',GL_F='rgba(222,236,246,.22)';
+function glassHi(ctx,x1,y1,x2,y2,w=4,a=.75){ctx.save();ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();}
+/* 烧杯：cx 中心，by 杯底，w 宽，h 高；o.lv 液面占比，o.col 液体色 */
+function beakerPath(ctx,cx,by,w,h){const l=cx-w/2,r=cx+w/2,t=by-h,rad=Math.min(10,w*.08);
+  ctx.beginPath();ctx.moveTo(l-6,t-3);ctx.quadraticCurveTo(l,t,l,t+8);ctx.lineTo(l,by-rad);ctx.quadraticCurveTo(l,by,l+rad,by);ctx.lineTo(r-rad,by);ctx.quadraticCurveTo(r,by,r,by-rad);ctx.lineTo(r,t+4);ctx.quadraticCurveTo(r,t,r+4,t-2);}
+function beaker(ctx,cx,by,w,h,o={}){
+  const l=cx-w/2,t=by-h,lv=o.lv||0;
+  ctx.save();beakerPath(ctx,cx,by,w,h);ctx.fillStyle=GL_F;ctx.fill();
+  if(lv>0){ctx.save();beakerPath(ctx,cx,by,w,h);ctx.clip();const ly=by-h*lv;
+    const g=ctx.createLinearGradient(0,ly,0,by);g.addColorStop(0,o.col||waterCol(0));g.addColorStop(1,o.col2||o.col||waterCol(0));ctx.fillStyle=g;ctx.fillRect(l-8,ly,w+16,by-ly+2);
+    ctx.strokeStyle='rgba(255,255,255,.65)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(l+2,ly+1);ctx.lineTo(l+w-2,ly+1);ctx.stroke();
+    if(o.sed){ctx.fillStyle='#7d6040';const sh=o.sed;ctx.beginPath();ctx.moveTo(l,by);ctx.lineTo(l,by-sh*.7);for(let i=0;i<=10;i++)ctx.lineTo(l+w*i/10,by-sh*(.8+.2*Math.sin(i*1.7)));ctx.lineTo(l+w,by);ctx.fill();}
+    ctx.restore();}
+  if(o.ticks){ctx.strokeStyle='rgba(66,92,118,.55)';ctx.lineWidth=1.2;for(let i=1;i<=o.ticks;i++){const y=by-h*.85*i/o.ticks;ctx.beginPath();ctx.moveTo(l+6,y);ctx.lineTo(l+(i%2?16:24),y);ctx.stroke();}}
+  beakerPath(ctx,cx,by,w,h);ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();
+  glassHi(ctx,l+w*.84,t+16,l+w*.84,by-14,Math.max(3,w*.035),.7);glassHi(ctx,l+w*.92,t+26,l+w*.92,t+h*.45,2,.5);
+  ctx.restore();
+}
+/* 玻璃棒 */
+function rod(ctx,x1,y1,x2,y2,w=7){ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(80,106,130,.85)';ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.strokeStyle='rgba(232,244,250,.95)';ctx.lineWidth=w-3;ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1.4;const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;ctx.beginPath();ctx.moveTo(x1+nx*1.2,y1+ny*1.2);ctx.lineTo(x2+nx*1.2,y2+ny*1.2);ctx.stroke();ctx.restore();}
+/* 金属渐变 */
+function metal(ctx,x1,y1,x2,y2,dark=false){const g=ctx.createLinearGradient(x1,y1,x2,y2);if(dark){g.addColorStop(0,'#5a5f68');g.addColorStop(.45,'#2e3239');g.addColorStop(1,'#1c1f24');}else{g.addColorStop(0,'#8d939c');g.addColorStop(.35,'#e6e9ee');g.addColorStop(.6,'#a2a8b1');g.addColorStop(1,'#6b717a');}return g;}
+/* 铁架台：底座 + 立杆 */
+function stand(ctx,px,by,top,bw=230,bx=null){bx=bx??px-30;ctx.save();
+  ctx.fillStyle='rgba(60,40,10,.12)';ctx.beginPath();ctx.ellipse(bx+bw/2,by+6,bw*.55,8,0,0,TAU);ctx.fill();
+  rr(ctx,bx,by-18,bw,18,4);ctx.fillStyle=metal(ctx,0,by-18,0,by,true);ctx.fill();ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(bx+4,by-17,bw-8,2);
+  ctx.fillStyle=metal(ctx,px-5,0,px+5,0);ctx.fillRect(px-5,top,10,by-18-top);ctx.beginPath();ctx.arc(px,top,5,Math.PI,0);ctx.fill();ctx.restore();}
+/* 铁圈（从立杆伸出），rx 圈半径 */
+function ironRing(ctx,px,y,cx,rx,front){ctx.save();ctx.lineWidth=5;ctx.strokeStyle='#3a3f47';
+  if(!front){ctx.beginPath();ctx.moveTo(px,y);ctx.lineTo(cx-rx,y);ctx.stroke();rr(ctx,px-9,y-9,18,18,3);ctx.fillStyle=metal(ctx,px-9,0,px+9,0,true);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx,y,rx,rx*.2,0,Math.PI,TAU);ctx.stroke();}
+  else{ctx.beginPath();ctx.ellipse(cx,y,rx,rx*.2,0,0,Math.PI);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(cx,y-1.5,rx,rx*.2,0,.3,Math.PI-.3);ctx.stroke();}
+  ctx.restore();}
+/* 酒精灯：cx 中心，by 底，s 缩放，lit 是否点燃 */
+function lamp(ctx,cx,by,s,lit,t,capOn=false){ctx.save();ctx.translate(cx,by);ctx.scale(s,s);
+  ctx.fillStyle='rgba(60,40,10,.12)';ctx.beginPath();ctx.ellipse(0,4,62,8,0,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.moveTo(-58,0);ctx.bezierCurveTo(-66,-40,-48,-74,-16,-80);ctx.lineTo(16,-80);ctx.bezierCurveTo(48,-74,66,-40,58,0);ctx.closePath();
+  const g=ctx.createLinearGradient(-60,0,60,0);g.addColorStop(0,'rgba(200,225,238,.55)');g.addColorStop(.3,'rgba(240,250,255,.35)');g.addColorStop(1,'rgba(170,200,220,.55)');ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=2;ctx.stroke();
+  ctx.save();ctx.clip();ctx.fillStyle='rgba(150,200,225,.45)';ctx.fillRect(-70,-38,140,40);ctx.restore();
+  glassHi(ctx,-40,-50,-46,-14,4,.65);
+  rr(ctx,-14,-94,28,16,3);ctx.fillStyle=metal(ctx,-14,0,14,0);ctx.fill();
+  ctx.strokeStyle='#efe6cf';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(0,-94);ctx.lineTo(0,-104);ctx.stroke();ctx.strokeStyle='#2a2a2a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,-103);ctx.lineTo(0,-107);ctx.stroke();
+  if(capOn){ctx.beginPath();ctx.moveTo(-20,-90);ctx.lineTo(-17,-128);ctx.quadraticCurveTo(0,-140,17,-128);ctx.lineTo(20,-90);ctx.closePath();ctx.fillStyle='rgba(210,230,240,.5)';ctx.fill();ctx.strokeStyle=GL_S;ctx.stroke();}
+  if(lit)flame(ctx,0,-106,1,t);
+  ctx.restore();}
+function flame(ctx,x,y,k,t){const f=1+.06*Math.sin(t*23)+.04*Math.sin(t*37),sw=Math.sin(t*9)*2.5;ctx.save();ctx.translate(x,y);ctx.scale(k,k*f);ctx.globalCompositeOperation='source-over';
+  const glw=ctx.createRadialGradient(0,-30,4,0,-30,70);glw.addColorStop(0,'rgba(255,190,90,.35)');glw.addColorStop(1,'rgba(255,190,90,0)');ctx.fillStyle=glw;ctx.beginPath();ctx.arc(0,-30,70,0,TAU);ctx.fill();
+  const shape=(w,h,dx)=>{ctx.beginPath();ctx.moveTo(-w,0);ctx.bezierCurveTo(-w*1.1,-h*.4,-w*.4+dx*.5,-h*.75,dx,-h);ctx.bezierCurveTo(w*.4+dx*.5,-h*.75,w*1.1,-h*.4,w,0);ctx.quadraticCurveTo(0,w*.5,-w,0);};
+  let g=ctx.createLinearGradient(0,0,0,-78);g.addColorStop(0,'rgba(255,170,60,.85)');g.addColorStop(.6,'rgba(255,200,90,.7)');g.addColorStop(1,'rgba(255,230,160,0)');shape(15,78,sw);ctx.fillStyle=g;ctx.fill();
+  g=ctx.createLinearGradient(0,0,0,-48);g.addColorStop(0,'rgba(255,245,200,.95)');g.addColorStop(1,'rgba(255,215,110,.2)');shape(9,48,sw*.6);ctx.fillStyle=g;ctx.fill();
+  g=ctx.createLinearGradient(0,0,0,-22);g.addColorStop(0,'rgba(70,120,255,.85)');g.addColorStop(1,'rgba(120,160,255,0)');shape(6,22,0);ctx.fillStyle=g;ctx.fill();
+  ctx.restore();}
+/* 漏斗几何（基准：rim 圆口中心 cx,ry，半径 R，锥高 ch，颈长 sl） */
+function funnelGeo(cx,ry,R=70,ch=96,sl=150,sr=7){return{cx,ry,R,ch,sl,sr,cy:ry+ch,sy:ry+ch+sl};}
+function funnelBack(ctx,F){ctx.save();ctx.beginPath();ctx.ellipse(F.cx,F.ry,F.R,F.R*.2,0,0,TAU);ctx.fillStyle='rgba(214,232,244,.35)';ctx.fill();ctx.restore();}
+function funnelBody(ctx,F){const{cx,ry,R,cy,sy,sr}=F;ctx.save();
+  ctx.beginPath();ctx.moveTo(cx-R,ry);ctx.lineTo(cx-sr,cy);ctx.lineTo(cx-sr,sy-6);ctx.lineTo(cx+sr,sy+6);ctx.lineTo(cx+sr,cy);ctx.lineTo(cx+R,ry);ctx.fillStyle=GL_F;ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx,ry,R,R*.2,0,0,TAU);ctx.stroke();
+  glassHi(ctx,cx-R*.72,ry+8,cx-sr*1.6,cy-6,3.5,.7);glassHi(ctx,cx-sr*.3,cy+8,cx-sr*.3,sy-14,2,.75);
+  ctx.restore();}
+/* 滤纸圆锥：top 为滤纸上沿 y（与漏斗内壁贴合），wetK 润湿程度 */
+function paperCone(ctx,F,top,{wet=1,mud=0,bubbles=0,t=0,tear=false}={}){const{cx,ry,R,cy}=F;const k=(cy-top)/(cy-ry),rw=R*k*.985,bot=cy-12;
+  ctx.save();ctx.beginPath();ctx.moveTo(cx-rw,top);ctx.lineTo(cx,bot);ctx.lineTo(cx+rw,top);ctx.ellipse(cx,top,rw,rw*.2,0,0,Math.PI,false);ctx.closePath();
+  ctx.fillStyle=wet>.5?'rgba(226,221,206,.92)':'rgba(250,249,243,.97)';ctx.fill();ctx.strokeStyle='rgba(140,128,104,.85)';ctx.lineWidth=1.6;ctx.stroke();
+  // 三层一侧：右侧折叠线
+  ctx.fillStyle='rgba(205,198,180,.45)';ctx.beginPath();ctx.moveTo(cx+rw*.28,top+rw*.19);ctx.lineTo(cx,bot);ctx.lineTo(cx+rw,top);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='rgba(150,140,120,.55)';ctx.beginPath();ctx.moveTo(cx+rw*.28,top+rw*.19);ctx.lineTo(cx,bot);ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx,top,rw,rw*.2,0,0,TAU);ctx.strokeStyle='rgba(150,140,120,.8)';ctx.stroke();
+  if(mud>0){ctx.save();ctx.beginPath();ctx.moveTo(cx-rw*.62,top+(bot-top)*.38);ctx.lineTo(cx,bot);ctx.lineTo(cx+rw*.62,top+(bot-top)*.38);ctx.closePath();ctx.clip();
+    ctx.fillStyle=`rgba(120,92,58,${.55*mud})`;ctx.fillRect(cx-rw,top,rw*2,bot-top);for(let i=0;i<30;i++){ctx.fillStyle=`rgba(95,70,40,${.6*mud})`;ctx.beginPath();ctx.arc(cx+(((i*37)%60)-30)/30*rw*.5,bot-((i*53)%100)/100*(bot-top)*.55,1.5+(i%3),0,TAU);ctx.fill();}ctx.restore();}
+  if(bubbles>0){for(let i=0;i<5;i++){const yy=top+(bot-top)*(.25+i*.13),xx=cx+(i%2?-1:1)*rw*(1-(yy-top)/(bot-top))*.86;ctx.globalAlpha=bubbles;ctx.strokeStyle='rgba(90,120,150,.8)';ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.ellipse(xx,yy,5+i%2*2,4,0,0,TAU);ctx.fill();ctx.stroke();}ctx.globalAlpha=1;}
+  if(tear){ctx.strokeStyle=CIN;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-6,bot-30);ctx.lineTo(cx+2,bot-20);ctx.lineTo(cx-4,bot-12);ctx.stroke();}
+  ctx.restore();return{rw,bot};}
+/* 漏斗中的液体（液面 y=ly） */
+function funnelLiquid(ctx,F,ly,col){const{cx,ry,R,cy}=F;const k=(cy-ly)/(cy-ry),rw=R*k*.97;ctx.save();ctx.beginPath();ctx.moveTo(cx-rw,ly);ctx.lineTo(cx,cy-10);ctx.lineTo(cx+rw,ly);ctx.closePath();ctx.fillStyle=col;ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx,ly,rw,rw*.2,0,0,TAU);ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1.5;ctx.stroke();ctx.restore();return rw;}
+/* 倾斜的烧杯（倒液），lip 为杯嘴坐标 */
+function tiltBeaker(ctx,lx,ly,ang,w,h,lv,col){ctx.save();ctx.translate(lx,ly);ctx.rotate(ang);ctx.translate(w/2+6,h);
+  // 在旋转坐标系中画烧杯（杯嘴在左上角 (−w/2−6, −h)）
+  const by=0,cx=0,l=-w/2,t=-h;
+  beakerPath(ctx,cx,by,w,h);ctx.fillStyle=GL_F;ctx.fill();
+  if(lv>0){ctx.save();beakerPath(ctx,cx,by,w,h);ctx.clip();ctx.rotate(-ang);const pts=[[l,t],[l+w,t],[l,by],[l+w,by]].map(([x,y])=>[x*Math.cos(ang)-y*Math.sin(ang),x*Math.sin(ang)+y*Math.cos(ang)]);
+    const ymax=Math.max(...pts.map(p=>p[1])),ymin=Math.min(...pts.map(p=>p[1]));const surf=lerp(ymax,ymin,lv);ctx.fillStyle=col;ctx.fillRect(-w*2,surf,w*4,ymax-surf+4);ctx.restore();}
+  beakerPath(ctx,cx,by,w,h);ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();glassHi(ctx,l+w*.84,t+16,l+w*.84,by-14,3,.7);
+  ctx.restore();}
+/* 液流（贝塞尔路径上的细流 + 流动亮点） */
+function stream(ctx,pts,col,w,t){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
+  ctx.setLineDash([6,14]);ctx.lineDashOffset=-t*80;ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=Math.max(1,w*.35);ctx.stroke();ctx.restore();}
+function drop(ctx,x,y,r,col){ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y-r*1.8);ctx.bezierCurveTo(x+r*.9,y-r*.6,x+r,y+r*.2,x,y+r);ctx.bezierCurveTo(x-r,y+r*.2,x-r*.9,y-r*.6,x,y-r*1.8);ctx.fill();ctx.fillStyle='rgba(255,255,255,.6)';ctx.beginPath();ctx.arc(x-r*.3,y-r*.1,r*.25,0,TAU);ctx.fill();ctx.restore();}
+/* 引线标注 */
+function callout(ctx,x,y,tx,ty,s,{col=INK,size=17,align=null,bg=true,font=BODY,weight=700}={}){ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(tx,ty);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,3.2,0,TAU);ctx.fill();
+  align=align||(tx<x?'right':'left');ctx.font=`${weight} ${size}px ${font}`;const m=ctx.measureText(s).width,px=align==='right'?tx-6-m:tx+6;
+  if(bg){ctx.fillStyle='rgba(251,249,244,.92)';rr(ctx,px-5,ty-size*.75,m+10,size*1.5,4);ctx.fill();}
+  ctx.fillStyle=col;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(s,px,ty);ctx.restore();}
+
+/* ================= 过滤装置（基准坐标 600×600，由 o 控制各处对错） =================
+   o: {rod,rodSingle,pour,lipTouch,tipAway,liquidHigh,paperHigh,flow,lv,turb,fil,filTurb,mud,labels,t,tear} */
+function filterRig(ctx,ox,oy,k,o){
+  const t=o.t||0;ctx.save();ctx.translate(ox,oy);ctx.scale(k,k);
+  const px=110,base=572,F=funnelGeo(300,188,74,100,150,7);
+  const bw=128,bh=168,bcx=o.tipAway?300:300-(bw/2-F.sr-2),bby=base-18;
+  stand(ctx,px,base,70,250,40);
+  ironRing(ctx,px,202,300,64,false);
+  const fil=o.fil||0;ctx.save();ctx.globalAlpha=o.balpha??1;beaker(ctx,bcx,bby,bw,bh,{lv:fil*.55,col:waterCol(o.filTurb??0.06),ticks:4});ctx.restore();
+  funnelBack(ctx,F);
+  const ptop=o.paperHigh?F.ry-16:F.ry+16;
+  // 液体先画（在滤纸内部）
+  const lv=o.lv||0;let ly=null;
+  if(lv>0){ly=o.liquidHigh?ptop-6:lerp(F.cy-14,ptop+30,lv);}
+  const pc=paperCone(ctx,F,ptop,{wet:1,mud:o.mud||0,tear:o.tear});
+  if(ly!==null){funnelLiquid(ctx,F,ly,waterCol(o.turb??.8,{a:.9}));
+    if(o.liquidHigh){ctx.save();ctx.fillStyle=waterCol(o.turb??.8,{a:.8});ctx.beginPath();ctx.moveTo(F.cx-F.R*.96,F.ry+4);ctx.lineTo(F.cx-pc.rw*.98,ptop+3);ctx.lineTo(F.cx-pc.rw*.86,ptop+30);ctx.closePath();ctx.fill();ctx.restore();}}
+  funnelBody(ctx,F);
+  ironRing(ctx,px,202,300,64,true);
+  // 漏斗下端与烧杯内壁
+  const tipX=F.cx+F.sr,tipY=F.sy+6;
+  // 滤液沿内壁流下 / 滴落
+  if(o.flow>0){const fc=waterCol(o.filTurb??0.06,{a:1});
+    if(!o.tipAway){ctx.save();ctx.strokeStyle=fc;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(tipX+.5,bby-bh*fil*.55);ctx.lineWidth=2;ctx.moveTo(tipX+1,tipY-4);ctx.lineTo(tipX+1,tipY+2);ctx.stroke();ctx.restore();}
+    else{const ph=(t*1.6)%1;drop(ctx,F.cx,lerp(tipY+6,bby-bh*fil*.55-4,ph*ph),4,fc);if(ph>.85&&!LOW){ctx.strokeStyle='rgba(120,160,190,.7)';ctx.lineWidth=1.3;ctx.beginPath();ctx.ellipse(F.cx,bby-bh*fil*.55,10*(ph-.8)*6,2.5,0,0,TAU);ctx.stroke();}}}
+  // 玻璃棒与倾倒烧杯
+  const rodTip=o.rodSingle?[F.cx-pc.rw*.42,ptop+48]:[F.cx+pc.rw*.4,ptop+50];
+  const rodTop=[rodTip[0]+(o.rodSingle?50:70),rodTip[1]-210];
+  if(o.rod)rod(ctx,rodTop[0],rodTop[1],rodTip[0],rodTip[1],8);
+  if(o.pour){const lip=o.rod?(o.lipTouch===false?[rodTop[0]+40,rodTop[1]+32]:[lerp(rodTop[0],rodTip[0],.22)+4,lerp(rodTop[1],rodTip[1],.22)]):[F.cx+30,F.ry-58];
+    const pc2=waterCol(o.turb??.8,{a:.92});
+    if(o.flow>0){if(o.rod&&o.lipTouch!==false)stream(ctx,[lip,[rodTip[0]+3,rodTip[1]-4]],pc2,5,t);
+      else{stream(ctx,[lip,[lip[0]-6,lip[1]+40],[o.rod?rodTip[0]:F.cx+12,(ly??F.cy-14)]],pc2,6,t);
+        if(!LOW&&!o.rod){for(let i=0;i<4;i++){const a=t*6+i*1.6;ctx.fillStyle=pc2;ctx.beginPath();ctx.arc(F.cx+12+Math.cos(a)*16,(ly??F.cy)-6-Math.abs(Math.sin(a))*14,2.5,0,TAU);ctx.fill();}}}}
+    tiltBeaker(ctx,lip[0],lip[1],-1.02,96,128,o.pourLv??.5,pc2);}
+  // 标注
+  const L=o.labels;
+  if(L){if(L.includes('一贴'))callout(ctx,F.cx-pc.rw*.7,ptop+30,F.cx-200,ptop+10,'一贴：滤纸紧贴漏斗内壁',{col:NAVY});
+    if(L.includes('二低')){ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle=CIN;ctx.lineWidth=1.5;[[F.ry,'漏斗边缘',-9],[ptop,'滤纸边缘',9]].forEach(([y,s,dy])=>{ctx.beginPath();ctx.moveTo(F.cx-F.R-20,y);ctx.lineTo(F.cx-F.R-110,y);ctx.stroke();txt(ctx,s,F.cx-F.R-116,y+dy,{align:'right',size:15,col:CIN,weight:700});});
+      if(ly!==null){ctx.strokeStyle='#2f6fb0';ctx.beginPath();ctx.moveTo(F.cx-F.R-20,ly);ctx.lineTo(F.cx-F.R-110,ly);ctx.stroke();txt(ctx,'液面',F.cx-F.R-116,ly+4,{align:'right',size:15,col:'#2f6fb0',weight:700});}ctx.restore();
+      hand(ctx,'二低',F.cx-F.R-150,(ly??ptop+30)+44,{size:32,col:CIN});}
+    if(L.includes('三靠')){callout(ctx,lerp(rodTop[0],rodTip[0],.22),lerp(rodTop[1],rodTip[1],.22),540,rodTop[1]+4,'① 烧杯口靠玻璃棒',{col:MOSS});
+      callout(ctx,rodTip[0],rodTip[1],545,ptop+66,'② 玻璃棒靠三层滤纸',{col:MOSS});
+      callout(ctx,tipX,tipY-6,545,tipY-30,'③ 漏斗下端靠烧杯内壁',{col:MOSS});}}
+  ctx.restore();
+  return{F,ptop,rodTip,rodTop,tip:[tipX,tipY],map:(x,y)=>[ox+x*k,oy+y*k]};
+}
+/* ================= 共用小工具 ================= */
+const P2D={};
+function mdiDraw(ctx,k,x,y,size,col){const m=MDI[k];if(!m)return;P2D[k]=P2D[k]||new Path2D(m[0]);ctx.save();ctx.translate(x-size/2,y-size/2);ctx.scale(size/24,size/24);ctx.fillStyle=col;ctx.fill(P2D[k]);ctx.restore();}
+function setSt(el,cls,html){el.className='status'+(cls?' '+cls:'');el.innerHTML=html;}
+function stampOn(host,text,ok=false,x='50%',y='40%'){let s=host.querySelector('.stamp');if(!s){s=document.createElement('div');s.className='stamp';host.appendChild(s);}
+  s.textContent=text;s.classList.toggle('ok',ok);s.style.left=x;s.style.top=y;s.style.translate='-50% -50%';s.classList.remove('on');void s.offsetWidth;s.classList.add('on');sfx('stamp');}
+function stampOff(host){const s=host.querySelector('.stamp');if(s)s.classList.remove('on');}
+const rng=seed=>{let s=seed;return()=>{s=(s*16807)%2147483647;return s/2147483647;};};
+/* 单选题：opts 容器 + 提交按钮 + 状态栏 */
+function single(box,sub,st,ans,{pts=5,ok='',bad='',onDone}={}){let pick=null,done=false;
+  $$('.opt',box).forEach(b=>b.onclick=()=>{if(done)return;pick=+b.dataset.v;$$('.opt',box).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
+  sub.onclick=()=>{if(done)return;if(pick===null){setSt(st,'warn','请先选择一个答案');return;}done=true;const tm=TEAM.cur;
+    $$('.opt',box).forEach(x=>{const v=+x.dataset.v;x.disabled=true;if(v===ans)x.classList.add('right');else if(v===pick)x.classList.add('wrong');});
+    if(pick===ans){teamAdd(pts,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}答对 +${pts}</b>　${ok}`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}答错，不加分</b>　${bad}`);}
+    teamNext();onDone&&onDone(pick===ans);};
+  return{reset(){pick=null;done=false;$$('.opt',box).forEach(x=>{x.disabled=false;x.classList.remove('right','wrong');x.setAttribute('aria-pressed','false');});}};}
+
+/* ================= 1 封面：一杯浑浊河水 ================= */
+S.cover=(()=>{const cv=$('#cvCover');let t=0,sel=-1,selT=0;const R=rng(11);
+  const ps=Array.from({length:150},()=>({x:R(),y:R(),r:R()<.25?2.2+R()*2.2:.8+R()*1.3,ph:R()*6,c:R()<.5?'#7a5b37':'#a3855a'}));
+  const bac=Array.from({length:7},()=>({x:R(),y:R(),a:R()*6,l:14+R()*8}));
+  const info=[['泥沙','不溶性杂质 · 可沉降、过滤除去'],['色素、异味','可溶性杂质 · 可用活性炭吸附'],['细菌等微生物','需要消毒杀灭'],['可溶性钙、镁化合物','过滤、吸附都除不掉']];
+  $$('#covChips .imp').forEach(b=>b.onclick=()=>{sel=+b.dataset.k;selT=0;b.classList.add('done');sfx('pop');burstAt(b,12,[CIN,MUST]);});
+  function tick(dt){t+=dt;selT+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const cx=w*.4,by=h-150,bw=Math.min(330,w*.52),bh=Math.min(430,h-150),l=cx-bw/2,top=by-bh*.78;
+    ctx.fillStyle='rgba(60,40,10,.12)';ctx.beginPath();ctx.ellipse(cx,by+6,bw*.6,12,0,0,TAU);ctx.fill();
+    beaker(ctx,cx,by,bw,bh,{lv:.78,col:waterCol(sel===1?.7:.78,{tint:sel===1?.12:0}),col2:waterCol(.95),ticks:6,sed:12});
+    ctx.save();beakerPath(ctx,cx,by,bw,bh);ctx.clip();
+    ps.forEach(p=>{const x=l+8+p.x*(bw-16)+Math.sin(t*.6+p.ph)*4,y=top+10+p.y*(by-top-24)+Math.cos(t*.5+p.ph)*3;ctx.fillStyle=p.c;ctx.globalAlpha=sel===0?1:.75;ctx.beginPath();ctx.arc(x,y,p.r*(sel===0?1.35:1),0,TAU);ctx.fill();});
+    ctx.globalAlpha=1;
+    if(sel===1){for(let i=0;i<5;i++){const yy=top+40+i*55,g=ctx.createRadialGradient(cx+Math.sin(t+i)*60,yy,4,cx+Math.sin(t+i)*60,yy,90);g.addColorStop(0,'rgba(205,140,60,.35)');g.addColorStop(1,'rgba(205,140,60,0)');ctx.fillStyle=g;ctx.fillRect(l,yy-90,bw,180);}}
+    ctx.restore();
+    // 水面波纹
+    ctx.save();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();for(let x=l+3;x<=l+bw-3;x+=6)ctx.lineTo(x,top+Math.sin(x*.05+t*2)*1.6);ctx.stroke();ctx.restore();
+    // 放大镜
+    const mx=Math.min(w-104,cx+bw*.5+110),my=Math.max(118,top-10),mr=96;
+    ctx.save();ctx.strokeStyle='rgba(40,40,46,.85)';ctx.lineWidth=10;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(mx-mr*.72,my+mr*.72);ctx.lineTo(mx-mr*1.12,my+mr*1.12);ctx.stroke();
+    ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fillStyle='#fdfcf8';ctx.fill();ctx.save();ctx.clip();ctx.fillStyle=waterCol(.25);ctx.fillRect(mx-mr,my-mr,mr*2,mr*2);
+    if(sel===-1){hand(ctx,'点下方标签',mx,my-12,{size:24,col:'#3a4a5a'});hand(ctx,'看看水里有什么',mx,my+20,{size:22,col:'#3a4a5a'});}
+    else if(sel===0){for(let i=0;i<9;i++){const a=i*.7+t*.2,rr2=10+i*7;ctx.fillStyle=i%2?'#7a5b37':'#9b7b4e';ctx.beginPath();ctx.ellipse(mx+Math.cos(a)*rr2*1.3,my+Math.sin(a)*rr2,7+i%3*4,5+i%2*3,a,0,TAU);ctx.fill();}}
+    else if(sel===1){for(let i=0;i<14;i++){const a=i*2.4+t*.4,d=18+(i*13)%60;ctx.fillStyle=i%2?'rgba(214,120,40,.85)':'rgba(150,90,170,.8)';ctx.beginPath();ctx.arc(mx+Math.cos(a)*d,my+Math.sin(a*1.1)*d*.8,5,0,TAU);ctx.fill();}}
+    else if(sel===2){bac.forEach((b,i)=>{b.a+=dt*(.3+i*.05);const x=mx+(b.x-.5)*mr*1.4+Math.cos(b.a)*8,y=my+(b.y-.5)*mr*1.4+Math.sin(b.a)*8;ctx.save();ctx.translate(x,y);ctx.rotate(b.a);rr(ctx,-b.l/2,-5,b.l,10,5);ctx.fillStyle='#6fae86';ctx.fill();ctx.strokeStyle='#2f6a49';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.strokeStyle='#2f6a49';ctx.beginPath();ctx.moveTo(b.l/2,0);ctx.quadraticCurveTo(b.l/2+6,Math.sin(t*12+i)*5,b.l/2+12,0);ctx.stroke();ctx.restore();});}
+    else{for(let i=0;i<8;i++){const a=i*.8+t*.3,d=22+(i*17)%55,x=mx+Math.cos(a)*d,y=my+Math.sin(a)*d*.85,ca=i%2===0;ctx.fillStyle=ca?'#5d8fc4':'#8d7cc2';ctx.beginPath();ctx.arc(x,y,13,0,TAU);ctx.fill();txt(ctx,ca?'Ca²⁺':'Mg²⁺',x,y,{size:11,col:'#fff',weight:700});}}
+    ctx.restore();ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.lineWidth=9;ctx.strokeStyle='#2c2f36';ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.arc(mx,my,mr-7,3.6,4.6);ctx.stroke();ctx.restore();
+    if(sel>=0){const a=clamp(selT*3,0,1);ctx.globalAlpha=a;hand(ctx,info[sel][0],mx,my+mr+34,{size:28,col:CIN});txt(ctx,info[sel][1],mx,my+mr+64,{size:15,col:'#4a4f5c'});ctx.globalAlpha=1;}
+    hand(ctx,'浑浊的河水',cx,by+34,{size:26,col:'#4a4f5c'});
+  }
+  return{tick};})();
+
+/* ================= 2 自来水厂净水流程 ================= */
+S.plant=(()=>{const cv=$('#cvPlant');let t=0,step=0,front=0;
+  const ST=[
+    {n:'取水口',d:'从江河、湖泊或水库中取水，水中含泥沙、色素、细菌等杂质。',x:.075},
+    {n:'加絮凝剂',d:'加入明矾等絮凝剂，生成胶状物吸附悬浮杂质。',x:.2},
+    {n:'反应沉淀池',d:'絮状物越聚越大，沉到池底——沉降。',x:.335},
+    {n:'过滤池',d:'水流过砂层、砾石层，除去不溶性杂质——过滤。',x:.48},
+    {n:'活性炭吸附池',d:'活性炭疏松多孔，吸附色素和异味——吸附。',x:.625},
+    {n:'清水池 · 投药消毒',d:'投入消毒剂杀灭细菌等微生物——消毒（化学变化）。',x:.77},
+    {n:'配水泵 → 用户',d:'自来水经管网送到千家万户。它仍含可溶性杂质，是混合物。',x:.915}];
+  const TURB=[.92,.85,.42,.18,.07,.04,.04];
+  const seqItems=[['过滤池','除去不溶性杂质',2],['投药消毒','杀灭细菌',4],['反应沉淀池','加絮凝剂，沉降',1],['活性炭吸附池','除色素异味',3]];
+  let order=[],judged=false;const box=$('#plSeq'),st=$('#plSt');
+  function renderSeq(){box.innerHTML=seqItems.map((s,i)=>`<button class="seqc${order.includes(i)?' on':''}" data-i="${i}"><em>${order.includes(i)?order.indexOf(i)+1:''}</em>${s[0]}<small>${s[1]}</small></button>`).join('');
+    $$('.seqc',box).forEach(b=>b.onclick=()=>{if(judged)return;const i=+b.dataset.i;if(order.includes(i))order=order.filter(x=>x!==i);else order.push(i);sfx('click');renderSeq();});}
+  $('#plSub').onclick=()=>{if(judged)return;if(order.length<4){setSt(st,'warn','还没排完，请把 4 项都排上序号');return;}judged=true;const tm=TEAM.cur;let all=true;
+    $$('.seqc',box).forEach(b=>{const i=+b.dataset.i,ok=order.indexOf(i)+1===seqItems[i][2];all=all&&ok;b.classList.add(ok?'right':'wrong');if(!ok)b.querySelector('em').textContent=seqItems[i][2];});
+    if(all){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>　沉淀 → 过滤 → 吸附 → 消毒`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}有误，不加分</b>　红框里已改为正确序号：沉淀 → 过滤 → 吸附 → 消毒`);}teamNext();};
+  $('#plRedo').onclick=()=>{order=[];judged=false;renderSeq();setSt(st,'','排好后提交，正确 +5 分');};
+  renderSeq();
+  const go=d=>{step=clamp(step+d,0,ST.length-1);sfx(d>0?'whoosh':'click');upd();};
+  function upd(){$('#plPrev').disabled=step===0;$('#plNext').disabled=step===ST.length-1;$('#plHint').textContent=`第 ${step+1} 站 / 共 ${ST.length} 站`;}
+  $('#plNext').onclick=()=>go(1);$('#plPrev').onclick=()=>go(-1);$('#plReset').onclick=()=>{step=0;front=0;upd();};upd();
+  function tank(ctx,x,G,w,d,turb,kind,i,t,on){const l=x-w/2;
+    // 混凝土池壁
+    ctx.fillStyle='#cfc8bb';rr(ctx,l-10,G-18,w+20,d+28,6);ctx.fill();ctx.fillStyle='#b7ae9f';ctx.fillRect(l-10,G-18,w+20,6);
+    ctx.fillStyle='#e9e4da';ctx.fillRect(l,G-12,w,d+12);
+    if(!on){return;}
+    const wy=G-6;ctx.save();ctx.beginPath();ctx.rect(l,wy,w,d+6);ctx.clip();
+    ctx.fillStyle=waterCol(turb,{a:1.05});ctx.fillRect(l,wy,w,d+6);
+    if(kind==='settle'){ctx.fillStyle='#7d6040';ctx.beginPath();ctx.moveTo(l,G+d);for(let k=0;k<=8;k++)ctx.lineTo(l+w*k/8,G+d-14-4*Math.sin(k*1.9));ctx.lineTo(l+w,G+d);ctx.fill();
+      for(let k=0;k<10;k++){const fx=l+10+((k*37)%(w-20)),fy=wy+((t*18+k*23)%(d-10));ctx.fillStyle='rgba(110,82,50,.75)';ctx.beginPath();ctx.arc(fx,fy,3+k%3,0,TAU);ctx.fill();}}
+    if(kind==='filter'){const ly=[[.55,'#d8c49a',3],[.72,'#b5a27c',5],[.86,'#8f8170',8]];ly.forEach(([f,c,r],k)=>{ctx.fillStyle=c;ctx.fillRect(l,G+d*f,w,d*.18);ctx.fillStyle='rgba(0,0,0,.12)';for(let q=0;q<w/(r*2.2);q++){ctx.beginPath();ctx.arc(l+q*r*2.2+r,G+d*f+d*.09+(q%2)*3,r*.8,0,TAU);ctx.fill();}});}
+    if(kind==='carbon'){ctx.fillStyle='#2b2b2e';ctx.fillRect(l,G+d*.5,w,d*.5);ctx.fillStyle='#45464b';for(let q=0;q<26;q++){ctx.beginPath();ctx.arc(l+((q*29)%w),G+d*.55+((q*17)%(d*.42)),3+q%3,0,TAU);ctx.fill();}}
+    if(kind==='settle'||kind==='clear'||kind==='carbon'){if(i<5)for(let k=0;k<4;k++){const bx2=l+12+((k*41+t*14)%(w-24)),by2=wy+16+((k*29)%(d*.4));ctx.fillStyle='#6fae86';rr(ctx,bx2-5,by2-2.5,10,5,2.5);ctx.fill();}}
+    ctx.restore();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();for(let xx=l;xx<=l+w;xx+=5)ctx.lineTo(xx,wy+Math.sin(xx*.08+t*2)*1.3);ctx.stroke();}
+  function tick(dt){t+=dt;front=lerp(front,step,1-Math.exp(-dt*2.2));const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const G=h*.56,d=Math.min(150,h*.22),tw=Math.min(118,w*.105);
+    // 地面
+    ctx.fillStyle='rgba(176,150,110,.22)';ctx.fillRect(0,G+8,w,h-G-70);ctx.strokeStyle='rgba(120,95,60,.5)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,G+8);ctx.lineTo(w,G+8);ctx.stroke();
+    // 管道
+    const py=G+d*.32;ctx.fillStyle=metal(ctx,0,py-9,0,py+9);ctx.fillRect(ST[0].x*w,py-9,(ST[6].x-ST[0].x)*w,18);
+    const fx=lerp(ST[0].x,ST[6].x,front/6)*w;
+    for(let k=0;k<40;k++){const xx=ST[0].x*w+((k*36+t*90)%((ST[6].x-ST[0].x)*w));if(xx>fx)continue;const seg=clamp(Math.floor((xx/w-ST[0].x)/((ST[6].x-ST[0].x)/6)),0,6);ctx.fillStyle=waterCol(TURB[seg],{a:1.3});ctx.beginPath();ctx.arc(xx,py,4.5,0,TAU);ctx.fill();}
+    // 河流
+    ctx.save();const rw=ST[0].x*w+tw*.5;ctx.beginPath();ctx.moveTo(0,G+8);for(let xx=0;xx<=rw;xx+=6)ctx.lineTo(xx,G+8+Math.sin(xx*.05+t*1.6)*3);ctx.lineTo(rw,h-70);ctx.lineTo(0,h-70);ctx.closePath();ctx.fillStyle=waterCol(.9,{a:1.1});ctx.fill();ctx.restore();
+    mdiDraw(ctx,'water-pump',ST[0].x*w,G-30,46,'#5a6270');
+    tank(ctx,ST[2].x*w,G,tw,d,TURB[2],'settle',2,t,front>1.6);
+    tank(ctx,ST[3].x*w,G,tw,d,TURB[3],'filter',3,t,front>2.6);
+    tank(ctx,ST[4].x*w,G,tw,d,TURB[4],'carbon',4,t,front>3.6);
+    tank(ctx,ST[5].x*w,G,tw,d,TURB[5],'clear',5,t,front>4.6);
+    // 加药装置
+    const dose=(x,col,lab,on)=>{ctx.fillStyle=metal(ctx,x-4,0,x+4,0);ctx.fillRect(x-3,G-120,6,py-G+120-9);rr(ctx,x-26,G-170,52,58,8);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#5a6270';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=col;rr(ctx,x-22,G-146,44,30,5);ctx.fill();txt(ctx,lab,x,G-131,{size:13,col:'#fff',weight:700});
+      if(on){const ph=(t*1.5)%1;drop(ctx,x,lerp(G-108,py-12,ph),4,col);}};
+    dose(ST[1].x*w,'#8c7ab8','明矾',front>.6);dose(ST[5].x*w+tw*.62,'#3f7d5a','消毒剂',front>4.6);
+    // 用户
+    mdiDraw(ctx,'home-city-outline',ST[6].x*w,G-34,64,'#1f4e79');
+    // 站名
+    ST.forEach((s,i)=>{const x=s.x*w,on=i<=Math.round(front),cur=i===step;const y=G+d+44;ctx.save();ctx.globalAlpha=on?1:.45;
+      ctx.fillStyle=cur?CIN:'#fff';ctx.strokeStyle=cur?CIN:'#9aa3ad';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,13,0,TAU);ctx.fill();ctx.stroke();txt(ctx,String(i+1),x,y+1,{size:14,col:cur?'#fff':'#4a4f5c',weight:700,font:'"Kalam",sans-serif'});
+      const nm=s.n.split(' · ')[0].replace(' → 用户','');txt(ctx,nm,x,y+30,{size:15,weight:700,col:cur?CIN:'#23262f'});ctx.restore();});
+    // 说明卡
+    const s=ST[step],cw=Math.min(560,w-60),cx0=30,cy0=22;ctx.save();ctx.fillStyle='rgba(255,255,255,.93)';ctx.shadowColor='rgba(60,40,10,.18)';ctx.shadowBlur=14;ctx.shadowOffsetY=6;rr(ctx,cx0,cy0,cw,96,8);ctx.fill();ctx.restore();
+    ctx.fillStyle=CIN;ctx.fillRect(cx0,cy0,6,96);hand(ctx,`${step+1}. ${s.n}`,cx0+22,cy0+32,{size:32,align:'left',col:'#23262f'});txt(ctx,s.d,cx0+22,cy0+70,{size:16,align:'left',col:'#4a4f5c'});
+    // 水质条
+    const qx=w-250,qy=34;txt(ctx,'水质（浑浊度）',qx,qy,{size:13,align:'left',col:'#6f7480',weight:700});const q=TURB[Math.round(front)];rr(ctx,qx,qy+14,210,16,8);ctx.fillStyle='#ece6da';ctx.fill();rr(ctx,qx,qy+14,210*q,16,8);ctx.fillStyle=waterCol(q,{a:1.4});ctx.fill();
+    txt(ctx,q>.6?'很浑浊':q>.3?'较浑浊':q>.1?'较清':'清澈',qx+210,qy,{size:13,align:'right',col:'#4a4f5c',weight:700});
+    // 当前站高亮
+    const hx=s.x*w;ctx.save();ctx.strokeStyle=CIN;ctx.lineWidth=2;ctx.setLineDash([6,5]);rr(ctx,hx-tw*.5-22,G-190,tw+44,d+260,10);ctx.stroke();ctx.restore();
+  }
+  return{tick};})();
+
+/* ================= 3 沉降：静置 vs 明矾 ================= */
+S.alum=(()=>{const cv=$('#cvAlum');let t=0,vt=0,waiting=0,alum=false,stir=0,floc=0,zoom=false;let A,B;
+  const R=rng(5);
+  function mk(){const a=[];for(let i=0;i<170;i++){const big=R()<.3;a.push({x:R(),y:.05+R()*.92,r:big?2.4+R()*1.8:.9+R()*1.1,big,f:-1,vy:0,down:false});}return a;}
+  let flocs=[];
+  function reset(){A=mk();B=mk();alum=false;stir=0;floc=0;vt=0;waiting=0;flocs=[];$('#alAdd').disabled=false;$('#alWait').textContent='静置 3 分钟';}
+  reset();
+  $('#alReset').onclick=()=>{reset();sfx('click');};
+  $('#alAdd').onclick=()=>{alum=true;$('#alAdd').disabled=true;sfx('drop');flocs=Array.from({length:16},()=>({x:.1+R()*.8,y:.15+R()*.7,n:0,r:3,vy:0}));};
+  $('#alStir').onclick=()=>{stir=1.6;sfx('whoosh');};
+  $('#alWait').onclick=()=>{if(waiting>0)return;waiting=6;vt=0;sfx('tick');};
+  $('#alZoom').onclick=e=>{zoom=!zoom;e.currentTarget.setAttribute('aria-pressed',String(zoom));sfx('click');};
+  const q=single($('#alOpts'),$('#alSub'),$('#alSt'),1,{ok:'明矾生成的胶状物把细小颗粒聚成大絮团，沉得快。',bad:'正确答案是 B：加明矾的右杯更澄清。'});
+  function sim(P,dt,vdt,isB){
+    for(const p of P){if(p.down)continue;
+      if(stir>0){const a=Math.atan2(p.y-.55,p.x-.5)+dt*2.2*(stir/1.6);const r=Math.hypot(p.x-.5,p.y-.55);p.x=.5+Math.cos(a)*r;p.y=.55+Math.sin(a)*r;}
+      p.x+=(Math.random()-.5)*.0016;p.y+=(Math.random()-.5)*.0012;
+      if(isB&&alum&&p.f<0&&Math.random()<dt*(stir>0?2.4:waiting>0?.9:.05)){const f=flocs[Math.floor(Math.random()*flocs.length)];p.f=flocs.indexOf(f);f.n++;f.r=3+Math.sqrt(f.n)*2.6;}
+      if(p.f<0){const v=p.big?.0045:.00012;p.y+=v*vdt;}
+      if(p.y>.985){p.y=.985;p.down=true;}p.x=clamp(p.x,.02,.98);p.y=Math.max(.04,p.y);}
+    if(isB)for(const f of flocs){if(f.down)continue;if(stir>0){const a=Math.atan2(f.y-.55,f.x-.5)+dt*2.2*(stir/1.6);const r=Math.hypot(f.x-.5,f.y-.55);f.x=.5+Math.cos(a)*r;f.y=.55+Math.sin(a)*r;}
+      f.y+=.00012*f.r*f.r*.18*vdt+(Math.random()-.5)*.001;if(f.y>.96){f.y=.96;f.down=true;}
+      P.forEach(p=>{if(p.f>=0&&flocs[p.f]===f){p.x=f.x+Math.cos(p.r*97)*f.r*.004;p.y=f.y+Math.sin(p.r*61)*f.r*.004;if(f.down)p.down=true;}});}
+  }
+  function turb(P){let n=0;for(const p of P)if(!p.down&&p.f<0&&p.y<.85)n++;return n/P.length;}
+  function cup(ctx,cx,by,bw,bh,P,isB,lab){const l=cx-bw/2,top=by-bh*.8,tb=turb(P);
+    beaker(ctx,cx,by,bw,bh,{lv:.8,col:waterCol(Math.min(1,tb*1.25)),col2:waterCol(Math.min(1,tb*1.25+.1)),ticks:5});
+    ctx.save();beakerPath(ctx,cx,by,bw,bh);ctx.clip();const H=by-top-6;
+    // 沉积层
+    const nd=P.filter(p=>p.down).length/P.length;ctx.fillStyle='#7a5c3c';ctx.beginPath();ctx.moveTo(l,by);for(let k=0;k<=10;k++)ctx.lineTo(l+bw*k/10,by-4-nd*26-2*Math.sin(k*1.8));ctx.lineTo(l+bw,by);ctx.fill();
+    if(isB)flocs.forEach(f=>{if(f.n<2||f.down)return;const x=l+6+f.x*(bw-12),y=top+4+f.y*H;ctx.fillStyle='rgba(240,236,222,.55)';ctx.beginPath();ctx.arc(x,y,f.r*1.15,0,TAU);ctx.fill();});
+    P.forEach(p=>{if(p.down)return;const x=l+6+p.x*(bw-12),y=top+4+p.y*H;ctx.fillStyle=p.f>=0?'#6b4f30':'#8a6a43';ctx.beginPath();ctx.arc(x,y,p.r,0,TAU);ctx.fill();});
+    ctx.restore();hand(ctx,lab,cx,by+34,{size:26});
+    return tb;}
+  function tick(dt){t+=dt;let vdt=0;if(waiting>0){waiting-=dt;vdt=dt*30;vt=Math.min(180,vt+dt*30);if(waiting<=0){waiting=0;$('#alWait').textContent='再静置 3 分钟';sfx('ok');}}
+    if(stir>0)stir=Math.max(0,stir-dt);
+    sim(A,dt,vdt,false);sim(B,dt,vdt,true);
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const bw=Math.min(270,w*.25),bh=Math.min(400,h*.64),by=h-118;
+    const ta=cup(ctx,w*.2,by,bw,bh,A,false,'甲：只静置'),tb=cup(ctx,w*.53,by,bw,bh,B,true,alum?'乙：加了明矾':'乙：待加明矾');
+    if(stir>0){ctx.save();rod(ctx,w*.53+30,by-bh-50,w*.53+Math.sin(t*14)*30,by-30,7);ctx.restore();}
+    // 计时
+    ctx.save();const cx=w*.365,cy=56;ctx.beginPath();ctx.arc(cx,cy,30,0,TAU);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle=INK;ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,30,-Math.PI/2,-Math.PI/2+TAU*vt/180);ctx.closePath();ctx.fillStyle='rgba(196,73,47,.25)';ctx.fill();
+    txt(ctx,`${Math.floor(vt/60)}:${String(Math.floor(vt%60)).padStart(2,'0')}`,cx,cy+48,{size:18,weight:700,font:'"Kalam",sans-serif'});txt(ctx,waiting>0?'快进中…':'静置时间',cx,cy+72,{size:13,col:'#6f7480'});ctx.restore();
+    // 浑浊度
+    [[w*.2,ta],[w*.53,tb]].forEach(([x,v])=>{const y=by-bh-36;rr(ctx,x-70,y,140,12,6);ctx.fillStyle='#ece6da';ctx.fill();rr(ctx,x-70,y,140*clamp(v*1.25,0,1),12,6);ctx.fillStyle=waterCol(clamp(v*1.25,0,1),{a:1.4});ctx.fill();txt(ctx,'浑浊度',x-76,y+6,{size:13,align:'right',col:'#6f7480',weight:700});});
+    if(zoom){const mr=Math.min(118,w*.12),mx=w-mr-26,my=by-bh*.55;ctx.save();ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fillStyle='#f6fbfd';ctx.fill();ctx.clip();ctx.fillStyle=waterCol(.18);ctx.fillRect(mx-mr,my-mr,2*mr,2*mr);
+      if(alum){for(let i=0;i<3;i++){const fx=mx+(i-1)*52,fy=my+Math.sin(t+i)*10+(i===1?-10:12);ctx.fillStyle='rgba(235,232,214,.85)';ctx.beginPath();for(let a=0;a<TAU;a+=.4){const rr3=26+5*Math.sin(a*3+t+i);ctx.lineTo(fx+Math.cos(a)*rr3,fy+Math.sin(a)*rr3);}ctx.fill();ctx.strokeStyle='rgba(180,170,140,.8)';ctx.stroke();
+        for(let k=0;k<7;k++){ctx.fillStyle='#7a5b37';ctx.beginPath();ctx.arc(fx+Math.cos(k*.9)*16,fy+Math.sin(k*1.3)*14,3.4,0,TAU);ctx.fill();}}
+        }
+      else{for(let k=0;k<26;k++){ctx.fillStyle='#7a5b37';ctx.beginPath();ctx.arc(mx+Math.sin(k*7.1+t*1.3)*mr*.75,my+Math.cos(k*3.3+t*1.1)*mr*.7,3,0,TAU);ctx.fill();}}
+      ctx.restore();ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.lineWidth=8;ctx.strokeStyle='#2c2f36';ctx.stroke();hand(ctx,alum?'胶状物吸附细小颗粒':'细小颗粒悬浮，难以沉降',mx,my+mr+30,{size:24,col:CIN});
+      ctx.strokeStyle='#2c2f36';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(w*.53+bw*.3,by-bh*.5);ctx.lineTo(mx-mr,my);ctx.stroke();ctx.setLineDash([]);}
+  }
+  return{tick,leave(){waiting=0;}};})();
+
+/* ================= 4 过滤：器材 ================= */
+S.kit=(()=>{
+  const G=`<defs><linearGradient id="kgM" x1="0" x2="1"><stop offset="0" stop-color="#7d838c"/><stop offset=".4" stop-color="#e8ebef"/><stop offset=".7" stop-color="#9aa0a9"/><stop offset="1" stop-color="#666c75"/></linearGradient>
+    <linearGradient id="kgD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4c5159"/><stop offset="1" stop-color="#1e2126"/></linearGradient>
+    <linearGradient id="kgG" x1="0" x2="1"><stop offset="0" stop-color="rgba(190,215,232,.55)"/><stop offset=".25" stop-color="rgba(245,251,255,.25)"/><stop offset=".8" stop-color="rgba(220,236,246,.2)"/><stop offset="1" stop-color="rgba(170,200,222,.55)"/></linearGradient></defs>`;
+  const GS='stroke="rgba(66,92,118,.8)" stroke-width="2.2" fill="url(#kgG)"';
+  const TOOLS=[
+    {n:'铁架台',sub:'（带铁圈）',use:'固定并支撑漏斗',svg:`<svg viewBox="0 0 200 320">${G}<ellipse cx="100" cy="306" rx="90" ry="8" fill="rgba(60,40,10,.12)"/><rect x="18" y="284" width="168" height="20" rx="4" fill="url(#kgD)"/><rect x="40" y="30" width="10" height="256" fill="url(#kgM)"/><circle cx="45" cy="30" r="5" fill="#9aa0a9"/>
+      <rect x="34" y="118" width="22" height="20" rx="3" fill="url(#kgD)"/><path d="M56 128 H96" stroke="#3a3f47" stroke-width="5"/><ellipse cx="136" cy="128" rx="42" ry="9" fill="none" stroke="#3a3f47" stroke-width="5"/></svg>`},
+    {n:'漏斗',sub:'',use:'放入滤纸进行过滤；下端尖嘴靠烧杯内壁',svg:`<svg viewBox="0 0 200 320"><ellipse cx="100" cy="60" rx="74" ry="15" ${GS}/><path d="M26 60 L93 168 V292 L107 302 V168 L174 60" ${GS}/><path d="M44 72 L90 150" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/><path d="M97 180 V284" stroke="#fff" stroke-width="2" opacity=".8"/></svg>`},
+    {n:'滤纸',sub:'（圆形）',use:'截留不溶性固体；折成圆锥形放入漏斗',svg:`<svg viewBox="0 0 200 320"><circle cx="100" cy="190" r="82" fill="#fdfdf8" stroke="#bcb4a0" stroke-width="2"/><path d="M18 190 H182 M100 108 V272" stroke="#d9d2bf" stroke-width="1.5" stroke-dasharray="5 4"/><circle cx="100" cy="190" r="82" fill="none" stroke="rgba(0,0,0,.04)" stroke-width="10"/></svg>`},
+    {n:'烧杯',sub:'',cnt:'× 2',use:'一个盛泥沙水，一个承接滤液',svg:`<svg viewBox="0 0 200 320"><path d="M38 116 Q46 120 46 128 V286 Q46 298 58 298 H150 Q162 298 162 286 V124 Q162 118 168 116" ${GS}/><path d="M46 200 H162 V286 Q162 298 150 298 H58 Q46 298 46 286Z" fill="rgba(156,123,78,.55)"/>
+      <path d="M56 152 H70 M56 176 H64 M56 200 H70 M56 224 H64 M56 248 H70" stroke="rgba(66,92,118,.6)" stroke-width="1.5"/><path d="M146 134 V282" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></svg>`},
+    {n:'玻璃棒',sub:'',use:'引流：使液体沿玻璃棒缓缓流入漏斗',svg:`<svg viewBox="0 0 200 320"><path d="M70 40 L132 300" stroke="rgba(80,106,130,.85)" stroke-width="10" stroke-linecap="round"/><path d="M70 40 L132 300" stroke="#eef6fb" stroke-width="6" stroke-linecap="round"/><path d="M69 44 L130 296" stroke="#fff" stroke-width="1.6"/></svg>`}];
+  const kit=$('#kit');kit.innerHTML=TOOLS.map((o,i)=>`<button class="tool" data-i="${i}">${o.cnt?`<span class="cnt">${o.cnt}</span>`:''}${o.svg}<span class="nm">${o.n}<small class="hint">${o.sub}</small></span><span class="use">${o.use}</span></button>`).join('');
+  $$('.tool',kit).forEach(b=>b.onclick=()=>{b.classList.toggle('on');sfx('pop');});
+  $('#kitAll').onclick=()=>{$$('.tool',kit).forEach(b=>b.classList.add('on'));sfx('whoosh');};
+  const MIX=[['浑浊河水中的泥沙','',1],['白糖水中的白糖','',0],['二氧化锰和水','回收二氧化锰',1],['酒精和水','',0],['豆浆中的豆渣','',1],['海水中的食盐','',0]];
+  let sel=new Set(),done=false;const box=$('#kitMix'),st=$('#kitSt');
+  function render(){box.innerHTML=MIX.map((m,i)=>`<button class="mixc" data-i="${i}" aria-pressed="${sel.has(i)}">${m[0]}${m[1]?`<small>${m[1]}</small>`:''}</button>`).join('');
+    $$('.mixc',box).forEach(b=>b.onclick=()=>{if(done)return;const i=+b.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);sfx('click');render();});}
+  render();
+  $('#kitSub').onclick=()=>{if(done)return;if(!sel.size){setSt(st,'warn','请至少选一项');return;}done=true;const tm=TEAM.cur;let miss=0,extra=0;
+    $$('.mixc',box).forEach(b=>{const i=+b.dataset.i,a=MIX[i][2]===1,s=sel.has(i);if(a&&s)b.classList.add('right');else if(a&&!s){b.classList.add('miss');miss++;}else if(!a&&s){b.classList.add('wrong');extra++;}});
+    if(!miss&&!extra){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>　过滤分离的是<b>不溶性固体</b>和液体。`);}
+    else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}不加分</b>　${miss?`漏选 ${miss} 项（黄框）`:''}${miss&&extra?'，':''}${extra?`多选 ${extra} 项（红框）`:''}。白糖、酒精、食盐都溶于水，过滤分不开。`);}teamNext();};
+  $('#kitRedo').onclick=()=>{sel.clear();done=false;render();setSt(st,'','全对 +5 分');};
+  return{};})();
+/* ================= 过滤五步：共用的分步动画 ================= */
+const FSTEP=[
+  {t:'折滤纸',d:'圆形滤纸<b>对折</b>，再<b>对折</b>，打开成圆锥形：<b>一边一层，一边三层</b>。',
+   k:[['要点','折好的滤纸一侧 3 层、一侧 1 层'],['注意','滤纸边缘要比漏斗口略低']],lab:'把圆形滤纸对折、再对折，打开成圆锥形（一边三层）。'},
+  {t:'放入漏斗，润湿',d:'把滤纸放进漏斗，用少量水<b>润湿</b>，用手指轻压，使滤纸<b>紧贴漏斗内壁</b>，中间不留气泡。',
+   k:[['一贴','滤纸紧贴漏斗内壁'],['二低①','滤纸边缘低于漏斗边缘'],['注意','留有气泡会使过滤变慢']],lab:'放入漏斗，用少量水润湿，轻压使滤纸紧贴漏斗内壁，不留气泡。'},
+  {t:'组装装置',d:'漏斗放在铁圈上，下方放烧杯，使漏斗<b>下端管口紧靠烧杯内壁</b>。',
+   k:[['三靠③','漏斗下端紧靠烧杯内壁'],['作用','滤液沿内壁流下，防止溅出']],lab:'漏斗放上铁圈，下端管口紧靠烧杯内壁。'},
+  {t:'沿玻璃棒倾倒',d:'烧杯口<b>紧靠玻璃棒</b>，玻璃棒下端<b>轻靠三层滤纸</b>处，液体缓缓流入；<b>液面低于滤纸边缘</b>。',
+   k:[['三靠①','烧杯口紧靠玻璃棒'],['三靠②','玻璃棒下端轻靠三层滤纸处'],['二低②','液面始终低于滤纸边缘'],['注意','靠在三层处，防止戳破滤纸']],lab:'烧杯口靠玻璃棒，玻璃棒靠三层滤纸，慢慢倒入，液面低于滤纸边缘。'},
+  {t:'观察滤液',d:'滤纸上留下泥沙，滤液变澄清。若滤液<b>仍浑浊</b>，查明原因后<b>再过滤一次</b>。',
+   k:[['现象','滤纸上有泥沙，滤液澄清'],['注意','滤液浑浊 → 再过滤'],['结论','过滤除去的是不溶性杂质']],lab:'观察滤纸上的残留物和滤液；如果滤液仍浑浊，再过滤一次。'}];
+function drawFStep(ctx,ox,oy,k,i,p,t,{labels=true}={}){
+  ctx.save();ctx.translate(ox,oy);ctx.scale(k,k);
+  if(i===0){const cx=300,cy=300,R=150;
+    const paper=(f)=>{ctx.fillStyle=f?'#fdfdf8':'#efece2';ctx.strokeStyle='#b9b09a';ctx.lineWidth=2;};
+    if(p<.33){const a=ease(p/.33),sy=1-2*a;
+      paper(1);ctx.beginPath();ctx.arc(cx,cy,R,Math.PI,TAU);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.save();ctx.translate(cx,cy);ctx.scale(1,sy||.001);paper(sy>0);ctx.beginPath();ctx.arc(0,0,R,0,Math.PI);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+      if(labels)hand(ctx,'① 对折',cx,cy+R+50,{size:34,col:CIN});}
+    else if(p<.66){const b=ease((p-.33)/.33),sx=1-2*b;
+      paper(1);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,Math.PI,Math.PI*1.5);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.save();ctx.translate(cx,cy);ctx.scale(sx||.001,1);paper(sx>0);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.PI*1.5,TAU);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+      ctx.strokeStyle='rgba(150,140,120,.5)';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(cx-R,cy);ctx.lineTo(cx,cy);ctx.stroke();ctx.setLineDash([]);
+      if(labels)hand(ctx,'② 再对折',cx,cy+90,{size:34,col:CIN});}
+    else{const c=ease(clamp((p-.66)/.24,0,1));
+      ctx.globalAlpha=1-c;paper(1);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,Math.PI,Math.PI*1.5);ctx.closePath();ctx.fill();ctx.stroke();ctx.globalAlpha=c;
+      const top=200,ap=470,rw=120;ctx.beginPath();ctx.moveTo(cx-rw,top);ctx.lineTo(cx,ap);ctx.lineTo(cx+rw,top);ctx.ellipse(cx,top,rw,rw*.22,0,0,Math.PI,false);ctx.closePath();ctx.fillStyle='#fbfaf4';ctx.fill();ctx.strokeStyle='#b9b09a';ctx.lineWidth=2;ctx.stroke();
+      ctx.beginPath();ctx.ellipse(cx,top,rw,rw*.22,0,0,TAU);ctx.fillStyle='#f1eee4';ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(200,192,170,.5)';ctx.beginPath();ctx.moveTo(cx+rw*.3,top+rw*.21);ctx.lineTo(cx,ap);ctx.lineTo(cx+rw,top);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#b9b09a';ctx.beginPath();ctx.moveTo(cx+rw*.3,top+rw*.21);ctx.lineTo(cx,ap);ctx.stroke();
+      if(labels){callout(ctx,cx-rw*.45,top+90,cx-200,top+70,'一边一层',{col:NAVY,size:19});callout(ctx,cx+rw*.6,top+70,cx+200,top+50,'一边三层',{col:CIN,size:19});hand(ctx,'③ 打开成圆锥形',cx,ap+56,{size:34,col:CIN});}
+      ctx.globalAlpha=1;}
+  }
+  else if(i===1){const F=funnelGeo(300,200,96,130,170,8);const drop0=clamp(p/.25,0,1),wet=clamp((p-.3)/.2,0,1),press=clamp((p-.6)/.3,0,1);
+    funnelBack(ctx,F);const top=F.ry+18-(1-ease(drop0))*120;
+    ctx.save();ctx.globalAlpha=.4+.6*drop0;paperCone(ctx,{...F,ry:F.ry-(1-ease(drop0))*120,cy:F.cy-(1-ease(drop0))*120},top,{wet,bubbles:drop0>=1?(1-press):0});ctx.restore();
+    funnelBody(ctx,F);
+    if(p>.28&&p<.55){const ph=(t*1.8)%1;// 洗瓶滴水
+      ctx.save();ctx.translate(420,40);ctx.rotate(-.5);rr(ctx,-30,-20,60,90,14);ctx.fillStyle='rgba(225,238,246,.6)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='rgba(150,200,225,.5)';ctx.fillRect(-28,20,56,46);ctx.strokeStyle='#5a6270';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,-40);ctx.lineTo(-30,-60);ctx.stroke();ctx.restore();
+      drop(ctx,370+ph*-40,40+ph*120,6,waterCol(0,{a:1.6}));}
+    if(press>0&&press<1){const yy=lerp(F.ry+40,F.cy-20,(Math.sin(press*Math.PI*3)+1)/2);mdiDraw(ctx,'hand-pointing-up',F.cx-F.R*(1-(yy-F.ry)/(F.cy-F.ry))*.6-8,yy+26,54,'#d8a27a');}
+    if(labels){if(drop0>=1&&press<1)callout(ctx,F.cx+F.R*.5,F.ry+60,F.cx+190,F.ry+30,'有气泡 → 过滤慢',{col:CIN,size:18});
+      if(press>=1)callout(ctx,F.cx-F.R*.55,F.ry+60,F.cx-210,F.ry+30,'紧贴漏斗内壁',{col:MOSS,size:18});}
+  }
+  else if(i===2){const a=ease(clamp(p/.35,0,1)),b=ease(clamp((p-.35)/.4,0,1));ctx.globalAlpha=1;
+    filterRig(ctx,0,0,1,{balpha:b,lv:0,fil:0,t});
+    if(labels&&b>=1){ctx.save();ctx.strokeStyle=MOSS;ctx.lineWidth=3;ctx.beginPath();ctx.arc(307,442,22,0,TAU);ctx.stroke();ctx.restore();callout(ctx,328,446,450,420,'下端紧靠烧杯内壁',{col:MOSS,size:18});}
+  }
+  else if(i===3){filterRig(ctx,0,0,1,{rod:true,pour:true,flow:1,lv:.55,fil:clamp(p,0,1)*.6,t,pourLv:.55-.25*p,labels:labels?(p<.45?['三靠']:['三靠','二低']):null});}
+  else{const r=filterRig(ctx,0,0,1,{rod:false,lv:0,fil:.7,mud:1,t});
+    beaker(ctx,520,560,96,130,{lv:.6,col:waterCol(.85),ticks:3});
+    if(labels){callout(ctx,300,262,450,230,'滤纸上留有泥沙',{col:MUD,size:18});callout(ctx,262,515,400,380,'滤液澄清',{col:NAVY,size:18});hand(ctx,'原泥沙水',520,590,{size:22,col:'#4a4f5c'});}}
+  ctx.restore();}
+
+/* ================= 5 过滤：步骤拆解 ================= */
+S.steps=(()=>{const cv=$('#cvSteps');let cur=0,p=0,t=0;const seen=new Set([0]);
+  $('#stTabs').innerHTML=FSTEP.map((s,i)=>`<button data-i="${i}"><em>${i+1}</em>${s.t}</button>`).join('');
+  $$('#stTabs button').forEach(b=>b.onclick=()=>show(+b.dataset.i));
+  function show(i){cur=clamp(i,0,4);p=0;seen.add(cur);sfx('whoosh');const s=FSTEP[cur];$('#stT').textContent=`第 ${cur+1} 步　${s.t}`;$('#stD').innerHTML=s.d;
+    $('#stKeys').innerHTML=s.k.map(([a,b])=>`<li class="${a==='注意'?'warn':''}"><i>${a}</i><span>${b}</span></li>`).join('');
+    $$('#stTabs button').forEach((b,k)=>{b.classList.toggle('on',k===cur);b.classList.toggle('done',seen.has(k)&&k!==cur);});
+    $('#stPrev').disabled=cur===0;$('#stNext').textContent=cur===4?'去动手实验 →':'下一步';}
+  $('#stPrev').onclick=()=>show(cur-1);$('#stNext').onclick=()=>{if(cur===4){$('#btnNext').click();return;}show(cur+1);};$('#stReplay').onclick=()=>{p=0;sfx('click');};
+  show(0);
+  function tick(dt){t+=dt;p=Math.min(1,p+dt/(cur===0?4.5:cur===3?6:3.5));const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const k=Math.min((h-8)/600,w/800),ox=cur<2?w-650*k:w-760*k,oy=(h-600*k)/2+4;drawFStep(ctx,ox,oy,k,cur,p,t);}
+  return{tick,enter(){p=0;}};})();
+
+/* ================= 6 学生动手演示 ================= */
+S.lab=(()=>{const cv=$('#cvLab');let total=240,left=240,run=false,cur=0,p=0,t=0,lastSec=-1;
+  const CHK=[['一贴','滤纸紧贴漏斗内壁，无气泡'],['二低','滤纸边缘低于漏斗边缘'],['二低','液面低于滤纸边缘'],['三靠','烧杯口紧靠玻璃棒'],['三靠','玻璃棒下端轻靠三层滤纸处'],['三靠','漏斗下端紧靠烧杯内壁']];
+  const mark=CHK.map(()=>0);const box=$('#labChk');
+  function renderChk(){box.innerHTML=CHK.map((c,i)=>`<button class="${mark[i]===1?'ok':mark[i]===2?'ng':''}" data-i="${i}"><i>${c[0]}</i><span>${c[1]}</span><em>${mark[i]===1?'✓':mark[i]===2?'✗':''}</em></button>`).join('');
+    $$('button',box).forEach(b=>b.onclick=()=>{const i=+b.dataset.i;mark[i]=(mark[i]+1)%3;sfx(mark[i]===1?'ok':mark[i]===2?'bad':'click');renderChk();});}
+  renderChk();
+  let paid=false;
+  $('#labRes').onclick=()=>{const ok=mark.filter(v=>v===1).length,ng=mark.filter(v=>v===2).length,un=6-ok-ng;const st=$('#labSt');
+    if(un){setSt(st,'warn',`还有 ${un} 项没有判定，请质检员看完再判`);return;}
+    if(!ng){if(!paid){teamAdd(5);paid=true;}sfx('win');FX.confetti();setSt(st,'ok',`<b>6 项全部达标！</b>演示同学所在队（${tname(TEAM.cur)}）+5。<br>现象：滤纸上留有泥沙，滤液比原泥沙水澄清。`);stampOn($('[data-id="lab"] .lab'),'操作规范',true,'70%','30%');}
+    else{sfx('bad');setSt(st,'bad',`<b>${ng} 项未达标：</b>${mark.map((v,i)=>v===2?CHK[i][1]:null).filter(Boolean).join('；')}。请台下同学说一说怎样改正。`);}};
+  $$('[data-lt]').forEach(b=>b.onclick=()=>{total=left=+b.dataset.lt;run=false;$$('[data-lt]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();sfx('click');});
+  $('#labGo').onclick=()=>{if(left<=0)left=total;run=true;sfx('click');};$('#labPause').onclick=()=>{run=false;sfx('click');};$('#labReset').onclick=()=>{run=false;left=total;draw();stampOff($('[data-id="lab"] .lab'));};
+  function draw(){const s=Math.ceil(left);$('#labClock').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;$('#labClock').classList.toggle('low',left<=30);$('#labArc').setAttribute('stroke-dashoffset',String(276.5*(1-left/total)));}
+  function show(i){cur=clamp(i,0,4);p=0;const s=FSTEP[cur];$('#labN').textContent=`第 ${cur+1} 步 / 共 5 步`;$('#labT').textContent=s.t;$('#labD').innerHTML=s.lab;$('#labPrev').disabled=cur===0;$('#labNext').disabled=cur===4;sfx('whoosh');}
+  $('#labPrev').onclick=()=>show(cur-1);$('#labNext').onclick=()=>show(cur+1);show(0);draw();
+  function tick(dt){t+=dt;p=Math.min(1,p+dt/(cur===0?4.5:4));if(run){left=Math.max(0,left-dt);const s=Math.ceil(left);if(s!==lastSec){lastSec=s;if(s<=10&&s>0)sfx('tick');}if(left<=0){run=false;sfx('win');stampOn($('[data-id="lab"] .lab'),'时间到',false,'30%','30%');}draw();}
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const k=Math.min(w,h)/640;drawFStep(ctx,(w-600*k)/2,(h-600*k)/2,k,cur,p,t,{labels:false});}
+  return{tick};})();
+
+/* ================= 7 找茬 + 故障诊断 ================= */
+S.spot=(()=>{const cv=$('#cvSpot'),wrap=$('#spWrap');let sc=0,t=0,marks=[[],[]],judged=[false,false],geo=null;
+  const SC=[{o:{rod:false,pour:true,flow:1,lv:.5,fil:.3,tipAway:true},err:[['没有用玻璃棒引流',g=>[g.F.cx+40,g.F.ry-40]],['漏斗下端没有紧靠烧杯内壁',g=>g.tip]]},
+            {o:{rod:true,rodSingle:true,pour:true,flow:1,liquidHigh:true,lv:1,fil:.3},err:[['液面高于滤纸边缘',g=>[g.F.cx-g.F.R*.82,g.ptop+2]],['玻璃棒靠在一层滤纸一侧',g=>g.rodTip]]}];
+  const st=$('#spSt');
+  function rings(){$$('.ring2',wrap).forEach(e=>e.remove());if(!geo)return;
+    if(judged[sc]){SC[sc].err.forEach(([n,f])=>{const[x,y]=geo.map(...f(geo));const hit=marks[sc].some(([mx,my])=>Math.hypot(mx-x,my-y)<70);addRing(x,y,hit?'right':'miss',(hit?'✓ ':'漏找：')+n);});
+      marks[sc].forEach(([mx,my])=>{const ok=SC[sc].err.some(([n,f])=>{const[x,y]=geo.map(...f(geo));return Math.hypot(mx-x,my-y)<70;});if(!ok)addRing(mx,my,'wrong','这里没错');});}
+    else marks[sc].forEach(([x,y])=>addRing(x,y,'',''));}
+  function addRing(x,y,cls,lab){const d=document.createElement('div');d.className='ring2 '+cls;d.style.left=x+'px';d.style.top=y+'px';if(lab)d.innerHTML=`<b>${lab}</b>`;wrap.appendChild(d);}
+  cv.onclick=e=>{if(judged[sc])return;const[x,y]=ptIn(cv,e);const m=marks[sc];const j=m.findIndex(([a,b])=>Math.hypot(a-x,b-y)<34);if(j>=0)m.splice(j,1);else{if(m.length>=4){setSt(st,'warn','最多标记 4 处，点已有的圈可以撤销');return;}m.push([x,y]);}sfx('pop');rings();setSt(st,'',`已标记 ${m.length} 处`);};
+  $$('[data-sc]').forEach(b=>b.onclick=()=>{sc=+b.dataset.sc;$$('[data-sc]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');geo=null;requestAnimationFrame(()=>{rings();});setSt(st,'',judged[sc]?'本装置已判定，可点“重做”':`已标记 ${marks[sc].length} 处`);});
+  $('#spSub').onclick=()=>{if(judged[sc]||!geo)return;if(!marks[sc].length){setSt(st,'warn','请先在图上点出错误位置');return;}judged[sc]=true;const tm=TEAM.cur;
+    const found=SC[sc].err.filter(([n,f])=>{const[x,y]=geo.map(...f(geo));return marks[sc].some(([mx,my])=>Math.hypot(mx-x,my-y)<70);}).length;
+    const extra=marks[sc].filter(([mx,my])=>!SC[sc].err.some(([n,f])=>{const[x,y]=geo.map(...f(geo));return Math.hypot(mx-x,my-y)<70;})).length;
+    rings();if(found===2&&!extra){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全部找对 +5</b>　${SC[sc].err.map(e=>e[0]).join('；')}`);}
+    else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}不加分</b>　找对 ${found} 处${extra?`，多标 ${extra} 处`:''}。正确：${SC[sc].err.map(e=>e[0]).join('；')}`);}teamNext();};
+  $('#spRedo').onclick=()=>{marks[sc]=[];judged[sc]=false;rings();setSt(st,'','已标记 0 处');};
+  // 故障诊断
+  const CASE=[{h:'滤液仍然浑浊',ic:'alert-circle-outline',o:[['滤纸破损',1],['液面高于滤纸边缘',1],['承接滤液的烧杯不干净',1],['滤纸没有紧贴漏斗内壁',0],['漏斗下端没有靠烧杯内壁',0]],fix:'查明原因，更换滤纸或洗净仪器后<b>再过滤一次</b>。'},
+              {h:'过滤速度太慢',ic:'timer-outline',o:[['滤纸与漏斗壁之间有气泡',1],['泥沙太多，堵住滤纸孔隙',1],['液面低于滤纸边缘',0],['玻璃棒靠在三层滤纸处',0]],fix:'重新使滤纸紧贴漏斗内壁；泥沙多时<b>先静置沉淀，再过滤</b>。'}];
+  const diag=$('#spDiag');
+  function renderDiag(){diag.innerHTML=CASE.map((c,ci)=>`<div class="case" data-c="${ci}"><h4>${icon(c.ic)}${c.h}</h4><p class="hint">可能的原因有哪些？（多选）</p><div class="cs">${c.o.map((o,i)=>`<button class="mixc" data-i="${i}" aria-pressed="false">${o[0]}</button>`).join('')}</div>
+    <div class="row"><button class="btn pri sm" data-chk="${ci}">检查</button><button class="btn sm" data-rd="${ci}">重做</button></div><div class="status">全对 +5 分</div></div>`).join('');
+    $$('.case',diag).forEach(el=>{const ci=+el.dataset.c,c=CASE[ci];let done=false;
+      $$('.mixc',el).forEach(b=>b.onclick=()=>{if(done)return;b.setAttribute('aria-pressed',String(b.getAttribute('aria-pressed')!=='true'));sfx('click');});
+      $(`[data-chk="${ci}"]`,el).onclick=()=>{if(done)return;const picks=$$('.mixc',el).filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>+b.dataset.i);const s=$('.status',el);if(!picks.length){setSt(s,'warn','请至少选一项');return;}done=true;const tm=TEAM.cur;let bad=0;
+        $$('.mixc',el).forEach(b=>{const i=+b.dataset.i,a=c.o[i][1]===1,p2=picks.includes(i);if(a&&p2)b.classList.add('right');else if(a){b.classList.add('miss');bad++;}else if(p2){b.classList.add('wrong');bad++;}});
+        if(!bad){teamAdd(5,tm);sfx('ok');setSt(s,'ok',`<b>${tname(tm)}全对 +5</b>　处理：${c.fix}`);}else{sfx('bad');setSt(s,'bad',`<b>${tname(tm)}不加分</b>（黄框漏选，红框多选）　处理：${c.fix}`);}teamNext();};
+      $(`[data-rd="${ci}"]`,el).onclick=()=>renderDiag();});}
+  renderDiag();
+  function tab(n){$('#spTab1').setAttribute('aria-pressed',String(n===1));$('#spTab2').setAttribute('aria-pressed',String(n===2));wrap.hidden=n!==1;$('#spBar').hidden=n!==1;diag.hidden=n!==2;
+    $('#spH').textContent=n===1?'操作找茬：哪里错了？':'故障诊断：出了问题怎么办？';$('#spTitle').textContent=n===1?'在图中点出错误':'先诊断，再处理';
+    $('#spTip').textContent=n===1?'每套装置藏着 2 处错误，点出位置后提交；全部找对 +5 分。':'左侧两个“病例”，各选出可能原因后点检查，每个全对 +5 分。';st.hidden=n!==1;sfx('click');}
+  $('#spTab1').onclick=()=>tab(1);$('#spTab2').onclick=()=>tab(2);
+  function tick(dt){t+=dt;if(wrap.hidden)return;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const k=Math.min((h-70)/600,w/640),ox=(w-600*k)/2,oy=10;
+    const first=!geo;geo=filterRig(ctx,ox,oy,k,Object.assign({t},SC[sc].o));if(first)rings();
+    hand(ctx,sc?'装置乙':'装置甲',40,40,{size:32,align:'left',col:CIN});}
+  return{tick,enter(){geo=null;}};})();
+/* ================= 8 吸附与消毒 ================= */
+S.carbon=(()=>{const cv=$('#cvCarbon');let t=0,ink=0,carb=0,carbT=0;const R=rng(23);
+  const grains=Array.from({length:46},()=>({x:R(),y:-R()*.3,vy:0,r:3+R()*4,a:R()*6}));
+  // 孔道：从表面伸入内部的折线
+  const chunk=[];for(let a=0;a<TAU;a+=TAU/22){const r=1+.13*Math.sin(a*3+1)+.08*Math.cos(a*5)+(R()-.5)*.1;chunk.push([Math.cos(a)*r,Math.sin(a)*r*.86]);}
+  const pores=[];for(let i=0;i<9;i++){const a=i/9*TAU+.3,p=[[Math.cos(a)*.98,Math.sin(a)*.84]];let x=p[0][0],y=p[0][1];for(let k=0;k<4;k++){x*=.7;y*=.7;x+=(R()-.5)*.18;y+=(R()-.5)*.18;p.push([x,y]);}pores.push(p);
+    const b=p[2];pores.push([b,[b[0]+(R()-.5)*.4,b[1]+(R()-.5)*.4]]);}
+  const sites=[];pores.forEach(p=>{for(let k=0;k<p.length-1;k++)for(let q=0;q<3;q++){const f=(q+.5)/3;sites.push([lerp(p[k][0],p[k+1][0],f),lerp(p[k][1],p[k+1][1],f)]);}});
+  const mol=Array.from({length:34},(_,i)=>({x:(R()-.5)*3,y:(R()-.5)*2.2,vx:0,vy:0,c:i%3===0?'#8d5fb0':'#d24a54',s:Math.floor(R()*sites.length),stuck:false}));
+  $('#caAdd').onclick=()=>{if(ink>0)return;ink=.001;sfx('drop');};
+  $('#caCarb').onclick=()=>{if(ink===0){$('#caAdd').click();}if(carb)return;carb=1;carbT=0;sfx('pop');};
+  $('#caReset').onclick=()=>{ink=0;carb=0;carbT=0;grains.forEach(g=>{g.y=-Math.random()*.3;g.vy=0;});mol.forEach(m=>{m.stuck=false;m.x=(Math.random()-.5)*3;m.y=(Math.random()-.5)*2.2;});sfx('click');};
+  // 物理 / 化学 分类
+  const ROWS=[['静置沉淀','p'],['过滤','p'],['活性炭吸附','p'],['投药消毒','c'],['蒸馏','p']];const pick={};let done=false;const box=$('#caSort'),st=$('#caSt');
+  function render(){box.innerHTML=ROWS.map((r,i)=>`<div class="srow"><span>${r[0]}</span><button class="btn" data-r="${i}" data-v="p" aria-pressed="${pick[i]==='p'}">物理变化</button><button class="btn" data-r="${i}" data-v="c" aria-pressed="${pick[i]==='c'}">化学变化</button></div>`).join('');
+    $$('[data-r]',box).forEach(b=>b.onclick=()=>{if(done)return;pick[b.dataset.r]=b.dataset.v;sfx('click');render();});}
+  render();
+  $('#caSub').onclick=()=>{if(done)return;if(Object.keys(pick).length<ROWS.length){setSt(st,'warn','每一行都要选一个');return;}done=true;const tm=TEAM.cur;let bad=0;
+    $$('.srow',box).forEach((row,i)=>{const ok=pick[i]===ROWS[i][1];if(!ok)bad++;const right=$(`[data-v="${ROWS[i][1]}"]`,row);right.style.background=ok?'#e5f2e8':'#fbe8e2';right.style.borderColor=ok?MOSS:CIN;});
+    if(!bad){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>　只有投药消毒生成了新物质。`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}错 ${bad} 处，不加分</b>　着色的是正确答案：只有<b>投药消毒</b>是化学变化。`);}teamNext();};
+  $('#caRedo').onclick=()=>{for(const k in pick)delete pick[k];done=false;render();setSt(st,'','全对 +5 分');};
+  function tick(dt){t+=dt;if(ink>0)ink=Math.min(1,ink+dt*.8);if(carb){carbT+=dt;}
+    const tint=ink*(carb?clamp(1-(carbT-1.2)/5,0,1)*.9+.1*clamp(1-(carbT-1.2)/5,0,1):1);
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    // 左：烧杯
+    const cx=w*.25,by=h-90,bw=Math.min(240,w*.26),bh=Math.min(320,h*.58),top=by-bh*.75,l=cx-bw/2;
+    beaker(ctx,cx,by,bw,bh,{lv:.75,col:waterCol(.05,{tint:tint*.85}),ticks:5});
+    if(ink>0&&ink<1){ctx.save();beakerPath(ctx,cx,by,bw,bh);ctx.clip();for(let i=0;i<6;i++){const g=ctx.createRadialGradient(cx+Math.sin(i*2)*30,top+ink*bh*.6*(i/6+.3),2,cx,top+40,60);g.addColorStop(0,'rgba(200,40,60,.5)');g.addColorStop(1,'rgba(200,40,60,0)');ctx.fillStyle=g;ctx.fillRect(l,top,bw,bh);}ctx.restore();}
+    if(carb){ctx.save();beakerPath(ctx,cx,by,bw,bh);ctx.clip();grains.forEach(g=>{if(g.y<.97){g.vy+=dt*.25;g.y=Math.min(.97,g.y+g.vy*dt*.6);}const x=l+10+g.x*(bw-20),y=lerp(top-10,by-6,g.y);
+      ctx.fillStyle='#2a2a2d';ctx.beginPath();for(let a=0;a<TAU;a+=1.2)ctx.lineTo(x+Math.cos(a+g.a)*g.r*(1+.3*Math.sin(a*3)),y+Math.sin(a+g.a)*g.r);ctx.fill();});ctx.restore();}
+    hand(ctx,ink?(carb?(tint<.15?'红色褪去了':'活性炭吸附中…'):'滴入红墨水的水'):'一杯清水',cx,by+36,{size:26});
+    // 右：放大的活性炭
+    const mx=w*.64,my=h*.43,mr=Math.min(h*.35,w*.25);
+    ctx.save();ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fillStyle='#f4f9fb';ctx.fill();ctx.clip();ctx.fillStyle=waterCol(.04,{tint:tint*.5});ctx.fillRect(mx-mr,my-mr,mr*2,mr*2);
+    const cs=mr*.52;
+    if(carb){ctx.save();ctx.translate(mx,my);ctx.beginPath();chunk.forEach(([x,y],i)=>i?ctx.lineTo(x*cs,y*cs):ctx.moveTo(x*cs,y*cs));ctx.closePath();const g=ctx.createRadialGradient(-cs*.3,-cs*.3,cs*.1,0,0,cs*1.1);g.addColorStop(0,'#4a4b50');g.addColorStop(1,'#1d1d20');ctx.fillStyle=g;ctx.fill();
+      ctx.lineCap='round';ctx.lineJoin='round';pores.forEach((p,i)=>{ctx.strokeStyle='#cfe6ee';ctx.lineWidth=(i%2?5:10)*mr/220;ctx.beginPath();p.forEach(([x,y],k)=>k?ctx.lineTo(x*cs,y*cs):ctx.moveTo(x*cs,y*cs));ctx.stroke();});ctx.restore();}
+    mol.forEach(m=>{if(carb&&!m.stuck){const[sx,sy]=sites[m.s];const dx=sx-m.x,dy=sy-m.y,d=Math.hypot(dx,dy);if(carbT>1.2){m.x+=dx*Math.min(1,dt*.9);m.y+=dy*Math.min(1,dt*.9);if(d<.03)m.stuck=true;}}
+      if(!m.stuck&&(!carb||carbT<1.2)){m.x+=(Math.random()-.5)*dt*1.2;m.y+=(Math.random()-.5)*dt*1.2;m.x=clamp(m.x,-1.7,1.7);m.y=clamp(m.y,-1.6,1.6);}
+      if(!ink)return;const x=mx+m.x*cs,y=my+m.y*cs;ctx.fillStyle=m.c;ctx.beginPath();ctx.arc(x,y,5.5*mr/220,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.6)';ctx.beginPath();ctx.arc(x-1.5,y-1.5,1.6,0,TAU);ctx.fill();});
+    ctx.restore();ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.lineWidth=9;ctx.strokeStyle='#2c2f36';ctx.stroke();
+    ctx.save();ctx.setLineDash([4,4]);ctx.strokeStyle='#2c2f36';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx+bw*.3,by-30);ctx.lineTo(mx-mr*.9,my+mr*.45);ctx.stroke();ctx.restore();
+    if(carb){hand(ctx,'活性炭：疏松多孔，表面积很大',mx,my+mr+28,{size:24,col:INK});if(carbT>2)hand(ctx,'色素、异味分子被吸附在孔道表面',mx,my+mr+58,{size:24,col:CIN});}
+    else hand(ctx,ink?'色素分子在水中自由运动':'放大镜：等待加入红墨水',mx,my+mr+30,{size:22,col:'#4a4f5c'});
+    if(ink){[['#d24a54','色素分子'],['#8d5fb0','异味分子']].forEach(([c,s],i)=>{const x=40,y=30+i*26;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,6,0,TAU);ctx.fill();txt(ctx,s,x+12,y,{size:14,align:'left',weight:700});});}
+  }
+  return{tick};})();
+
+/* ================= 9 自制简易净水器 ================= */
+S.bottle=(()=>{const cv=$('#cvBottle');let t=0,order=[],judged=false,pour=0,front=0,out=0;
+  const LY=[{n:'小卵石',d:'除去较大的不溶性颗粒',c:'#9b8f80'},{n:'石英砂',d:'除去较小的不溶性颗粒',c:'#e2cfa3'},{n:'活性炭',d:'吸附色素和异味',c:'#2b2b2e'},{n:'蓬松棉',d:'阻挡细小颗粒，防止活性炭漏出',c:'#f6f4ee'}];
+  const RIGHT=[3,2,1,0];// 从瓶口（下）往上
+  const show=[1,3,0,2];const box=$('#boLayers'),st=$('#boSt');
+  function sw(c,n,cvs){const{ctx,w,h}=fitS(cvs);ctx.fillStyle=c;ctx.fillRect(0,0,w,h);const R=rng(n+3);for(let i=0;i<24;i++){ctx.fillStyle=n===0?`rgba(80,70,60,${.3+R()*.4})`:n===1?'rgba(170,140,90,.5)':n===2?'rgba(90,90,96,.8)':'rgba(220,215,200,.9)';ctx.beginPath();ctx.arc(R()*w,R()*h,n===0?3+R()*3:1+R()*1.5,0,TAU);ctx.fill();}}
+  function render(){box.innerHTML=show.map(i=>`<button class="layer" data-i="${i}"><canvas></canvas><span>${LY[i].n}<small>${LY[i].d}</small></span><em>${order.includes(i)?order.indexOf(i)+1:''}</em></button>`).join('');
+    $$('.layer',box).forEach(b=>{requestAnimationFrame(()=>sw(LY[+b.dataset.i].c,+b.dataset.i,$('canvas',b)));b.onclick=()=>{if(judged)return;const i=+b.dataset.i;if(order.includes(i)){order=order.slice(0,order.indexOf(i));}else order.push(i);sfx('drop');render();};});}
+  render();
+  $('#boSub').onclick=()=>{if(judged)return;if(order.length<4){setSt(st,'warn','4 种材料都要装进去');return;}judged=true;const tm=TEAM.cur;const ok=order.every((v,i)=>v===RIGHT[i]);
+    if(ok){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}正确 +5</b>　自上而下：小卵石 → 石英砂 → 活性炭 → 蓬松棉。点“倒入浑浊河水”试试！`);}
+    else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}顺序不对，不加分</b>　已改为正确装填：先粗后细，活性炭在下，蓬松棉垫底。`);order=RIGHT.slice();render();}
+    teamNext();$('#boPour').disabled=false;};
+  $('#boPour').onclick=()=>{if(pour)return;pour=.001;front=0;out=0;$('#boPour').disabled=true;sfx('whoosh');};
+  $('#boReset').onclick=()=>{order=[];judged=false;pour=0;front=0;out=0;$('#boPour').disabled=true;render();setSt(st,'','瓶口朝下，水从上往下流。正确 +5 分');stampOff($('[data-id="bottle"] .stage'));};
+  function tick(dt){t+=dt;if(pour){pour+=dt;front=Math.min(1,front+dt*.16);if(front>=1)out=Math.min(1,out+dt*.12);if(out>=1&&pour<99){pour=99;stampOn($('[data-id="bottle"] .stage'),'仍含可溶性杂质',false,'72%','22%');}}
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const cx=w*.44,top=46,bodyB=h*.5,nb=bodyB+64,bw=Math.min(190,w*.2),nw=26;
+    const half=y=>y<bodyB?bw:y<nb-24?lerp(bw,nw,smooth(bodyB,nb-24,y)):nw;
+    const path=()=>{ctx.beginPath();ctx.moveTo(cx-bw,top);for(let y=top;y<=nb;y+=4)ctx.lineTo(cx-half(y),y);ctx.lineTo(cx-nw,nb+18);ctx.lineTo(cx+nw,nb+18);for(let y=nb;y>=top;y-=4)ctx.lineTo(cx+half(y),y);};
+    // 支架与接水烧杯
+    stand(ctx,cx-bw-70,h-50,top+20,bw*2+150,cx-bw-110);ctx.strokeStyle='#3a3f47';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(cx-bw-70,bodyB+20);ctx.lineTo(cx-half(bodyB+20),bodyB+20);ctx.stroke();
+    const bkH=Math.max(90,h-nb-104);beaker(ctx,cx,h-68,170,bkH,{lv:out*.6,col:waterCol(.05),ticks:4});
+    path();ctx.fillStyle='rgba(225,238,246,.25)';ctx.fill();
+    // 填料：自下而上
+    ctx.save();path();ctx.clip();const H=[66,58,58,66];let y0=nb+18;const bands=[];
+    order.forEach((li,k)=>{const hh=k===0?H[0]+18:H[k];const y1=y0-hh;bands.push([li,y1,y0]);const R=rng(li*11+5);ctx.fillStyle=LY[li].c;ctx.fillRect(cx-bw,y1,bw*2,hh);
+      const n=li===0?60:li===1?400:li===2?220:90;for(let i=0;i<n;i++){const x=cx-bw+R()*bw*2,y=y1+R()*hh;if(li===0){ctx.fillStyle=`hsl(${25+R()*20},${10+R()*15}%,${45+R()*25}%)`;ctx.beginPath();ctx.ellipse(x,y,7+R()*7,5+R()*4,R()*3,0,TAU);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.18)';ctx.stroke();}
+        else if(li===1){ctx.fillStyle=R()<.5?'#c9b384':'#f1e3bf';ctx.fillRect(x,y,2,2);}else if(li===2){ctx.fillStyle=R()<.5?'#45464c':'#151517';ctx.beginPath();ctx.arc(x,y,2+R()*2.5,0,TAU);ctx.fill();}
+        else{ctx.strokeStyle='rgba(205,200,186,.9)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,4+R()*6,R()*6,R()*6+2);ctx.stroke();}}
+      ctx.strokeStyle='rgba(0,0,0,.15)';ctx.beginPath();ctx.moveTo(cx-bw,y1);ctx.lineTo(cx+bw,y1);ctx.stroke();y0=y1;});
+    // 水流通过
+    if(pour){const surf=Math.min(y0,top+40),fy=lerp(surf,nb+18,front);
+      bands.forEach(([li,a,b])=>{if(fy<=a)return;const k=order.indexOf(li),turb=[.08,.12,.3,.6][k]??.6;ctx.fillStyle=waterCol(turb,{a:.55,tint:0});ctx.fillRect(cx-bw,a,bw*2,Math.min(b,fy)-a);});
+      ctx.fillStyle=waterCol(.9,{a:.95});ctx.fillRect(cx-bw,surf-(pour<99?28:16),bw*2,y0-surf+(pour<99?28:16));}
+    ctx.restore();path();ctx.strokeStyle=GL_S;ctx.lineWidth=2.4;ctx.stroke();glassHi(ctx,cx+bw*.78,top+20,cx+bw*.78,bodyB-20,5,.6);
+    ctx.strokeStyle=GL_S;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,top,bw,10,0,0,TAU);ctx.stroke();
+    if(pour&&pour<99){tiltBeaker(ctx,cx-bw*.2,top-14,-1.1,96,120,.5,waterCol(.9,{a:.95}));stream(ctx,[[cx-bw*.2,top-14],[cx-bw*.25,top+30]],waterCol(.9,{a:.95}),6,t);}
+    if(front>=1){const ph=(t*2)%1;drop(ctx,cx,lerp(nb+24,h-68-bkH*out*.6-6,ph*ph),4,waterCol(.06,{a:1.4}));}
+    // 标注
+    bands.forEach(([li,a,b])=>{callout(ctx,cx+bw-10,(a+b)/2,cx+bw+60,(a+b)/2,LY[li].n,{col:INK,size:17,align:'left'});});
+    if(!order.length)hand(ctx,'← 在右侧按“从瓶底往上”的顺序点击材料',cx+bw+30,h*.4,{size:24,align:'left',col:'#6f7480'});
+    txt(ctx,'瓶口朝下',cx-nw-14,nb+10,{size:14,align:'right',col:'#6f7480',weight:700});
+  }
+  return{tick};})();
+
+/* ================= 10 制取蒸馏水（蒸馏烧瓶 + 温度计 + 冷凝管 + 锥形瓶） ================= */
+/* 基准坐标 1000×640；s = {water,stones,lit,cap,temp,vol,first,bump,boil,cool,drip,escape,t} */
+function drawDistill(ctx,ox,oy,k,s){const t=s.t||0;ctx.save();ctx.translate(ox,oy);ctx.scale(k,k);
+  const fcx=250,fcy=332,FR=72,nw=14,neckTop=150,armY=196,meshY=406;
+  const C0=[366,262],C1=[706,404],dx=C1[0]-C0[0],dy=C1[1]-C0[1],CL=Math.hypot(dx,dy),ux=dx/CL,uy=dy/CL,nx=-uy,ny=ux;
+  const at=(f,off=0)=>[C0[0]+dx*f+nx*off,C0[1]+dy*f+ny*off];
+  // 右侧铁架台（在冷凝管后面）
+  stand(ctx,560,612,140,190,470);
+  // 左侧铁架台
+  stand(ctx,110,612,80,300,50);
+  ctx.strokeStyle='#3a3f47';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(110,236);ctx.lineTo(fcx-nw-6,236);ctx.stroke();rr(ctx,101,226,18,20,3);ctx.fillStyle=metal(ctx,101,0,119,0,true);ctx.fill();
+  ctx.fillStyle='#55504a';rr(ctx,fcx-nw-10,226,8,22,2);ctx.fill();rr(ctx,fcx+nw+2,226,8,22,2);ctx.fill();
+  ctx.strokeStyle='#3a3f47';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(110,meshY+8);ctx.lineTo(fcx-66,meshY+8);ctx.stroke();ctx.beginPath();ctx.ellipse(fcx,meshY+8,66,10,0,0,TAU);ctx.stroke();
+  ctx.fillStyle='#ece9e1';ctx.fillRect(fcx-96,meshY,192,7);ctx.fillStyle='#c9c3b6';ctx.fillRect(fcx-42,meshY,84,7);ctx.strokeStyle='#8f8a80';ctx.lineWidth=1;ctx.strokeRect(fcx-96,meshY,192,7);
+  lamp(ctx,fcx,612,1.0,s.lit,t,s.cap);
+  if(s.lit){const g=ctx.createRadialGradient(fcx,meshY+4,4,fcx,meshY+4,60);g.addColorStop(0,'rgba(255,150,60,.55)');g.addColorStop(1,'rgba(255,150,60,0)');ctx.fillStyle=g;ctx.fillRect(fcx-70,meshY-20,140,40);}
+  // 支管（烧瓶 → 冷凝管）
+  const arm=new Path2D(`M${fcx+nw} ${armY} L${C0[0]+ux*8} ${C0[1]+uy*8}`);
+  ctx.save();ctx.lineCap='round';ctx.strokeStyle=GL_S;ctx.lineWidth=11;ctx.stroke(arm);ctx.strokeStyle='rgba(236,246,251,.95)';ctx.lineWidth=7;ctx.stroke(arm);ctx.restore();
+  // 烧瓶
+  const a0=Math.asin(nw/FR);const flask=()=>{ctx.beginPath();ctx.moveTo(fcx-nw,neckTop);ctx.lineTo(fcx-nw,fcy-FR*Math.cos(a0));ctx.arc(fcx,fcy,FR,-Math.PI/2-a0,-Math.PI/2+a0,true);ctx.lineTo(fcx+nw,neckTop);};
+  flask();ctx.fillStyle=GL_F;ctx.fill();
+  const lvH=s.water*FR*.776*(1-(s.vol||0)/90);
+  if(s.water>0){ctx.save();flask();ctx.clip();const ly=fcy+FR-lvH,boil=s.boil||0;
+    ctx.fillStyle=waterCol(.05,{a:1.1});ctx.fillRect(fcx-FR,ly,FR*2,lvH+4);ctx.fillStyle=`rgba(214,180,90,${Math.min(.35,(s.vol||0)/40)})`;ctx.fillRect(fcx-FR,ly,FR*2,lvH+4);
+    ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();for(let x=fcx-FR;x<=fcx+FR;x+=4)ctx.lineTo(x,ly+Math.sin(x*.2+t*14)*boil*2.2);ctx.stroke();
+    if(s.stones){const R=rng(9);for(let i=0;i<5;i++){const x=fcx-30+i*14+R()*5,y=fcy+FR-6-R()*3;ctx.fillStyle='#f3f1ea';ctx.strokeStyle='#a9a395';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x-5,y+3);ctx.lineTo(x-3,y-4);ctx.lineTo(x+4,y-3);ctx.lineTo(x+5,y+3);ctx.closePath();ctx.fill();ctx.stroke();}}
+    const nb=Math.floor((s.stones?24:6)*boil);for(let i=0;i<nb;i++){const ph=((t*(s.stones?1.4:.6)+i*.137)%1),bx=s.stones?fcx-30+(i%5)*14+Math.sin(i*3+t*5)*4:fcx+Math.sin(i*7.3)*FR*.6;const yy=lerp(fcy+FR-8,ly+3,ph);ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(bx,yy,(s.stones?2:3.5)+ph*3,0,TAU);ctx.stroke();}
+    if(s.bump>0){const b=s.bump;for(let i=0;i<7;i++){const bx=fcx+Math.sin(i*2.3)*FR*.5,by=fcy+FR-14-((i*.31+t*2.2)%1)*lvH*1.3,br=(10+i%3*8)*b;ctx.fillStyle='rgba(255,255,255,.3)';ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,br,0,TAU);ctx.fill();ctx.stroke();}
+      ctx.fillStyle=waterCol(.05,{a:1.1});ctx.beginPath();ctx.moveTo(fcx-FR,ly);for(let x=fcx-FR;x<=fcx+FR;x+=6)ctx.lineTo(x,ly-b*(30+18*Math.sin(x*.15+t*30)));ctx.lineTo(fcx+FR,ly+4);ctx.closePath();ctx.fill();}
+    ctx.restore();}
+  if(s.bump>0){for(let i=0;i<12;i++){const a=(i/11-.5)*.5,d=s.bump*(120+i*8);ctx.fillStyle=waterCol(.1,{a:1.3});ctx.beginPath();ctx.arc(fcx+Math.sin(a)*d*.15,fcy-FR-d*.5,3+i%3,0,TAU);ctx.fill();}}
+  flask();ctx.strokeStyle=GL_S;ctx.lineWidth=2.4;ctx.stroke();glassHi(ctx,fcx-FR*.62,fcy-FR*.35,fcx-FR*.7,fcy+FR*.2,4,.7);glassHi(ctx,fcx-nw+4,neckTop+12,fcx-nw+4,fcy-FR+10,2.5,.75);
+  // 胶塞 + 温度计（水银球位于支管口处）
+  ctx.fillStyle='#2c2b2e';ctx.beginPath();ctx.moveTo(fcx-nw-4,neckTop-22);ctx.lineTo(fcx+nw+4,neckTop-22);ctx.lineTo(fcx+nw-1,neckTop+10);ctx.lineTo(fcx-nw+1,neckTop+10);ctx.closePath();ctx.fill();
+  const thT=40,thB=armY+4;rr(ctx,fcx-5,thT,10,thB-thT,5);ctx.fillStyle='rgba(240,248,252,.95)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=1.5;ctx.stroke();
+  for(let i=0;i<10;i++){ctx.strokeStyle='rgba(60,70,80,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fcx+5,thT+10+i*9);ctx.lineTo(fcx+(i%5?2:-1),thT+10+i*9);ctx.stroke();}
+  const tt=clamp(((s.temp||20)-0)/110,0,1),colTop=lerp(thB-14,thT+8,tt);ctx.fillStyle='#d23b35';ctx.fillRect(fcx-1.6,colTop,3.2,thB-8-colTop);ctx.beginPath();ctx.ellipse(fcx,thB-6,4.5,7,0,0,TAU);ctx.fill();
+  // 冷凝管：外套管 + 内管
+  const jf0=.07,jf1=.86,JR=17,IR=6;
+  const tube=(f0,f1,r)=>{const a=at(f0,-r),b=at(f1,-r),c=at(f1,r),d=at(f0,r);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.lineTo(...c);ctx.lineTo(...d);ctx.closePath();};
+  // 进、出水口小管
+  const inP=at(jf1-.05,JR),outP=at(jf0+.05,-JR);
+  ctx.save();ctx.lineCap='round';[[inP,[inP[0]+nx*20-ux*4,inP[1]+ny*20]],[outP,[outP[0]-nx*20+ux*4,outP[1]-ny*20]]].forEach(([a,b])=>{ctx.strokeStyle=GL_S;ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();ctx.strokeStyle='rgba(236,246,251,.95)';ctx.lineWidth=6;ctx.stroke();});
+  // 橡胶管
+  ctx.strokeStyle='#8a3b2c';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(inP[0]+nx*18,inP[1]+ny*18);ctx.quadraticCurveTo(inP[0]+nx*40,inP[1]+ny*60,inP[0]+nx*20+40,inP[1]+90);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(outP[0]-nx*18,outP[1]-ny*18);ctx.quadraticCurveTo(outP[0]-nx*40,outP[1]-ny*60,outP[0]+40,outP[1]-70);ctx.stroke();ctx.restore();
+  tube(jf0,jf1,JR);ctx.fillStyle=s.cool?'rgba(150,205,235,.55)':'rgba(225,238,246,.35)';ctx.fill();
+  if(s.cool){ctx.save();tube(jf0,jf1,JR);ctx.clip();ctx.setLineDash([10,14]);ctx.lineDashOffset=t*60;ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=2;for(const off of[-11,11]){ctx.beginPath();ctx.moveTo(...at(jf1,off));ctx.lineTo(...at(jf0,off));ctx.stroke();}ctx.restore();}
+  tube(jf0,jf1,JR);ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();
+  tube(0,1,IR);ctx.fillStyle='rgba(240,248,252,.9)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=1.6;ctx.stroke();
+  if(s.boil>.6&&s.lit){ctx.save();ctx.setLineDash([3,14]);ctx.lineDashOffset=-t*110;ctx.strokeStyle='#ffffff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(fcx,armY-4);ctx.lineTo(fcx+nw,armY);ctx.lineTo(...at(0));ctx.lineTo(...at(s.cool?.45:1));ctx.stroke();ctx.restore();
+    if(s.cool)for(let i=0;i<5;i++){const f=.5+((t*.35+i*.11)%.5);const p=at(f,IR-2.5);ctx.fillStyle='rgba(120,180,210,.9)';ctx.beginPath();ctx.arc(p[0],p[1],2.4,0,TAU);ctx.fill();}}
+  glassHi(ctx,...at(jf0+.03,-JR+4),...at(jf1-.03,-JR+4),2.5,.7);
+  // 冷凝管夹（右侧铁架台）
+  const cp=at(.57);ctx.strokeStyle='#3a3f47';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(560,cp[1]);ctx.lineTo(cp[0],cp[1]);ctx.stroke();ctx.fillStyle='#55504a';ctx.save();ctx.translate(cp[0],cp[1]);ctx.rotate(Math.atan2(dy,dx));rr(ctx,-10,-JR-5,20,8,2);ctx.fill();rr(ctx,-10,JR-3,20,8,2);ctx.fill();ctx.restore();
+  rr(ctx,551,cp[1]-10,18,20,3);ctx.fillStyle=metal(ctx,551,0,569,0,true);ctx.fill();
+  // 胶塞（冷凝管两端）
+  [[at(.02),0],[at(.985),0]].forEach(([p])=>{ctx.save();ctx.translate(p[0],p[1]);ctx.rotate(Math.atan2(dy,dx));ctx.fillStyle='#2c2b2e';rr(ctx,-8,-11,16,22,3);ctx.fill();ctx.restore();});
+  // 牛角管 + 锥形瓶
+  const fx=790,fb=612,fh=150,fw=150,mouthY=fb-fh,mw=34;
+  const cone=()=>{ctx.beginPath();ctx.moveTo(fx-mw/2,mouthY);ctx.lineTo(fx-mw/2,mouthY+30);ctx.lineTo(fx-fw/2,fb-8);ctx.quadraticCurveTo(fx-fw/2,fb,fx-fw/2+10,fb);ctx.lineTo(fx+fw/2-10,fb);ctx.quadraticCurveTo(fx+fw/2,fb,fx+fw/2,fb-8);ctx.lineTo(fx+mw/2,mouthY+30);ctx.lineTo(fx+mw/2,mouthY);};
+  cone();ctx.fillStyle=GL_F;ctx.fill();
+  const vol=s.vol||0;if(vol>0){ctx.save();cone();ctx.clip();const ly=fb-4-Math.min(1,vol/15)*58;ctx.fillStyle=s.first?'rgba(206,214,170,.8)':waterCol(0,{a:1.3});ctx.fillRect(fx-fw/2,ly,fw,fb-ly);ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(fx-fw/2,ly);ctx.lineTo(fx+fw/2,ly);ctx.stroke();ctx.restore();
+    if(s.drip){const ph=(t*2.2)%1;drop(ctx,fx,lerp(mouthY+28,ly-4,ph*ph),3.5,waterCol(0,{a:1.6}));}}
+  cone();ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();glassHi(ctx,fx+fw*.28,fb-20,fx+mw*.3,mouthY+40,3,.7);
+  const ad=new Path2D(`M${C1[0]-ux*4} ${C1[1]-uy*4} L${C1[0]+ux*34} ${C1[1]+uy*34} Q${fx} ${C1[1]+uy*34+10} ${fx} ${mouthY+26}`);
+  ctx.save();ctx.lineCap='round';ctx.strokeStyle=GL_S;ctx.lineWidth=13;ctx.stroke(ad);ctx.strokeStyle='rgba(236,246,251,.95)';ctx.lineWidth=9;ctx.stroke(ad);ctx.restore();
+  if(s.escape&&!LOW){for(let i=0;i<6;i++){const ph=(t*.5+i/6)%1;ctx.fillStyle=`rgba(255,255,255,${.7*(1-ph)})`;ctx.beginPath();ctx.arc(fx+Math.sin(t*2+i)*14,mouthY-ph*90,8+ph*16,0,TAU);ctx.fill();ctx.strokeStyle=`rgba(150,170,190,${.4*(1-ph)})`;ctx.stroke();}}
+  // 标注
+  if(s.labels!==false){const lab=(p,tx,ty,str,col)=>callout(ctx,p[0],p[1],tx,ty,str,{col,size:15});
+    lab(inP,inP[0]+80,inP[1]+40,'进水口（下）','#2f6fb0');lab(outP,outP[0]+60,outP[1]-62,'出水口（上）','#2f6fb0');
+    lab([fcx+5,thT+20],fcx+70,thT,'温度计',INK);lab([fcx,armY],fcx-110,armY-40,'水银球在支管口处',INK);lab(at(.3,JR),at(.3)[0]-10,at(.3)[1]+110,'冷凝管',INK);lab([fx+fw*.3,fb-30],fx+fw*.5+10,fb-90,'锥形瓶',INK);lab([fcx-FR*.8,fcy+20],fcx-130,fcy+60,'沸石防暴沸',INK);}
+  ctx.restore();}
+
+S.distill=(()=>{const cv=$('#cvDist');let t=0;const host=$('[data-id="distill"] .stage');
+  let s,log,paid=false,bumpT=0,super_=0,msgT=0;
+  const LOG=['加水约 1/3 体积','加入几粒沸石','先通冷凝水（下进上出）','加热至沸腾','弃去开始馏出的液体','收集约 10 mL 后停止加热'];
+  function reset(){s={water:0,stones:false,lit:false,cap:true,temp:20,vol:0,first:true,bump:0,boil:0,cool:false,drip:false,escape:false,t:0,dumped:false,stopped:false,bumped:false};log=LOG.map(()=>0);paid=false;bumpT=0;super_=0;msgT=0;renderLog();stampOff(host);
+    setSt($('#diSt'),'','按 ①→⑥ 操作。试试不加沸石、不通冷凝水会怎样？');ui();}
+  function renderLog(){$('#diLog').innerHTML=LOG.map((x,i)=>`<li class="${log[i]===1?'ok':log[i]===2?'ng':''}"><em>${log[i]===1?'✓':log[i]===2?'✗':i+1}</em><span>${x}</span></li>`).join('');}
+  function ui(){$('#diWater').disabled=s.water>0||s.waterA;$('#diStone').disabled=s.stones;$('#diCool').disabled=s.cool;$('#diFire').disabled=s.lit;$('#diDump').disabled=!s.vol;$('#diStop').disabled=!s.lit;}
+  const st=$('#diSt');
+  $('#diWater').onclick=()=>{s.waterA=1;sfx('drop');log[0]=1;renderLog();setSt(st,'','烧瓶中加入约 1/3 体积的自来水。');ui();};
+  $('#diStone').onclick=()=>{if(s.temp>50){sfx('bad');setSt(st,'bad','<b>液体温度很高，不能直接补加沸石！</b>要停止加热，等液体冷却后再加。');return;}s.stones=true;sfx('pop');log[1]=1;renderLog();setSt(st,'ok','加入几粒沸石（或碎瓷片），作用：<b>防止暴沸</b>。');ui();};
+  $('#diCool').onclick=()=>{s.cool=true;s.escape=false;sfx('whoosh');if(!log[2])log[2]=s.lit?2:1;renderLog();setSt(st,s.lit?'warn':'ok',s.lit?'冷凝水通上了。注意：应该<b>先通冷凝水，再加热</b>。':'冷凝水从<b>下口进、上口出</b>，冷水充满冷凝管，冷凝效果好。');ui();};
+  $('#diFire').onclick=()=>{if(!s.water){sfx('bad');setSt(st,'bad','烧瓶里还没有水，不能空烧！先 ① 加水。');return;}
+    if(s.bumped&&!s.stones){sfx('bad');setSt(st,'bad','暴沸过一次了！先等液体冷却，再 ② 补加沸石。');return;}
+    s.lit=true;s.cap=false;s.stopped=false;stampOff(host);sfx('whoosh');if(!s.cool&&!log[2]){log[2]=2;renderLog();}
+    setSt(st,'warn',!s.cool?'还没通冷凝水就加热了，注意观察锥形瓶……':s.stones?'用酒精灯外焰加热，观察温度计和烧瓶中的现象……':'没加沸石就开始加热了，注意观察……');ui();};
+  $('#diDump').onclick=()=>{if(s.vol<=0)return;const early=!s.dumped;s.vol=0;s.first=false;s.dumped=true;log[4]=1;renderLog();sfx('drop');
+    setSt(st,'ok',early?'<b>弃去开始馏出的液体</b>：它可能溶有易挥发的杂质。换上洁净的锥形瓶继续收集。':'倒掉了，重新收集。');ui();};
+  $('#diStop').onclick=()=>{s.lit=false;s.cap=true;s.stopped=true;sfx('click');
+    if(s.vol>=8&&s.dumped)log[5]=1;else if(s.boil>.5||s.vol>0)log[5]=2;if(!s.dumped&&s.vol>0)log[4]=2;renderLog();
+    if(log.every(v=>v===1)){if(!paid){teamAdd(5);paid=true;}sfx('win');FX.confetti();stampOn(host,'蒸馏水 ✓',true,'80%','30%');setSt(st,'ok',`<b>实验成功！</b>用灯帽盖灭酒精灯，稍后再停止通冷凝水。收集到的蒸馏水是<b>纯净物</b>。${tname(TEAM.cur)} +5`);}
+    else if(s.vol>0&&!s.dumped)setSt(st,'bad','<b>没有弃去开始馏出的液体</b>，收集到的水可能含杂质。点“重新实验”再做一次。');
+    else if(log[2]===2)setSt(st,'bad','操作顺序有误：应<b>先通冷凝水，再加热</b>。点“重新实验”按正确顺序再做一次。');
+    else if(s.vol<8&&!s.bumped)setSt(st,'warn','用灯帽盖灭酒精灯。收集的蒸馏水还不够 10 mL，可以重新点燃继续。');
+    else setSt(st,'','用灯帽盖灭酒精灯。');ui();};
+  $('#diReset').onclick=()=>{reset();sfx('click');};
+  reset();
+  function tick(dt){t+=dt;s.t=t;if(s.waterA){s.water=Math.min(1,s.water+dt*1.2);if(s.water>=1){s.waterA=0;ui();}}
+    if(s.lit){const target=s.stones?100:103;s.temp=Math.min(target,s.temp+dt*(s.temp<90?14:5));}else s.temp=Math.max(20,s.temp-dt*(s.temp>60?8:4));
+    s.boil=s.lit?smooth(85,100,s.temp):Math.max(0,s.boil-dt*1.5);
+    if(s.lit&&s.temp>=100&&!s.stones&&!s.bumped){super_+=dt;s.boil=.15;if(super_>1.3){s.bumped=true;bumpT=1;s.lit=false;s.cap=true;s.stopped=true;shake();flash('#c4492f');sfx('boom');stampOn(host,'暴沸！',false,'30%','24%');log[1]=2;renderLog();
+        setSt(st,'bad','<b>发生暴沸！</b>液体突然剧烈沸腾、冲出，非常危险（已紧急熄灭酒精灯）。<br>原因：没有加沸石。要<b>冷却后补加沸石</b>，再重新加热。');ui();}}
+    if(bumpT>0){bumpT=Math.max(0,bumpT-dt*.8);s.bump=Math.sin((1-bumpT)*Math.PI);}else s.bump=0;
+    const boiling=s.lit&&s.temp>=100&&s.stones;s.escape=boiling&&!s.cool;
+    if(boiling){if(!log[3]){log[3]=1;renderLog();if(s.cool)setSt(st,'','水沸腾，温度计示数约 100 ℃。水蒸气在冷凝管中<b>冷凝</b>成水，流入锥形瓶。注意：<b>开始馏出的液体要弃去</b>。');}
+      if(!s.cool&&msgT>=0&&msgT<5){setSt(st,'bad','没通冷凝水：水蒸气得不到冷却，大部分从锥形瓶口<b>逸出</b>，几乎收集不到水！点“通冷凝水”。');msgT=5;}
+      s.vol=Math.min(15,s.vol+dt*(s.cool?.55:.04));s.drip=s.cool;
+      if(s.cool&&s.dumped&&s.vol>=10&&msgT<99){setSt(st,'warn','已收集约 10 mL 蒸馏水，可以 ⑥ 停止加热了。');msgT=99;}
+      if(s.cool&&!s.dumped&&s.vol>=3.5&&msgT>-1&&msgT<99){setSt(st,'warn','开始馏出的液体还没弃去哦！（点 ⑤）');msgT=-1;}}
+    else s.drip=false;
+    if(!$('#diDump').disabled!==!!s.vol)ui();
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const k=Math.min((w-236)/900,(h-16)/640),ox=226-30*k,oy=(h-640*k)/2;drawDistill(ctx,ox,oy,k,s);
+    const T=Math.round(s.temp);if($('#diTemp').textContent!=T)$('#diTemp').textContent=T;const V=s.vol.toFixed(1);if($('#diVol').textContent!==V)$('#diVol').textContent=V;const C2=s.cool?'已通':'未通';if($('#diCold').textContent!==C2)$('#diCold').textContent=C2;}
+  return{tick};})();
+/* ================= 11 硬水和软水 ================= */
+S.hard=(()=>{const cv=$('#cvHard');let t=0,hardI=0,soap=0,shakeT=0,shaken=false;const st=$('#haSt');
+  const q=single($('#haOpts'),$('#haSub'),$('#haSt'),0,{ok:'',bad:''});
+  function reset(){hardI=Math.random()<.5?0:1;soap=0;shakeT=0;shaken=false;q.reset();$$('#haOpts .opt').forEach(b=>b.disabled=true);$('#haSub').disabled=true;$('#haShake').disabled=true;$('#haSoap').disabled=false;
+    setSt(st,'','先滴肥皂水、振荡，再观察判断');
+    // 根据随机结果重新绑定答案
+    const nq=single($('#haOpts'),$('#haSub'),$('#haSt'),hardI,{ok:'泡沫少、浮渣多的是硬水。',bad:`泡沫少、浮渣多的${hardI?'乙':'甲'}试管才是硬水。`});$$('#haOpts .opt').forEach(b=>b.disabled=true);}
+  $('#haSoap').onclick=()=>{soap=.001;$('#haSoap').disabled=true;sfx('drop');setTimeout(()=>{$('#haShake').disabled=false;},900);};
+  $('#haShake').onclick=()=>{shakeT=1.4;sfx('whoosh');$('#haShake').disabled=true;setTimeout(()=>{shaken=true;$$('#haOpts .opt').forEach(b=>b.disabled=false);$('#haSub').disabled=false;setSt(st,'warn','观察泡沫和浮渣，判断哪支是硬水，再提交');},1500);};
+  $('#haReset').onclick=()=>{reset();sfx('click');};reset();
+  function tubeAt(ctx,x,top,bot,r,isHard,f,t){ctx.save();const ang=shakeT>0?Math.sin(t*28)*.12:0;ctx.translate(x,top);ctx.rotate(ang);ctx.translate(-x,-top);
+    const path=()=>{ctx.beginPath();ctx.moveTo(x-r,top);ctx.lineTo(x-r,bot-r);ctx.arc(x,bot-r,r,Math.PI,0,true);ctx.lineTo(x+r,top);};
+    path();ctx.fillStyle='rgba(230,242,248,.35)';ctx.fill();ctx.save();path();ctx.clip();const ly=lerp(bot,top,.55);
+    ctx.fillStyle=soap?`rgba(214,232,240,${.75})`:waterCol(0,{a:1.2});ctx.fillRect(x-r,ly,r*2,bot-ly);
+    if(soap&&shaken||f>0){const fh=isHard?14:130;const R=rng(isHard?3:7);const n=isHard?12:120;for(let i=0;i<n;i++){const bx=x-r+R()*r*2,by=ly-R()*fh*f,br=3+R()*(isHard?3:6);ctx.fillStyle='rgba(255,255,255,.92)';ctx.strokeStyle='rgba(150,180,200,.6)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(bx,by,br,0,TAU);ctx.fill();ctx.stroke();}
+      if(isHard&&shaken){const R2=rng(5);for(let i=0;i<16;i++){ctx.fillStyle='rgba(236,232,214,.95)';ctx.strokeStyle='rgba(170,160,130,.7)';const bx=x-r+4+R2()*(r*2-8),by=ly+4+R2()*22+Math.sin(t*2+i)*1.5;ctx.beginPath();ctx.ellipse(bx,by,4+R2()*3,2+R2()*1.5,R2()*3,0,TAU);ctx.fill();ctx.stroke();}}}
+    ctx.restore();path();ctx.strokeStyle=GL_S;ctx.lineWidth=2.2;ctx.stroke();ctx.beginPath();ctx.ellipse(x,top,r+2,5,0,0,TAU);ctx.stroke();glassHi(ctx,x+r*.5,top+14,x+r*.5,bot-22,3,.75);ctx.restore();}
+  let foam=0;
+  function tick(dt){t+=dt;if(soap>0&&soap<1)soap=Math.min(1,soap+dt*1.2);if(shakeT>0){shakeT=Math.max(0,shakeT-dt);}foam=shaken?Math.min(1,foam+dt*1.5):0;
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const top=h*.16,bot=h*.76,r=Math.min(40,w*.04),xs=[w*.32,w*.62];
+    // 试管架
+    ctx.fillStyle='#b98e5c';rr(ctx,w*.18,bot-30,w*.58,26,4);ctx.fill();ctx.fillStyle='#a37a4a';rr(ctx,w*.18,top+120,w*.58,18,4);ctx.fill();ctx.fillStyle='#8c6438';ctx.fillRect(w*.19,top+120,12,bot-top-100);ctx.fillRect(w*.75-12,top+120,12,bot-top-100);
+    xs.forEach((x,i)=>{tubeAt(ctx,x,top,bot-10,r,i===hardI,foam,t);hand(ctx,i?'乙':'甲',x,bot+30,{size:34,col:CIN});});
+    if(soap>0&&soap<1){xs.forEach(x=>{drop(ctx,x,lerp(top-40,top+60,soap),5,'rgba(230,236,240,.95)');});}
+    if(shaken){[['泡沫',0],['浮渣',1]].forEach(([s2,k])=>{});
+      const xh=xs[hardI],xs2=xs[1-hardI];callout(ctx,xs2+r,lerp(bot,top,.55)-60,xs2+r+80,top+40,'泡沫多',{col:NAVY,size:17});callout(ctx,xh+r,lerp(bot,top,.55)+12,xh+r+80,lerp(bot,top,.55)+60,'泡沫少、浮渣多',{col:CIN,size:17});}
+    hand(ctx,'两支试管中各盛有等量的水样（一支硬水，一支软水）',w*.47,34,{size:24,col:'#4a4f5c'});}
+  return{tick};})();
+
+/* ================= 12 竞赛：净水密室逃脱 ================= */
+S.escape=(()=>{const cv=$('#cvEscape'),card=$('#esCard');let t=0;
+  const ROOMS=['沉降','过滤','吸附','消毒','蒸馏与硬水'];
+  const Q=[
+    {r:0,q:'用明矾净水时，明矾所起的作用是',o:['杀灭水中的细菌','使水中悬浮的杂质沉降','除去水中的异味','把硬水变成软水'],a:1,e:'明矾溶于水后生成胶状物，吸附悬浮杂质使其沉降；它不能杀菌，也不能软化水。'},
+    {r:0,q:'取一杯浑浊的河水静置一段时间，下列说法正确的是',o:['上层的水变成了纯水','除去了所有不溶性杂质','较大的颗粒沉到了杯底','水中的色素被除去'],a:2,e:'静置只能使较大的不溶性颗粒沉降，细小颗粒、可溶性杂质仍留在水中。'},
+    {r:1,q:'过滤操作中，下列做法正确的是',o:['用玻璃棒在漏斗中搅拌，加快过滤','滤纸边缘高出漏斗边缘','漏斗下端管口紧靠烧杯内壁','液面高于滤纸边缘'],a:2,e:'过滤时不能搅拌（会戳破滤纸）；要做到“二低”：滤纸边缘低于漏斗边缘，液面低于滤纸边缘。'},
+    {r:1,q:'过氧化氢在二氧化锰催化下分解后，要回收不溶于水的二氧化锰，应采用的方法是',o:['蒸发','过滤','吸附','消毒'],a:1,e:'二氧化锰不溶于水，用过滤把不溶性固体与液体分开。'},
+    {r:1,hard:1,q:'右图是某同学的过滤操作。图中缺少的一种仪器及其作用是',fig:'rig',o:['玻璃棒，引流','玻璃棒，搅拌','铁圈，支撑漏斗','滤纸，吸附色素'],a:0,e:'倾倒液体时要用玻璃棒引流，液体沿玻璃棒流入漏斗，防止液体溅出或冲破滤纸。'},
+    {r:2,q:'许多家用净水器中装有活性炭，主要利用了活性炭的',o:['可燃性','吸附性','能溶于水','能杀菌'],a:1,e:'活性炭疏松多孔，具有吸附性，可除去色素和异味。'},
+    {r:2,q:'下列关于活性炭净水的说法，错误的是',o:['能除去水中的色素和异味','活性炭疏松多孔','吸附过程发生了化学变化','也能滤去部分不溶性杂质'],a:2,e:'吸附过程没有生成新物质，属于物理变化。'},
+    {r:3,q:'自来水厂净水的下列环节中，发生化学变化的是',o:['沉淀','过滤','活性炭吸附','投药消毒'],a:3,e:'投药消毒时消毒剂与细菌等发生反应，生成了新物质，是化学变化。'},
+    {r:3,hard:1,q:'把学校池塘里的水净化成可饮用的水，步骤有：①活性炭吸附 ②过滤 ③加明矾静置 ④投药消毒。合理的顺序是',o:['③②①④','②③①④','③①②④','④③②①'],a:0,e:'先沉降除去大颗粒，再过滤、吸附，最后消毒杀菌——与自来水厂的流程一致。'},
+    {r:4,q:'制取蒸馏水时，在烧瓶中加入几粒沸石的目的是',o:['加快水的蒸发','防止加热时暴沸','吸附水中的杂质','使水软化'],a:1,e:'沸石（或碎瓷片）能防止加热时液体暴沸。'},
+    {r:4,hard:1,q:'用右图装置制取蒸馏水，下列说法错误的是',fig:'dist',o:['冷凝管中的冷水从下口进、上口出','开始馏出的液体要收集起来','烧瓶中加入沸石可防止暴沸','收集到的蒸馏水是纯净物'],a:1,e:'开始馏出的液体可能含有杂质，应该弃去。'},
+    {r:4,q:'取等量的甲、乙两种水样，各加入等量肥皂水振荡：甲中泡沫很少、浮渣较多，乙中泡沫丰富。下列判断正确的是',o:['甲是软水','乙是硬水','甲是硬水','两者都是纯净物'],a:2,e:'泡沫少、浮渣多的是硬水；泡沫多、浮渣少的是软水。'}];
+  let qi=0,res=[],pick=null,judged=false,openT=0,openRoom=-1,win=false,winT=0,lastRoom=0;
+  const roomOf=i=>Q[i].r,inRoom=r=>Q.map((q,i)=>i).filter(i=>Q[i].r===r);
+  function reset(){qi=0;res=[];pick=null;judged=false;openT=0;openRoom=-1;win=false;winT=0;lastRoom=0;render();}
+  $('#esReset').onclick=()=>{reset();sfx('click');};
+  function render(){if(win){const r=TEAM.sc.r,b=TEAM.sc.b;card.innerHTML=`<div class="qmeta"><span class="tag y">逃脱成功</span></div><p class="hand" style="font-size:44px;line-height:1.2">净水厂大门打开了！</p>
+      <p class="qtext">全班闯过 5 间密室。本节积分：<b class="kr">红队 ${r}</b> ： <b class="k">蓝队 ${b}</b></p><p class="hand" style="font-size:36px;color:${r===b?'#d9a62e':r>b?'#c4492f':'#2f6fb0'}">${r===b?'两队打平，都是净水高手！':(r>b?'红队':'蓝队')+'获胜！'}</p>
+      <div class="row"><button class="btn pri" data-go="next">进入小结 →</button><button class="btn" id="esAgain">再玩一次</button></div>`;
+      $('[data-go]',card).onclick=()=>$('#btnNext').click();$('#esAgain').onclick=reset;return;}
+    const q=Q[qi],tm=TEAM.cur,pts=q.hard?20:10;
+    card.innerHTML=`<div class="qmeta"><span class="teamTag ${tm}">${tname(tm)}答题</span><span class="tag n">密室 ${q.r+1} · ${ROOMS[q.r]}</span><span class="tag p">第 ${qi+1} / ${Q.length} 题</span>${q.hard?'<span class="tag c">提升 · 双倍</span>':''}<span class="hint" style="margin-left:auto">答对 +${pts}</span></div>
+      <div style="display:grid;grid-template-columns:${q.fig?'minmax(0,1fr) 230px':'1fr'};gap:12px;align-items:start"><p class="qtext">${q.q}（　）</p>${q.fig?`<canvas id="esFig" style="width:230px;height:${q.fig==='dist'?170:220}px;border:1px solid #e3dccd;border-radius:6px;background:#fff"></canvas>`:''}</div>
+      <div class="opts">${q.o.map((o,i)=>`<button class="opt" data-v="${i}"><i>${'ABCD'[i]}</i>${o}</button>`).join('')}</div>
+      <div class="row"><button class="btn pri" id="esSub">提交</button><button class="btn" id="esNext" hidden>下一题 →</button></div><div class="status qex" id="esSt">选好后提交；答对点亮本队颜色的锁芯</div>`;
+    pick=null;judged=false;
+    $$('.opt',card).forEach(b=>b.onclick=()=>{if(judged)return;pick=+b.dataset.v;$$('.opt',card).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
+    $('#esSub').onclick=submit;$('#esNext').onclick=next;
+    if(q.fig)requestAnimationFrame(()=>{const c=$('#esFig');if(!c)return;const{ctx,w,h}=fitS(c);ctx.clearRect(0,0,w,h);if(q.fig==='rig'){const k=Math.min(w/600,h/600);filterRig(ctx,(w-600*k)/2,(h-600*k)/2,k,{rod:false,pour:true,flow:1,lv:.5,fil:.2,t:.4});}
+      else{const k=Math.min(w/1000,h/640);drawDistill(ctx,(w-1000*k)/2,(h-640*k)/2,k,{water:1,stones:true,lit:true,cap:false,temp:100,vol:5,first:false,boil:1,cool:true,drip:true,labels:false,t:.3});}});}
+  function submit(){if(judged)return;const st=$('#esSt');if(pick===null){setSt(st,'warn','请先选择一个答案');return;}judged=true;const q=Q[qi],tm=TEAM.cur,ok=pick===q.a,pts=q.hard?20:10;
+    $$('.opt',card).forEach(x=>{const v=+x.dataset.v;x.disabled=true;if(v===q.a)x.classList.add('right');else if(v===pick)x.classList.add('wrong');});
+    res[qi]=ok?tm:'x';if(ok){teamAdd(pts,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}答对 +${pts}</b>　${q.e}`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}答错，不加分</b>　正确答案 ${'ABCD'[q.a]}。${q.e}`);}
+    const r=q.r,done=inRoom(r).every(i=>res[i]);if(done){openRoom=r;openT=0;setTimeout(()=>{sfx('boom');},350);setTimeout(()=>sfx('win'),900);}
+    teamNext();$('#esSub').hidden=true;$('#esNext').hidden=false;$('#esNext').textContent=qi===Q.length-1?'打开大门 →':done?'进入下一间密室 →':'下一题 →';}
+  function next(){if(qi===Q.length-1){win=true;winT=0;FX.confetti();sfx('win');render();return;}qi++;sfx('whoosh');render();}
+  reset();
+  function door(ctx,x,y,w,h,open,lab,cur,pins,t){// 门洞
+    ctx.save();ctx.fillStyle='#2b2620';rr(ctx,x-8,y-8,w+16,h+8,8);ctx.fill();
+    if(open>0){const g=ctx.createLinearGradient(x,y,x+w,y);g.addColorStop(0,'rgba(255,240,190,1)');g.addColorStop(1,'rgba(255,214,130,1)');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+      if(!LOW){ctx.globalCompositeOperation='lighter';for(let i=0;i<6;i++){ctx.fillStyle=`rgba(255,220,140,${.07*open})`;ctx.beginPath();ctx.moveTo(x+w*.1,y+h*.05+i*h*.15);ctx.lineTo(x+w*1.9+i*20,y+h*1.3);ctx.lineTo(x+w*1.6+i*20,y+h*1.3);ctx.closePath();ctx.fill();}ctx.globalCompositeOperation='source-over';}}
+    // 门板（绕左侧铰链旋转，用宽度压缩表现透视）
+    const dw=w*(1-.82*ease(open));ctx.fillStyle=cur?'#6b4a2f':'#5a4330';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dw,y+open*h*.05);ctx.lineTo(x+dw,y+h-open*h*.05);ctx.lineTo(x,y+h);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+dw*i/4,y+open*h*.05*i/4+4);ctx.lineTo(x+dw*i/4,y+h-open*h*.05*i/4-4);ctx.stroke();}
+    ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(x+4,y+4,dw*.12,h-8);
+    // 锁
+    if(open<.3){const lx=x+w*.5,ly=y+h*.5,lr=Math.min(w*.3,46);const up=clamp(open/.3,0,1)*lr*.5;
+      ctx.strokeStyle='#c9ccd2';ctx.lineWidth=lr*.22;ctx.beginPath();ctx.arc(lx,ly-lr*.55-up,lr*.55,Math.PI,0);ctx.stroke();
+      rr(ctx,lx-lr,ly-lr*.55,lr*2,lr*1.5,lr*.25);ctx.fillStyle=metal(ctx,lx-lr,0,lx+lr,0);ctx.fill();ctx.strokeStyle='#5a5f68';ctx.lineWidth=2;ctx.stroke();
+      const n=pins.length;pins.forEach((p,i)=>{const px=lx-lr*.6+(n>1?i*lr*1.2/(n-1):lr*.6),py=ly+lr*.2;ctx.beginPath();ctx.arc(px,py,lr*.17,0,TAU);ctx.fillStyle=p==='r'?'#c4492f':p==='b'?'#2f6fb0':p==='x'?'#9a9ca3':'#2c2f36';ctx.fill();if(p==='r'||p==='b'){ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=1.5;ctx.stroke();}});}
+    ctx.restore();
+    hand(ctx,lab,x+w/2,y+h+30,{size:cur?30:22,col:cur?CIN:'#4a4f5c'});}
+  const SHORT=['沉降','过滤','吸附','消毒','蒸馏'];
+  function bigLock(ctx,cx,cy,L,pins,open,col){ctx.save();const up=ease(clamp(open*1.6,0,1))*L*.55,rot=ease(clamp(open*1.6-.4,0,1))*.5;
+    ctx.save();ctx.translate(cx+L*.5,cy-L*.55);ctx.rotate(-rot);ctx.translate(-(cx+L*.5),-(cy-L*.55));ctx.strokeStyle=metal(ctx,cx-L,0,cx+L,0);ctx.lineWidth=L*.2;ctx.lineCap='butt';ctx.beginPath();ctx.moveTo(cx-L*.5,cy-L*.5-up);ctx.arc(cx,cy-L*.55-up,L*.5,Math.PI,0);ctx.lineTo(cx+L*.5,cy-L*.3-up*.2);ctx.stroke();ctx.restore();
+    const g=ctx.createLinearGradient(cx-L,cy-L*.6,cx+L,cy+L*.8);g.addColorStop(0,'#f2cf73');g.addColorStop(.5,'#d9a62e');g.addColorStop(1,'#9c7215');rr(ctx,cx-L,cy-L*.55,L*2,L*1.45,L*.22);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#7b5a12';ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.25)';rr(ctx,cx-L*.86,cy-L*.45,L*1.72,L*.18,L*.09);ctx.fill();
+    const n=pins.length;pins.forEach((p,i)=>{const px=cx+(i-(n-1)/2)*L*.56,py=cy+L*.32;ctx.beginPath();ctx.arc(px,py,L*.19,0,TAU);ctx.fillStyle='#3a2c10';ctx.fill();ctx.beginPath();ctx.arc(px,py,L*.15,0,TAU);ctx.fillStyle=p==='r'?'#c4492f':p==='b'?'#2f6fb0':p==='x'?'#8d8f96':'#2a2116';ctx.fill();
+      if(p==='r'||p==='b'){ctx.globalCompositeOperation='lighter';glow(ctx,px,py,L*.4,p==='r'?'#c4492f':'#2f6fb0',.6);ctx.globalCompositeOperation='source-over';}});
+    ctx.fillStyle='#3a2c10';ctx.beginPath();ctx.arc(cx,cy-L*.08,L*.12,0,TAU);ctx.fill();ctx.fillRect(cx-L*.05,cy-L*.08,L*.1,L*.22);
+    if(open>0&&open<1&&!LOW){ctx.globalCompositeOperation='lighter';glow(ctx,cx,cy,L*2.4*open,'#f2cf73',.5*(1-open));ctx.globalCompositeOperation='source-over';}
+    ctx.restore();}
+  function tick(dt){t+=dt;if(openRoom>=0)openT=Math.min(1,openT+dt*.9);if(win)winT=Math.min(1,winT+dt*.6);
+    const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const wy=24,wh=h-96;ctx.fillStyle='#efe7d8';ctx.fillRect(20,wy,w-40,wh);ctx.strokeStyle='rgba(120,95,60,.16)';ctx.lineWidth=1;for(let y=wy;y<wy+wh;y+=28){ctx.beginPath();ctx.moveTo(20,y);ctx.lineTo(w-20,y);ctx.stroke();const off=((y-wy)/28)%2?0:40;for(let x=20+off;x<w-20;x+=80){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+28);ctx.stroke();}}
+    ctx.fillStyle='#c9b796';ctx.fillRect(20,wy+wh,w-40,16);
+    const cur=win?5:Q[qi].r;const n=5,gw=(w-80)/(n+1.3),dwid=gw*.74,dh=Math.min(wh*.5,dwid*2.1),dy=wy+wh-dh-4;
+    // 当前密室的大锁
+    const lr=cur<5?cur:4,lockOpen=openRoom===lr?openT:(inRoom(lr).every(i=>res[i])?1:0),L=Math.min(80,(dy-wy-130)/2.6);
+    const lx=(w-gw*.3)/2,lyy=wy+52+L*1.5;
+    hand(ctx,win?'全部密室已打开！':`密室 ${lr+1} · ${ROOMS[lr]}`,lx,wy+34,{size:34,col:win?MOSS:INK});
+    if(!win){bigLock(ctx,lx,lyy,L,inRoom(lr).map(i=>res[i]||''),lockOpen,'');
+      const left=inRoom(lr).filter(i=>!res[i]).length;txt(ctx,lockOpen>=1||left===0?'咔哒！锁打开了':`还有 ${left} 道题，答完开锁`,lx,lyy+L*1.25,{size:17,weight:700,col:lockOpen?MOSS:'#4a4f5c'});}
+    else{mdiDraw(ctx,'trophy',lx,lyy,L*2,'#d9a62e');}
+    for(let r=0;r<n;r++){const x=40+gw*r+(gw-dwid)/2;const pins=inRoom(r).map(i=>res[i]||'');const done=inRoom(r).every(i=>res[i]);const op=done?(r===openRoom?ease(openT):1):0;door(ctx,x,dy,dwid,dh,op,`${r+1} ${SHORT[r]}`,r===cur,pins,t);}
+    const gx=40+gw*n+8,gwid=gw*1.3-16,gh=Math.min(wh*.66,gwid*1.7),gy=wy+wh-gh;ctx.fillStyle='#2b2620';rr(ctx,gx-10,gy-10,gwid+20,gh+10,12);ctx.fill();
+    if(winT>0){const g=ctx.createLinearGradient(0,gy,0,gy+gh);g.addColorStop(0,'#bfe3f2');g.addColorStop(1,'#e9f6fb');ctx.fillStyle=g;ctx.fillRect(gx,gy,gwid,gh);mdiDraw(ctx,'water-check',gx+gwid/2,gy+gh*.42,gwid*.55,'#2f6fb0');hand(ctx,'净水厂',gx+gwid/2,gy+gh*.75,{size:28,col:NAVY});}
+    const hw=gwid/2*(1-.85*ease(winT));ctx.fillStyle='#3d4752';ctx.fillRect(gx,gy,hw,gh);ctx.fillRect(gx+gwid-hw,gy,hw,gh);ctx.strokeStyle='#5f6b78';ctx.lineWidth=3;for(let i=0;i<5;i++){const yy=gy+gh*(i+.5)/5;ctx.beginPath();ctx.moveTo(gx,yy);ctx.lineTo(gx+hw,yy);ctx.moveTo(gx+gwid-hw,yy);ctx.lineTo(gx+gwid,yy);ctx.stroke();}
+    if(winT<.05)mdiDraw(ctx,'lock',gx+gwid/2,gy+gh*.5,46,'#d9a62e');
+    hand(ctx,'大门',gx+gwid/2,gy+gh+30,{size:24,col:win?MOSS:'#4a4f5c'});
+    const cx2=cur<5?40+gw*cur+gw/2:gx+gwid/2,bob=Math.sin(t*4)*5,yy=dy-58+bob;mdiDraw(ctx,'water',cx2,yy,52,'#2f7fb0');ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx2-6,yy+5,3,0,TAU);ctx.arc(cx2+6,yy+5,3,0,TAU);ctx.fill();
+    const k2=res.filter(x=>x==='r'||x==='b').length;txt(ctx,`已点亮锁芯 ${k2} / ${Q.length}　·　已答 ${res.filter(Boolean).length} 题`,w-36,wy+22,{size:14,col:'#6f7480',weight:700,align:'right'});
+    [['r','红队'],['b','蓝队'],['x','答错']].forEach(([k,s2],i)=>{const x=w-250+i*76,y=wy+46;ctx.fillStyle=k==='r'?'#c4492f':k==='b'?'#2f6fb0':'#9a9ca3';ctx.beginPath();ctx.arc(x,y,6,0,TAU);ctx.fill();txt(ctx,s2,x+11,y,{size:13,align:'left',col:'#4a4f5c'});});}
+  return{tick};})();
+
+/* ================= 13 小结 ================= */
+S.sum=(()=>{const tab=$('#suTab');
+  const ROWS=[['沉降','较大的不溶性颗粒（明矾促进沉降）','物理变化',1],['过滤','不溶性杂质','物理变化',2],['吸附','色素、异味（活性炭）','物理变化',3],['消毒','细菌等微生物','化学变化',0],['蒸馏','几乎所有杂质 → 纯净物','物理变化',4]];
+  tab.innerHTML=`<tr><th>方法</th><th>主要除去</th><th>变化类型</th><th>净化程度</th></tr>`+ROWS.map(r=>`<tr><td class="m">${r[0]}</td><td class="cv hide">${r[1]}</td><td class="cv hide">${r[2]}</td><td>${r[3]?`<span class="purity">${Array.from({length:4},(_,i)=>`<i style="height:${8+i*5}px;opacity:${i<r[3]?1:.15}"></i>`).join('')}</span>`:'<span class="hint">（杀菌，不比较）</span>'}</td></tr>`).join('');
+  $$('.cv',tab).forEach(c=>c.onclick=()=>{c.classList.toggle('hide');sfx('pop');});
+  $('#suAll').onclick=()=>{$$('.cv',tab).forEach(c=>c.classList.remove('hide'));sfx('whoosh');};$('#suHide').onclick=()=>{$$('.cv',tab).forEach(c=>c.classList.add('hide'));sfx('click');};
+  const cv=$('#cvSum');let t=0;
+  function tick(dt){t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);if(h<60)return;const st=['沉降','过滤','吸附','蒸馏'],tb=[.6,.25,.1,0],n=4,sw=w/(n+.6),sh=Math.min(46,(h-70)/n);
+    hand(ctx,'净化程度阶梯',16,22,{size:26,align:'left',col:NAVY});
+    for(let i=0;i<n;i++){const x=20+i*sw,y=h-10-(i+1)*sh;ctx.fillStyle='#e9e1d0';ctx.fillRect(x,y,sw-6,h-10-y);ctx.strokeStyle='#b7ab92';ctx.lineWidth=1.5;ctx.strokeRect(x,y,sw-6,h-10-y);
+      const bh=Math.min(sh*1.9,70);beaker(ctx,x+sw*.3,y-2,46,bh,{lv:.7,col:waterCol(tb[i])});hand(ctx,st[i],x+sw*.62,y-bh*.4,{size:26,align:'left'});}
+    ctx.save();ctx.strokeStyle=CIN;ctx.lineWidth=2.5;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(30,h-10-sh*.4);ctx.lineTo(20+(n-1)*sw+sw*.8,h-10-n*sh-Math.min(sh*1.9,70)*.5);ctx.stroke();ctx.restore();
+    hand(ctx,'越来越纯 →',w-24,h-20,{size:24,align:'right',col:CIN});}
+  return{tick,enter(){const r=TEAM.sc.r,b=TEAM.sc.b;$('#suScore').innerHTML=`<span style="color:#c4492f">红队 ${r}</span>　:　<span style="color:#2f6fb0">蓝队 ${b}</span><div style="font-size:24px;color:#4a4f5c">${r===b?'平局，握手言和！':(r>b?'红队':'蓝队')+'领先，继续保持！'}</div>`;}};})();
+/* ================= 翻页框架 ================= */
+const slides=$$('.slide');let idx=-1;
+const dots=$('#dots'),ml=$('#menuList');
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label',`第 ${i+1} 页：${s.dataset.title}`);b.onclick=()=>goTo(i);dots.appendChild(b);
+  const li=document.createElement('li');li.innerHTML=`<button><b>${String(i+1).padStart(2,'0')}</b><span>${s.dataset.title}</span><small>${s.dataset.opt?'<span class="opt-tag">可选</span> · ':''}${s.dataset.min} 分钟</small></button>`;
+  li.firstChild.onclick=()=>{goTo(i);closeMenu();};ml.appendChild(li);
+});
+function goTo(i){
+  i=clamp(i,0,slides.length-1);if(i===idx)return;
+  const old=slides[idx];if(old){S[old.dataset.id]?.leave?.();}
+  idx=i;slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i);s.inert=k!==i;s.setAttribute('aria-hidden',String(k!==i));});
+  S[slides[i].dataset.id]?.enter?.();
+  $$('.dot').forEach((d,k)=>d.classList.toggle('on',k===i));
+  $('#pg').textContent=`${i+1} / ${slides.length}`;$('#prog').style.width=((i+1)/slides.length*100)+'%';
+  $('#btnPrev').disabled=i===0;$('#btnNext').disabled=i===slides.length-1;
+  try{history.replaceState(null,'','#p'+(i+1));}catch(e){}
+  if(old)sfx('click');
+}
+const openMenu=()=>{$('#menu').hidden=false;},closeMenu=()=>{$('#menu').hidden=true;};
+$('#btnPrev').onclick=()=>goTo(idx-1);$('#btnNext').onclick=()=>goTo(idx+1);
+$('#btnMenu').onclick=openMenu;$('#menuX').onclick=closeMenu;$('#menu').onclick=e=>{if(e.target.id==='menu')closeMenu();};
+$('#btnSnd').onclick=e=>{SND.on=!SND.on;e.currentTarget.textContent='音效：'+(SND.on?'开':'关');if(SND.on)sfx('ok');};
+$('#btnFxq').onclick=e=>{LOW=!LOW;e.currentTarget.textContent='特效：'+(LOW?'低':'高');};
+if(LOW)$('#btnFxq').textContent='特效：低';
+function toggleFs(){try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.().catch(()=>{});}catch(e){}}
+$('#btnFs').onclick=toggleFs;
+$$('[data-go="next"]').forEach(b=>b.onclick=()=>goTo(idx+1));
+addEventListener('keydown',e=>{
+  const tg=e.target.tagName||'';if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();goTo(idx-1);}
+  else if(e.key===' '&&tg!=='BUTTON'){e.preventDefault();goTo(idx+1);}
+  else if(e.key==='Home')goTo(0);else if(e.key==='End')goTo(slides.length-1);
+  else if(e.key==='f'||e.key==='F')toggleFs();else if(e.key==='Escape')closeMenu();
+});
+let tx0=null,ty0=null;
+addEventListener('touchstart',e=>{const t=e.touches[0];tx0=t.clientX;ty0=t.clientY;},{passive:true});
+addEventListener('touchend',e=>{if(tx0===null)return;const t=e.changedTouches[0],dx=t.clientX-tx0,dy=t.clientY-ty0;tx0=null;
+  if(e.target.closest('canvas,input,.gal,.bins,.items'))return;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)goTo(idx+(dx<0?1:-1));},{passive:true});
+
+teamRender();
+const m=/^#p(\d+)$/.exec(location.hash||'');goTo(m?(+m[1]-1):0);
+
+let last=performance.now();
+function loop(now){
+  const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;
+  try{BG.tick(dt);const cur=S[slides[idx].dataset.id];cur?.tick?.(dt);FX.tick(dt);}catch(err){console.error(err);}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
