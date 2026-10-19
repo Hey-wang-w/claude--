@@ -1,0 +1,345 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 一杯河水" data-min="2">
+  <div class="cov">
+    <div class="book">
+      <span class="tape tc"></span>
+      <p class="unit">第四单元 自然界的水 · 课题2</p>
+      <h1>水的<span>净化</span></h1>
+      <p class="sub">实验记录本 · 从一杯浑浊的河水出发</p>
+      <dl class="meta"><dt>实验员</dt><dd>九年级 全体同学</dd><dt>样品</dt><dd>取自小河的浑浊河水</dd><dt>任务</dt><dd>让它变清、变干净</dd></dl>
+      <div class="qs">
+        <p style="--i:0"><b>1</b>河水里藏着哪些杂质？</p>
+        <p style="--i:1"><b>2</b>自来水厂用了哪些方法净水？</p>
+        <p style="--i:2"><b>3</b>怎样动手过滤、怎样制取蒸馏水？</p>
+      </div>
+      <div class="row" style="margin-top:22px"><button class="btn pri big" data-go="next">开始记录 →</button></div>
+    </div>
+    <div class="glass" id="covGlass">
+      <canvas id="cvCover"></canvas>
+      <div class="chips" id="covChips">
+        <button class="imp" data-k="0">泥沙 <i style="background:#8a6a43">不溶性</i></button>
+        <button class="imp" data-k="1">色素、异味 <i style="background:#1f4e79">可溶性</i></button>
+        <button class="imp" data-k="2">细菌等微生物 <i style="background:#3f7d5a">微生物</i></button>
+        <button class="imp" data-k="3">钙、镁化合物 <i style="background:#1f4e79">可溶性</i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 自来水厂 -->
+<section class="slide" data-id="plant" data-title="自来水厂净水流程" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">观察 · 自来水厂</p><h2>一滴水的“净化之旅”</h2></div>
+      <div class="tools"><button class="btn sm" id="plReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="plantWrap"><canvas id="cvPlant"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="plPrev">上一站</button><span class="ctlinfo" id="plHint">第 1 站 / 共 7 站</span><button class="btn pri" id="plNext">下一站</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="clipboard-text-outline"></span>先排一排 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">按自来水厂的先后顺序依次点击（再点一次可撤销），排好后提交。</p>
+          <div class="seq" id="plSeq"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="plSub">提交</button><button class="btn sm" id="plRedo">重做</button></div>
+          <div class="status" id="plSt" style="margin-top:8px">排好后提交，正确 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 自来水厂</h4><ol>
+          <li><mark>沉淀 → 过滤 → 吸附 → 消毒</mark></li>
+          <li>絮凝剂（如<mark>明矾</mark>）：使悬浮杂质沉降</li>
+          <li>活性炭：吸附<mark>色素和异味</mark></li>
+          <li>投药消毒：杀灭细菌 <span class="to">→ 化学变化</span></li>
+          <li>自来水仍含可溶性杂质 <span class="to">→ 是混合物</span></li>
+        </ol><p class="pit"><b>易错</b><span>自来水是混合物，也不一定是软水。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3 沉降 -->
+<section class="slide" data-id="alum" data-title="方法一：沉降（明矾）" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 · 沉降</p><h2>静置沉淀 vs 加明矾</h2></div>
+      <div class="tools"><button class="btn sm" id="alReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="duo"><canvas id="cvAlum"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="alAdd">加入明矾</button><button class="btn" id="alStir">搅拌</button><button class="btn pri" id="alWait">静置 3 分钟</button><button class="btn" id="alZoom" aria-pressed="false">放大镜</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="lightbulb-on-outline"></span>先猜一猜 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p style="margin-bottom:8px">静置同样时间，哪一杯上层的水更澄清？</p>
+          <div class="opts c2" id="alOpts"><button class="opt" data-v="0"><i>A</i>左杯（只静置）</button><button class="opt" data-v="1"><i>B</i>右杯（加明矾）</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="alSub">提交</button></div>
+          <div class="status" id="alSt" style="margin-top:8px">选好后提交，再做实验验证</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 沉降</h4><ol>
+          <li>静置沉淀：除去<mark>较大</mark>的不溶性颗粒</li>
+          <li><mark>明矾</mark>溶于水生成<mark>胶状物</mark>，吸附悬浮杂质，使其沉降</li>
+          <li>明矾<span class="to">不能</span>杀菌消毒，也不能除去可溶性杂质</li>
+        </ol><p class="pit"><b>易错</b><span>明矾能使杂质沉降，但<span class="kr">不能</span>杀菌消毒。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 过滤：原理与器材 -->
+<section class="slide" data-id="kit" data-title="过滤 ① 原理与器材" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 准备</p><h2>过滤要用哪些器材？</h2></div>
+      <div class="tools"><button class="btn sm" id="kitReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="kit" id="kit"></div>
+        <div class="ctlbar"><button class="btn pri" id="kitAll">全部翻开</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="filter"></span>哪些能用过滤分开？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">多选，选完点“检查”</p>
+          <div class="mix" id="kitMix"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="kitSub">提交</button><button class="btn sm" id="kitRedo">重做</button></div>
+          <div class="status" id="kitSt" style="margin-top:8px">全对 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤</h4><ol>
+          <li>过滤：把<mark>不溶性固体</mark>与液体分离</li>
+          <li>器材：铁架台（带铁圈）、漏斗、滤纸、烧杯、<mark>玻璃棒</mark></li>
+          <li>玻璃棒的作用：<mark>引流</mark></li>
+        </ol><p class="pit"><b>易错</b><span>过滤只除不溶性杂质，食盐水过滤后仍是食盐水。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 过滤：步骤拆解 -->
+<section class="slide" data-id="steps" data-title="过滤 ② 步骤拆解" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 步骤</p><h2>五步完成过滤</h2></div>
+      <div class="tools"><button class="btn sm" id="stReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tr"></span>
+        <div class="steps5">
+          <div class="stepTabs" id="stTabs"></div>
+          <div class="stepView"><canvas id="cvSteps"></canvas>
+            <div class="stepCap"><div class="t" id="stT"></div><div class="d" id="stD"></div></div>
+            
+          </div>
+        </div>
+        <div class="ctlbar"><button class="btn" id="stPrev">上一步</button><button class="btn" id="stReplay">重播</button><button class="btn pri" id="stNext">下一步</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="alert-circle-outline"></span>本步要点</h3><ul class="keypt" id="stKeys"></ul></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤操作</h4><ol>
+          <li><mark>一贴</mark>：滤纸紧贴漏斗内壁</li>
+          <li><mark>二低</mark>：滤纸边缘低于漏斗边缘；液面低于滤纸边缘</li>
+          <li><mark>三靠</mark>：烧杯口靠玻璃棒；玻璃棒靠三层滤纸；漏斗下端靠烧杯内壁</li>
+        </ol><p class="pit"><b>易错</b><span>不能用玻璃棒在漏斗里搅拌，会戳破滤纸。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 学生演示 -->
+<section class="slide" data-id="lab" data-title="过滤 ③ 学生动手演示" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 动手</p><h2>请一位同学上台：过滤泥沙水</h2></div>
+      <div class="tools"></div></header>
+    <div class="body" style="grid-template-columns:minmax(0,1fr)">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="lab">
+          <div class="labMain">
+            <div class="clock"><svg class="ring" viewBox="0 0 100 100" id="labRing"><circle cx="50" cy="50" r="44" fill="none" stroke="#e3dccd" stroke-width="9"/><circle id="labArc" cx="50" cy="50" r="44" fill="none" stroke="#c4492f" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="0" transform="rotate(-90 50 50)"/></svg>
+              <div class="big" id="labClock">4:00</div>
+              <div class="labCtl"><button class="btn pri" id="labGo">开始计时</button><button class="btn" id="labPause">暂停</button><button class="btn" id="labReset">重置</button><span class="hint" style="margin-left:10px">时长</span><button class="btn sm" data-lt="180">3 分钟</button><button class="btn sm" data-lt="240" aria-pressed="true">4 分钟</button><button class="btn sm" data-lt="300">5 分钟</button></div></div>
+            <div class="nowstep"><div><div class="n" id="labN">第 1 步 / 共 5 步</div><div class="t" id="labT"></div><div class="d" id="labD"></div>
+              <div class="row" style="margin-top:14px"><button class="btn" id="labPrev">上一步</button><button class="btn pri" id="labNext">下一步</button></div></div>
+              <canvas id="cvLab"></canvas></div>
+          </div>
+          <div class="inspect">
+            <h3><span data-i="eye-outline"></span>台下同学当“质检员”</h3>
+            <p class="hint" style="overflow-wrap:anywhere">点一下打 ✓，再点一下打 ✗，第三下清空</p>
+            <div class="chk" id="labChk"></div>
+            <div class="status" id="labSt">演示结束后，点“质检结果”</div>
+            <button class="btn warm" id="labRes">质检结果</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 找茬与诊断 -->
+<section class="slide" data-id="spot" data-title="过滤 ④ 找茬与故障诊断" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 4 · 过滤 · 总结</p><h2 id="spH">操作找茬：哪里错了？</h2></div>
+      <div class="tools tabs"><button class="btn sm" id="spTab1" aria-pressed="true">操作找茬</button><button class="btn sm" id="spTab2">故障诊断</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="spotWrap" id="spWrap"><canvas id="cvSpot"></canvas></div>
+        <div class="diag" id="spDiag" hidden></div>
+        <div class="ctlbar" id="spBar"><button class="btn" data-sc="0" aria-pressed="true">装置甲</button><button class="btn" data-sc="1">装置乙</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="magnify"></span><span id="spTitle">在图中点出错误</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" id="spTip">每套装置藏着 2 处错误，点出位置后提交；全部找对 +5 分。</p>
+          <div class="status" id="spSt" style="margin-top:8px">已标记 0 处</div><div class="row" id="spBtns" style="margin-top:8px"><button class="btn pri sm" id="spSub">提交</button><button class="btn sm" id="spRedo">重做</button></div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 过滤总结</h4><ol>
+          <li>一贴二低三靠，<mark>玻璃棒引流</mark></li>
+          <li>滤液浑浊：<mark>滤纸破损</mark>、<mark>液面高于滤纸边缘</mark>、仪器不干净 <span class="to">→ 查明原因，重新过滤</span></li>
+          <li>过滤太慢：滤纸没紧贴、有气泡；泥沙多 <span class="to">→ 先静置再过滤</span></li>
+          <li>过滤后的水仍含<mark>可溶性杂质</mark></li>
+        </ol><p class="pit"><b>易错</b><span>过滤后澄清的水仍不是纯水。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 吸附与消毒 -->
+<section class="slide" data-id="carbon" data-title="方法三、四：吸附与消毒" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">观察 · 活性炭</p><h2>活性炭为什么能“吸”走颜色？</h2></div>
+      <div class="tools"><button class="btn sm" id="caReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="duo"><canvas id="cvCarbon"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="caAdd">滴入红墨水</button><button class="btn pri" id="caCarb">加入活性炭</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="clipboard-check-outline"></span>物理变化还是化学变化？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="sorter" id="caSort"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="caSub">提交</button><button class="btn sm" id="caRedo">重做</button></div>
+          <div class="status" id="caSt" style="margin-top:8px">全对 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 吸附与消毒</h4><ol>
+          <li>活性炭<mark>疏松多孔</mark>，有<mark>吸附性</mark>：除去色素和异味 <span class="to">→ 物理变化</span></li>
+          <li>投药消毒（如<mark>二氧化氯</mark>）杀灭细菌 <span class="to">→ 化学变化</span></li>
+          <li>生活中常用<mark>煮沸</mark>的方法杀菌</li>
+        </ol><p class="pit"><b>易错</b><span>活性炭不能杀菌，也不能把硬水变成软水。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 简易净水器 -->
+<section class="slide" data-id="bottle" data-title="动手想：自制简易净水器" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">设计 · 简易净水器</p><h2>用塑料瓶做一个净水器</h2></div>
+      <div class="tools"><button class="btn sm" id="boReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="bottleWrap"><canvas id="cvBottle"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="boPour" disabled>倒入浑浊河水</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="layers-triple-outline"></span>从瓶底往上依次装填 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="layers" id="boLayers"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="boSub">提交</button></div>
+          <div class="status" id="boSt" style="margin-top:8px">瓶口朝下，水从上往下流。正确 +5 分</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 简易净水器</h4><ol>
+          <li>自上而下：<mark>小卵石 → 石英砂 → 活性炭 → 蓬松棉</mark></li>
+          <li>先粗后细：卵石、石英砂起<mark>过滤</mark>作用；活性炭<mark>吸附</mark></li>
+          <li>得到的水仍含可溶性杂质，<span class="to">不是纯水</span></li>
+        </ol><p class="pit"><b>易错</b><span>得到的水不能直接饮用，还需消毒。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 蒸馏 -->
+<section class="slide" data-id="distill" data-title="方法五：制取蒸馏水（互动实验）" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">实验 · 制取蒸馏水</p><h2>蒸馏：净化程度最高的方法</h2></div>
+      <div class="tools"><button class="btn sm" id="diReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tr blue"></span>
+        <div class="distWrap"><canvas id="cvDist"></canvas></div>
+        <div class="ctlbar" id="diCtl"><button class="btn" id="diWater">加水</button><button class="btn" id="diStone">加沸石</button><button class="btn" id="diCool">通冷凝水</button><button class="btn" id="diFire">点燃酒精灯</button><button class="btn" id="diDump">弃去初馏液</button><button class="btn" id="diStop">停止加热</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="clipboard-check-outline"></span>实验记录</h3><div class="gauge"><span class="pill">温度计 <b id="diTemp">20</b> ℃</span><span class="pill">收集蒸馏水 <b id="diVol">0.0</b> mL</span><span class="pill">冷凝水 <b id="diCold">未通</b></span></div>
+          <ul class="dlog" id="diLog"></ul>
+          <div class="status" id="diSt" style="margin-top:8px">可以点下方按钮，也可以直接拖动、点击仪器。</div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 蒸馏</h4><ol>
+          <li>加<mark>沸石</mark>（或碎瓷片）：<mark>防止暴沸</mark></li>
+          <li>冷凝管中冷水<mark>下进上出</mark>；先通冷凝水，再加热</li>
+          <li><mark>弃去开始馏出的液体</mark>（含杂质）</li>
+          <li>蒸馏水是<mark>纯净物</mark>；净化程度：沉降 &lt; 过滤 &lt; 吸附 &lt; <mark>蒸馏</mark></li>
+        </ol><p class="pit"><b>易错</b><span>温度计水银球在支管口处，不插入液体。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 11 硬水软水 -->
+<section class="slide" data-id="hard" data-title="认识硬水和软水" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">认识 · 硬水与软水</p><h2>用肥皂水区分硬水和软水</h2></div>
+      <div class="tools"><button class="btn sm" id="haReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><span class="tape tl"></span>
+        <div class="hardWrap"><canvas id="cvHard"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="haSoap">滴入肥皂水</button><button class="btn pri" id="haShake">振荡</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="lightbulb-on-outline"></span>判断一下 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p style="margin-bottom:8px">振荡后，哪支试管里是<b class="kr">硬水</b>？</p>
+          <div class="opts c2" id="haOpts"><button class="opt" data-v="0" disabled><i>A</i>甲试管</button><button class="opt" data-v="1" disabled><i>B</i>乙试管</button></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="haSub" disabled>提交</button></div>
+          <div class="status" id="haSt" style="margin-top:8px">先滴肥皂水、振荡，再观察判断</div>
+        </div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 硬水与软水</h4><ol>
+          <li><mark>硬水</mark>：含较多可溶性钙、镁化合物</li>
+          <li><mark>软水</mark>：不含或含较少可溶性钙、镁化合物</li>
+          <li>加<mark>肥皂水</mark>振荡：泡沫多、浮渣少 → 软水；泡沫少、浮渣多 → 硬水</li>
+          <li>过滤、吸附不能除去钙镁化合物 <span class="to">→ 自来水不一定是软水</span></li>
+        </ol><p class="pit"><b>易错</b><span>澄清透明的水也可能是硬水。</span></p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 12 密室逃脱 -->
+<section class="slide" data-id="escape" data-title="竞赛：净水密室逃脱" data-min="10">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">竞赛 · 红蓝对抗</p><h2>净水密室逃脱</h2></div>
+      <div class="tools"><button class="btn sm" id="esReset">重新开始</button></div></header>
+    <div class="body q" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)">
+      <div class="stage"><span class="tape tl"></span><span class="tape tr blue"></span>
+        <div class="escape"><canvas id="cvEscape"></canvas></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow"><div class="qcard" id="esCard"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 13 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 净水方法对比" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">记录本 · 总结</p><h2>五种净水方法，一张表记住</h2></div>
+      <div class="tools"></div></header>
+    <div class="body two">
+      <div class="stage" style="padding:22px 24px"><span class="tape tl"></span>
+        <table class="sumtab" id="suTab"></table>
+        <canvas id="cvSum" style="position:relative;inset:auto;display:block;width:100%;height:230px;margin-top:22px"></canvas>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部揭晓</button><button class="btn" id="suHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div id="suScore" class="hand" style="font-size:30px"></div></div>
+        <div class="note grow"><h4><span data-i="pencil"></span>笔记 · 本课要点</h4><ol>
+          <li>净水：沉降、过滤、吸附、消毒、蒸馏</li>
+          <li>过滤：<mark>一贴二低三靠</mark>，玻璃棒引流</li>
+          <li>活性炭吸附是<mark>物理变化</mark>；投药消毒是<mark>化学变化</mark></li>
+          <li>蒸馏：沸石防暴沸，弃去初馏液，得到<mark>纯净物</mark></li>
+          <li>肥皂水区分硬水和软水</li>
+        </ol><p class="credit" style="margin-top:auto;line-height:1.5">图标几何：Material Design Icons（Apache 2.0）；实验装置与动画均为代码绘制。</p></div>
+      </aside>
+    </div>
+  </div>
+</section>

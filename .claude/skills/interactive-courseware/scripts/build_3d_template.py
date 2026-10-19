@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""单文件课件构建示例（水资源课的实际构建脚本）。
+"""3D 单文件课件构建示例（水资源课的实际构建脚本，只在老师要求 3D 时参考；2D 课件用 build_2d_template.py）。
 
 用法：python3 build_template.py symbols/index.html <输出 index.html> <源目录> <three-bundle.js> <素材目录>
 - 从 symbols/index.html 抽取共享的 head、工具与积分（js_head）、翻页框架（js_deck）、底栏（dock）；

@@ -5,7 +5,7 @@ import sys,io,base64,re
 from fontTools import subset
 from fontTools.ttLib import TTFont
 import os
-F=os.environ.get('FONT_DIR','fonts/')  # npm pack @fontsource/zcool-kuaile @fontsource/noto-sans-sc 后解压到这里
+F=os.path.join(os.environ.get('FONT_DIR','fonts'),'')  # 把 npm pack @fontsource/zcool-kuaile @fontsource/noto-sans-sc 得到的 tgz 各自解压到这个目录下的同名子目录
 ZC=F+'fontsource-zcool-kuaile-5.3.0/package/files/zcool-kuaile-'
 NS=F+'fontsource-noto-sans-sc-5.3.1/package/files/noto-sans-sc-'
 args=sys.argv[1:];out=args[args.index('-o')+1];srcs=[a for a in args if a not in('-o',out)]

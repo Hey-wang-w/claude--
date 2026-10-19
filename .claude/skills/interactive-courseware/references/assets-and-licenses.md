@@ -2,9 +2,9 @@
 
 ## 1. 网络访问现状（云端会话实测）
 
-- **能访问**：GitHub（`git clone`、raw.githubusercontent.com）和 npm 镜像（registry.npmjs.org）。
+- **能访问**：GitHub（`git clone`、raw.githubusercontent.com）、npm（registry.npmjs.org）、PyPI（`pip install`，例如 bpy、fonttools）和 Ubuntu 软件源（`apt-get`）。
 - **不能访问**：Unsplash、Wikimedia、Poly Pizza、Sketchfab、Poly Haven、kenney.nl、quaternius.com、cdnjs / jsDelivr（容器内被拦截）、百度和中国水网等中文网站。WebFetch 也解析不了这些中文域名。
-- 因此所有素材都要从 GitHub 或 npm 获取，转码后 base64 内联进 HTML。发布后的课件也就不依赖任何外部 CDN。
+- 因此所有素材都要从 GitHub、npm 或 PyPI 获取，转码后 base64 内联进 HTML。发布后的课件不依赖任何外部 CDN 或字体服务。
 - 遇到官方标志、教材插图这类必须“原样”的图，又查不到时：**请老师把图片文件发过来**（聊天里贴的截图不一定会保存到文件系统），然后按原图描画或嵌入。
 
 ## 2. 已验证可用的素材
@@ -19,6 +19,9 @@
 | 环境光照 | three.js 自带的 `RoomEnvironment` | MIT | 已打包进 three 包 |
 | HDR 天空 / 摄影棚光照（可选） | three.js 的 `examples/textures/equirectangular/*.hdr`（多为 Poly Haven） | CC0 | sparse checkout |
 | 图标几何 | npm 包 `@mdi/svg`（Material Design Icons，7000 多个） | Apache 2.0 | `npm pack @mdi/svg` |
+| 字体：站酷快乐体 | npm 包 `@fontsource/zcool-kuaile`（latin、chinese-simplified 子集） | SIL OFL 1.1 | `npm pack`，再用 `scripts/font_subset.py` 裁剪内嵌 |
+| 字体：思源黑体 | npm 包 `@fontsource/noto-sans-sc`（400、700 两个字重） | SIL OFL 1.1 | 同上 |
+| 字体裁剪工具 | PyPI `fonttools`、`brotli` | MIT | `pip install fonttools brotli` |
 | 3D 引擎 | npm `three@0.160.0` + `esbuild` | MIT | 见 `scripts/three-bundle/` |
 | 3D 建模工具 | PyPI `bpy`（Blender 作为 Python 模块；5.x 对应 Python 3.13），或 `apt-get install blender` | GPL（工具本身；导出的模型归作者所有） | 见 `3d-playbook.md` 第 1.5 节 |
 
@@ -33,7 +36,7 @@
 
 ## 4. 图标规范
 
-- 她不喜欢 3D 表情包式的图标（例如 Microsoft Fluent Emoji），要的是**代码绘制、风格统一、精致**的图标。
+- 老师不喜欢 3D 表情包式的图标（例如 Microsoft Fluent Emoji），要的是**代码绘制、风格统一、精致**的图标。
 - 做法：几何形状取自 Material Design Icons（标准、可识别），再用课件主题的渐变色填充（`assets/icons.js`）。
 - 标志类严格按标准：
   - 可回收物：蓝底、白色循环箭头、“可回收物”字样（GB/T 19095—2019 样式）。
