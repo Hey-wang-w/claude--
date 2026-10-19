@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""构建 purify/index.html —— 第四单元 课题2 水的净化（实验记录本风）。
+"""构建 purify/index.html —— 第四单元 课题1 第2课时 水的净化（实验记录本风）。
 用法（在仓库根目录）：python3 purify/src/build.py
 - 翻页、积分、音效、特效框架从 symbols/index.html 抽取；本课源文件都在 purify/src/。
 - fonts.css 是按用字裁剪后的内嵌字体；改了文字后用 .claude/skills/interactive-courseware/scripts/font_subset.py 重新生成
