@@ -1,15 +1,31 @@
 /* ================= 1 封面：青蒿素分子（15 C + 22 H + 5 O，可拖动旋转） ================= */
-S.cover=(()=>{const cv=$('#cvCover');let t=0,yaw=0,pitch=-.25,auto=true,sel=null,selT=0;const R=rng(20);
-  // 生成一个原子数与 C15H22O5 一致的立体骨架（示意，不是精确的晶体结构）
-  const heavy=[{e:'C',p:[0,0,0],n:[]}];const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
-  const rnd3=()=>{let v;do{v=[R()*2-1,R()*2-1,R()*2-1];}while(Math.hypot(...v)>1||Math.hypot(...v)<.3);const L=Math.hypot(...v);return v.map(x=>x/L);};
-  while(heavy.length<20){const par=heavy[Math.floor(R()*heavy.length)];if(par.n.length>=3)continue;let ok=false;
-    for(let k=0;k<40&&!ok;k++){const d=rnd3(),p=par.p.map((x,i)=>x+d[i]*1.5);if(heavy.every(h=>dist(h.p,p)>1.35)){heavy.push({e:'C',p,n:[heavy.indexOf(par)]});par.n.push(heavy.length-1);ok=true;}}}
-  // 5 个氧原子：放在连接数不超过 2 的位置
-  let o=0;for(const h of heavy.slice(1)){if(o<5&&h.n.length<=2&&R()<.45){h.e='O';o++;}}for(const h of heavy){if(o>=5)break;if(h.e==='C'&&h.n.length<=2&&h!==heavy[0]){h.e='O';o++;}}
-  const atoms=heavy.map(h=>({e:h.e,p:h.p}));const bonds=[];heavy.forEach((h,i)=>h.n.forEach(j=>{if(j>i)bonds.push([i,j]);}));heavy.forEach((h,i)=>h.n.forEach(j=>{if(j<i&&!bonds.some(b=>b[0]===j&&b[1]===i))bonds.push([j,i]);}));
-  let hcount=0;const cap=heavy.map(h=>h.e==='C'?4-h.n.length:0);
-  for(let pass=0;pass<8&&hcount<22;pass++)heavy.forEach((h,i)=>{if(hcount>=22||cap[i]<=0)return;for(let k=0;k<30;k++){const d=rnd3(),p=h.p.map((x,j)=>x+d[j]*1.1);if(atoms.every(a=>dist(a.p,p)>.95)){atoms.push({e:'H',p});bonds.push([i,atoms.length-1]);cap[i]--;hcount++;return;}}});
+S.cover=(()=>{const cv=$('#cvCover');let t=0,yaw=0,pitch=-.25,auto=true,sel=null,selT=0;
+  // 生成一个原子数与 C15H22O5 一致的立体骨架（示意，不是精确的晶体结构）。
+  // 每个原子有 4 个正四面体方向的“槽位”（键角 109.5°），新原子和氢原子只放进空槽位：C/O 键长 1.5、C–H 1.1；
+  // 不成键的重原子相距大于 2.4，H 与 H 大于 1.7、与重原子大于 2.0，旋转时球和键不会挤在一起。
+  const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+  function build(seed,HD=2.4,HH=1.7,HX=2.0){const R=rng(seed);
+    const nrm=v=>{const L=Math.hypot(...v);return v.map(x=>x/L);},cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+    // 沿 d 方向成键的新原子：除了指回 -d 的槽位，另外三个与 -d 成 109.5°，绕键轴随机扭转
+    const slotsFrom=d=>{const a=Math.abs(d[0])<.9?[1,0,0]:[0,1,0],e1=nrm(cross(d,a)),e2=cross(d,e1),ph=R()*TAU;
+      return[0,1,2].map(k=>{const f=ph+k*TAU/3;return d.map((x,i)=>x/3+.9428*(Math.cos(f)*e1[i]+Math.sin(f)*e2[i]));});};
+    const r0=nrm([R()-.5,R()-.5,R()-.5]);const A=[{e:'C',p:[0,0,0],par:-1,free:[r0,...slotsFrom(r0.map(x=>-x))]}];let tries=0;
+    while(A.length<20&&tries<3000){tries++;const i=Math.floor(R()*A.length),a=A[i];if(a.free.length<=1)continue;
+      const si=Math.floor(R()*a.free.length),d=a.free[si],p=a.p.map((x,k)=>x+d[k]*1.5);
+      if(A.every((b,j)=>j===i||dist(b.p,p)>HD)){a.free.splice(si,1);A.push({e:'C',p,par:i,free:slotsFrom(d)});}}
+    if(A.length<20)return null;
+    const deg=i=>4-A[i].free.length;
+    let o=0;for(let i=1;i<20&&o<5;i++)if(deg(i)<=2&&R()<.45){A[i].e='O';o++;}for(let i=1;i<20&&o<5;i++)if(A[i].e==='C'&&deg(i)<=2){A[i].e='O';o++;}
+    if(o<5)return null;
+    const atoms=A.map(a=>({e:a.e,p:a.p})),bonds=A.slice(1).map((a,k)=>[a.par,k+1]);let hc=0;
+    // 每次在所有碳的空槽位里挑离其他原子最远的一个放 H
+    while(hc<22){let best=null;A.forEach((a,i)=>{if(a.e!=='C')return;a.free.forEach((d,si)=>{const p=a.p.map((x,k)=>x+d[k]*1.1);let m=1e9;
+        atoms.forEach((b,j)=>{if(j!==i)m=Math.min(m,dist(b.p,p)/(b.e==='H'?HH:HX));});if(!best||m>best.m)best={m,i,si,p};});});
+      if(!best||best.m<1)return null;A[best.i].free.splice(best.si,1);atoms.push({e:'H',p:best.p});bonds.push([best.i,atoms.length-1]);hc++;}
+    return{atoms,bonds};}
+  // 在一批随机骨架里挑最紧凑的一个（青蒿素本身是多环的紧凑分子）
+  const rg=M=>{const c=[0,1,2].map(i=>M.atoms.reduce((a,x)=>a+x.p[i],0)/M.atoms.length);return Math.max(...M.atoms.map(a=>dist(a.p,c)));};
+  let M=null;for(let sd=20;sd<220;sd++){const m=build(sd);if(m&&(!M||rg(m)<rg(M)))M=m;}const{atoms,bonds}=M;
   const cen=[0,1,2].map(i=>atoms.reduce((a,x)=>a+x.p[i],0)/atoms.length);atoms.forEach(a=>a.p=a.p.map((x,i)=>x-cen[i]));
   const ext=Math.max(...atoms.map(a=>Math.hypot(...a.p)));
   const CNT={C:atoms.filter(a=>a.e==='C').length,H:atoms.filter(a=>a.e==='H').length,O:atoms.filter(a=>a.e==='O').length};
@@ -21,19 +37,24 @@ S.cover=(()=>{const cv=$('#cvCover');let t=0,yaw=0,pitch=-.25,auto=true,sel=null
   cv.addEventListener('pointermove',e=>{if(!drag)return;const p=ptIn(cv,e);yaw+=(p[0]-drag[0])*.01;pitch=clamp(pitch+(p[1]-drag[1])*.01,-1.3,1.3);drag=p;});
   cv.addEventListener('pointerup',()=>{drag=null;setTimeout(()=>auto=true,2500);});
   function tick(dt){t+=dt;selT+=dt;if(auto)yaw+=dt*.35;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
-    const cx=w/2,cy=h*.53,sc=Math.min(w,h)*.31/ext,cyw=Math.cos(yaw),syw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+    const top=88,bot=h-100,cx=w/2,cy=(top+bot)/2,sc=Math.min((bot-top)/2,w/2-40)/(ext*1.06+.5),cyw=Math.cos(yaw),syw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
     const P=atoms.map(a=>{const[x,y,z]=a.p;const x1=x*cyw+z*syw,z1=-x*syw+z*cyw,y1=y*cp-z1*sp,z2=y*sp+z1*cp;const f=5/(5+z2/ext*1.6);return{e:a.e,x:cx+x1*sc*f,y:cy+y1*sc*f,z:z2,f};});
     // 背景光晕
     const g=ctx.createRadialGradient(cx,cy,10,cx,cy,Math.min(w,h)*.5);g.addColorStop(0,'rgba(255,210,63,.22)');g.addColorStop(1,'rgba(255,210,63,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
     const on=e=>!sel||sel==='all'||sel===e;
-    // 原子和半根化学键一起按深度从远到近绘制（画家算法）：z 越大离观察者越远（透视系数 f 越小），所以先画 z 大的
-    const R0=p=>(p.e==='H'?11:17)*p.f*(sel&&on(p.e)&&sel!=='all'?1.12:1);
-    const items=P.map((p,i)=>({z:p.z,i}));
-    bonds.forEach(([i,j])=>{const zm=(P[i].z+P[j].z)/2;items.push({z:(P[i].z+zm)/2,b:[i,j]},{z:(P[j].z+zm)/2,b:[j,i]});});
+    // 深度排序绘制（画家算法）：z 越大离观察者越远，先画远的。化学键从两端球面起止，切成短段各自排序，
+    // 键与原子交错时只在很小的范围内交换先后，旋转时不会整根跳到前面或后面。
+    const RW=e=>e==='H'?.3:.45,big=sel&&sel!=='all';
+    const proj=q=>{const[x,y,z]=q;const x1=x*cyw+z*syw,z1=-x*syw+z*cyw,y1=y*cp-z1*sp,z2=y*sp+z1*cp;const f=5/(5+z2/ext*1.6);return[cx+x1*sc*f,cy+y1*sc*f,z2,f];};
+    const items=P.map((p,i)=>({z:p.z,i}));const SEG=8;
+    bonds.forEach(([i,j])=>{const A=atoms[i].p,B=atoms[j].p,L=dist(A,B),u=B.map((x,k)=>(x-A[k])/L),s0=RW(atoms[i].e)*.85,s1=L-RW(atoms[j].e)*.85;
+      for(let k=0;k<SEG;k++){const t0=s0+(s1-s0)*k/SEG,t1=s0+(s1-s0)*(k+1)/SEG,q0=proj(A.map((x,m)=>x+u[m]*t0)),q1=proj(A.map((x,m)=>x+u[m]*t1));
+        items.push({z:(q0[2]+q1[2])/2,s:[q0,q1],al:on(atoms[i].e)&&on(atoms[j].e)?1:.18});}});
+    ctx.lineCap='butt';
     items.sort((a,b)=>b.z-a.z).forEach(it=>{
-      if(it.b){const[i,j]=it.b,a=P[i],b=P[j],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,fw=(a.f+b.f)/2;ctx.globalAlpha=on(atoms[i].e)&&on(atoms[j].e)?1:.18;ctx.lineCap='butt';
-        ctx.strokeStyle=INK;ctx.lineWidth=7*fw;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(mx,my);ctx.stroke();ctx.strokeStyle='#c9d3e3';ctx.lineWidth=4*fw;ctx.stroke();ctx.globalAlpha=1;}
-      else{const p=P[it.i];atomBall(ctx,p.x,p.y,R0(p),p.e,{alpha:on(p.e)?1:.18,lab:p.e!=='H',hi:sel&&sel!=='all'&&on(p.e)});}});
+      if(it.s){const[q0,q1]=it.s,fw=(q0[3]+q1[3])/2*sc/40,dx=q1[0]-q0[0],dy=q1[1]-q0[1],L=Math.hypot(dx,dy)||1,ex=dx/L*.6,ey=dy/L*.6;ctx.globalAlpha=it.al;
+        ctx.beginPath();ctx.moveTo(q0[0]-ex,q0[1]-ey);ctx.lineTo(q1[0]+ex,q1[1]+ey);ctx.strokeStyle=INK;ctx.lineWidth=7*fw;ctx.stroke();ctx.strokeStyle='#c9d3e3';ctx.lineWidth=4*fw;ctx.stroke();ctx.globalAlpha=1;}
+      else{const p=P[it.i];atomBall(ctx,p.x,p.y,RW(p.e)*sc*p.f*(big&&on(p.e)?1.08:1),p.e,{alpha:on(p.e)?1:.18,lab:p.e!=='H',hi:big&&on(p.e)});}});
     // 化学式与计数
     fmDraw(ctx,'C15H22O5',cx,52,46,{cols:{sub:TEAL}});
     if(sel){const n=sel==='all'?CNT.C+CNT.H+CNT.O:CNT[sel],k=Math.min(n,Math.floor(selT*28));const name=sel==='all'?'1 个分子共有':`1 个分子中${ATOM[sel][1]}原子`;
