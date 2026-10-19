@@ -26,9 +26,14 @@ S.cover=(()=>{const cv=$('#cvCover');let t=0,yaw=0,pitch=-.25,auto=true,sel=null
     // 背景光晕
     const g=ctx.createRadialGradient(cx,cy,10,cx,cy,Math.min(w,h)*.5);g.addColorStop(0,'rgba(255,210,63,.22)');g.addColorStop(1,'rgba(255,210,63,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
     const on=e=>!sel||sel==='all'||sel===e;
-    bonds.forEach(([i,j])=>{const a=P[i],b=P[j];const al=on(atoms[i].e)&&on(atoms[j].e)?1:.18;ctx.globalAlpha=al;ctx.lineCap='round';ctx.strokeStyle=INK;ctx.lineWidth=7*(a.f+b.f)/2;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.strokeStyle='#c9d3e3';ctx.lineWidth=4*(a.f+b.f)/2;ctx.stroke();});
-    ctx.globalAlpha=1;
-    P.map((p,i)=>[p,i]).sort((a,b)=>a[0].z-b[0].z).forEach(([p])=>atomBall(ctx,p.x,p.y,(p.e==='H'?11:17)*p.f*(sel&&on(p.e)&&sel!=='all'?1.12:1),p.e,{alpha:on(p.e)?1:.18,lab:p.e!=='H',hi:sel&&sel!=='all'&&on(p.e)}));
+    // 原子和半根化学键一起按深度从远到近绘制（画家算法）：z 越大离观察者越远（透视系数 f 越小），所以先画 z 大的
+    const R0=p=>(p.e==='H'?11:17)*p.f*(sel&&on(p.e)&&sel!=='all'?1.12:1);
+    const items=P.map((p,i)=>({z:p.z,i}));
+    bonds.forEach(([i,j])=>{const zm=(P[i].z+P[j].z)/2;items.push({z:(P[i].z+zm)/2,b:[i,j]},{z:(P[j].z+zm)/2,b:[j,i]});});
+    items.sort((a,b)=>b.z-a.z).forEach(it=>{
+      if(it.b){const[i,j]=it.b,a=P[i],b=P[j],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,fw=(a.f+b.f)/2;ctx.globalAlpha=on(atoms[i].e)&&on(atoms[j].e)?1:.18;ctx.lineCap='butt';
+        ctx.strokeStyle=INK;ctx.lineWidth=7*fw;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(mx,my);ctx.stroke();ctx.strokeStyle='#c9d3e3';ctx.lineWidth=4*fw;ctx.stroke();ctx.globalAlpha=1;}
+      else{const p=P[it.i];atomBall(ctx,p.x,p.y,R0(p),p.e,{alpha:on(p.e)?1:.18,lab:p.e!=='H',hi:sel&&sel!=='all'&&on(p.e)});}});
     // 化学式与计数
     fmDraw(ctx,'C15H22O5',cx,52,46,{cols:{sub:TEAL}});
     if(sel){const n=sel==='all'?CNT.C+CNT.H+CNT.O:CNT[sel],k=Math.min(n,Math.floor(selT*28));const name=sel==='all'?'1 个分子共有':`1 个分子中${ATOM[sel][1]}原子`;

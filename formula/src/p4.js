@@ -1,4 +1,4 @@
-/* ================= 9 竞赛：化学式宾果（答对占格，连成一线额外加分） ================= */
+/* ================= 9 竞赛：化学式宾果（盲盒抽题：答对占格，连成一线额外加分） ================= */
 S.bingo=(()=>{
   // [格子上的化学式, 分值, 题目, 选项, 正确项, 解析]
   const Q=[
@@ -12,21 +12,26 @@ S.bingo=(()=>{
     ['Mg^2+',10,`${fmB('Mg^2+')} 中的“2”表示什么？`,['2 个镁离子','1 个镁离子带 2 个单位正电荷','2 个镁原子','1 个镁离子中含有 2 个镁原子'],1,'右上角的数字表示 1 个离子所带的电荷数。'],
     ['H2O2',20,`过氧化氢的化学式为 ${fmB('H2O2')}，下列说法正确的是`,['过氧化氢由氢气和氧气组成','过氧化氢由氢元素和氧元素组成','过氧化氢由 2 个氢原子和 2 个氧原子构成','1 个过氧化氢分子中含有 1 个氧分子'],1,'纯净物中不含氢气、氧气；物质的组成用元素描述，构成用分子描述。']];
   const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const grid=$('#biGrid'),card=$('#biCard');let own=Q.map(()=>''),cur=-1,pick=null,got={r:0,b:0},lines=[];
-  function cells(){grid.innerHTML=Q.map(([f,p],i)=>{const o=own[i];return`<div class="cell${o?' '+o:''}${i===cur?' cur':''}${lines.some(l=>l.includes(i))?' win':''}" data-i="${i}">
-      <span class="pt tag ${p>10?'y':'s'}">${p} 分</span><span class="fm">${fm(f)}</span>${o==='r'||o==='b'?`<span class="own">${tname(o)}</span>`:o==='x'?'<span class="own" style="color:#8a95ad">答错作废</span>':''}</div>`;}).join('');
+  const grid=$('#biGrid'),card=$('#biCard');let own=Q.map(()=>''),cur=-1,pick=null,got={r:0,b:0},lines=[],M=Q.map((_,i)=>i);
+  // 盲盒：格子上不显示化学式（会泄露答案），20 分题固定在中心和右下角，其余每局随机放
+  function deal(){const ten=Q.map((q,i)=>i).filter(i=>Q[i][1]===10);for(let i=ten.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ten[i],ten[j]]=[ten[j],ten[i]];}
+    const big=Q.map((q,i)=>i).filter(i=>Q[i][1]>10);M=Q.map((_,c)=>c===4?big[0]:c===8?big[1]:ten.shift());}
+  const BOX=['#ff9f86','#5fd3c0','#b9a6ff','#7cc8ef','#ff9f86','#5fd3c0','#b9a6ff','#7cc8ef'];
+  const box=(c,big,open)=>`<svg class="box${open?' open':''}" viewBox="0 0 120 110" aria-hidden="true"><g class="lid"><path d="M60 22c-10-18-30-14-26-3 3 7 16 6 26 3zM60 22c10-18 30-14 26-3-3 7-16 6-26 3z" fill="#ffd23f" stroke="#1f2a44" stroke-width="4" stroke-linejoin="round"/><rect x="10" y="22" width="100" height="22" rx="6" fill="${big?'#ffd23f':shade(c,-.08)}" stroke="#1f2a44" stroke-width="4"/><rect x="53" y="22" width="14" height="22" fill="${big?'#ff7a5c':'#ffd23f'}" stroke="#1f2a44" stroke-width="3"/></g><rect x="16" y="44" width="88" height="60" rx="6" fill="${big?'#ffe27a':c}" stroke="#1f2a44" stroke-width="4"/><rect x="53" y="44" width="14" height="60" fill="${big?'#ff7a5c':'#ffd23f'}" stroke="#1f2a44" stroke-width="3"/>${open?'':'<circle cx="60" cy="74" r="17" fill="#fff" stroke="#1f2a44" stroke-width="3.5"/>'}<text x="60" y="${open?40:85}" text-anchor="middle" font-family="ZCOOL KuaiLe, sans-serif" font-size="${open?34:30}" fill="#1f2a44" class="qm">?</text></svg>`;
+  function cells(){grid.innerHTML=M.map((qi,i)=>{const[f,p]=Q[qi],o=own[i],big=p>10;return`<div class="cell${o?' '+o:''}${i===cur?' cur':''}${lines.some(l=>l.includes(i))?' win':''}" data-i="${i}">
+      <span class="no">${i+1}</span><span class="pt tag ${big?'y':'s'}">${p} 分</span>${o?`<span class="fm">${fm(f)}</span>`:box(BOX[i%8],big,i===cur)}${o==='r'||o==='b'?`<span class="own">${tname(o)}</span>`:o==='x'?'<span class="own" style="color:#8a95ad">答错作废</span>':''}</div>`;}).join('');
     $$('.cell',grid).forEach(c=>c.onclick=()=>{const i=+c.dataset.i;if(own[i])return;cur=i;pick=null;sfx('pop');cells();ask();});}
   const tag=tm=>`<span class="teamTag ${tm}">${tname(tm)}</span>`;
-  function idle(){if(own.every(Boolean))return finish();card.innerHTML=`<div class="qmeta">${tag(TEAM.cur)}<span class="hint">选格子</span></div>
-      <div class="qtext">请 <b>${tname(TEAM.cur)}</b> 在左边选一个格子答题。</div>
-      <div class="hint" style="line-height:1.8">· 答对占领格子，得格子上的分数；答错格子作废，不加分。<br>· 同一队占领的格子连成一条线（横、竖、斜）就喊“宾果！”，额外 +20。<br>· 两队轮流选格子。</div>`;}
-  function ask(){const[,p,q,O]=Q[cur];
+  function idle(){if(own.every(Boolean))return finish();card.innerHTML=`<div class="qmeta">${tag(TEAM.cur)}<span class="hint">抽盲盒</span></div>
+      <div class="qtext">请 <b>${tname(TEAM.cur)}</b> 在左边抽一个盲盒答题。</div>
+      <div class="hint" style="line-height:1.8">· 盲盒里藏着一道题，打开才知道考什么；金色盲盒是 20 分提升题。<br>· 答对占领格子，得格子上的分数；答错格子作废，不加分。<br>· 同一队占领的格子连成一条线（横、竖、斜）就喊“宾果！”，额外 +20。<br>· 两队轮流抽盲盒。</div>`;}
+  function ask(){const[,p,q,O]=Q[M[cur]];
     card.innerHTML=`<div class="qmeta">${tag(TEAM.cur)}<span class="tag ${p>10?'y':'s'}">${p} 分${p>10?' · 提升':''}</span></div><div class="qtext">${q}</div>
       <div class="opts">${O.map((o,k)=>`<button class="opt" data-v="${k}"><i>${'ABCD'[k]}</i><span>${o}</span></button>`).join('')}</div>
       <div class="row"><button class="btn pri sm" id="biSub">提交</button></div><div class="status" id="biSt">选好后提交。</div>`;
     $$('.opt',card).forEach(b=>b.onclick=()=>{if(pick===-1)return;pick=+b.dataset.v;$$('.opt',card).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
     $('#biSub').onclick=submit;}
-  function submit(){if(pick===null){setSt($('#biSt'),'warn','请先选一个答案');return;}if(pick===-1)return;const i=cur,[,p,,,ans,ex]=Q[i],tm=TEAM.cur,mine=pick,ok=mine===ans;pick=-1;
+  function submit(){if(pick===null){setSt($('#biSt'),'warn','请先选一个答案');return;}if(pick===-1)return;const i=cur,[,p,,,ans,ex]=Q[M[i]],tm=TEAM.cur,mine=pick,ok=mine===ans;pick=-1;
     $$('.opt',card).forEach(x=>{const v=+x.dataset.v;x.disabled=true;if(v===ans)x.classList.add('right');else if(v===mine)x.classList.add('wrong');});
     $('#biSub').remove();own[i]=ok?tm:'x';cur=-1;let bonus=0;
     if(ok){teamAdd(p,tm);got[tm]+=p;sfx('ok');
@@ -36,13 +41,13 @@ S.bingo=(()=>{
     if(ok)burstAt(el,24,[tm==='r'?CORAL:SKY,SUN]);
     if(bonus){setTimeout(()=>{teamAdd(bonus,tm);got[tm]+=bonus;stampOn($('[data-id="bingo"] .stage'),'宾果！',true,'50%','50%');FX.confetti();sfx('win');},500);}
     setSt($('#biSt'),ok?'ok':'bad',`<b>${ok?`${tname(tm)}答对 +${p}${bonus?`，连线宾果 +${bonus}`:''}`:`${tname(tm)}答错，格子作废`}</b><br>${ex}`);
-    const nx=document.createElement('div');nx.className='row';nx.innerHTML=`<button class="btn pri sm">${own.every(Boolean)?'看结果':'下一队选格子'}</button>`;card.appendChild(nx);
+    const nx=document.createElement('div');nx.className='row';nx.innerHTML=`<button class="btn pri sm">${own.every(Boolean)?'看结果':'下一队抽盲盒'}</button>`;card.appendChild(nx);
     teamNext();$('button',nx).onclick=()=>{stampOff($('[data-id="bingo"] .stage'));idle();};}
   function finish(){const w=got.r===got.b?'':got.r>got.b?'r':'b';
     card.innerHTML=`<div class="qmeta"><span class="tag y">宾果结束</span></div><div class="qtext" style="font-size:24px">${w?`${tag(w)} 赢得本轮宾果！`:'两队打成平手！'}</div>
       <div class="row" style="gap:16px;font-size:20px"><span>${tag('r')} 本轮 <b class="fm">${got.r}</b> 分</span><span>${tag('b')} 本轮 <b class="fm">${got.b}</b> 分</span></div>
       <p class="hint">连成的线：${lines.length} 条。灰色格子是答错作废的题，可以一起再讲一讲。</p>`;FX.confetti();sfx('win');}
-  function reset(){own=Q.map(()=>'');cur=-1;pick=null;got={r:0,b:0};lines=[];stampOff($('[data-id="bingo"] .stage'));cells();idle();}
+  function reset(){deal();own=Q.map(()=>'');cur=-1;pick=null;got={r:0,b:0};lines=[];stampOff($('[data-id="bingo"] .stage'));cells();idle();}
   $('#biReset').onclick=reset;reset();
   return{enter(){if(cur<0&&!own.every(Boolean))idle();}};})();
 

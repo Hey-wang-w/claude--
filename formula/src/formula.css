@@ -283,7 +283,16 @@ canvas{touch-action:none}
 .bingo{position:absolute;inset:0;padding:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:14px}
 .cell{position:relative;border:var(--bd);border-radius:20px;box-shadow:var(--sh);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .2s,background .4s;overflow:hidden}
 .cell:hover{transform:translateY(-3px) rotate(-.5deg)}
-.cell .fm{font-size:48px}
+.cell .fm{font-size:44px;animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+.cell .no{position:absolute;left:14px;top:8px;font:700 22px var(--f-num);color:var(--dim)}
+.cell svg.box{width:min(48%,150px);height:auto;overflow:visible;transition:transform .2s}
+.cell:hover svg.box{animation:wobble .5s}
+.cell svg.box .lid{transition:transform .45s cubic-bezier(.3,1.6,.5,1);transform-origin:15% 40%}
+.cell svg.box.open .lid{transform:translate(-6px,-22px) rotate(-18deg)}
+.cell svg.box.open .qm{animation:qmup .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes wobble{25%{transform:rotate(-6deg)}50%{transform:rotate(5deg)}75%{transform:rotate(-3deg)}}
+@keyframes qmup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 .cell .pt{position:absolute;right:10px;top:8px}
 .cell.r{background:#ffb8a6}.cell.b{background:#a9dcf5}.cell.x{background:#e3e7ef}
 .cell.x .fm{opacity:.35}
