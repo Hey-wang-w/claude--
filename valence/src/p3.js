@@ -12,7 +12,7 @@ S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phas
   function ask(){const q=Q[qi];phase='ask';pick=null;x=free?0:null;revT=0;
     $('#caTitle').textContent=free?'自由调天平':`求化合价 ${qi+1} / ${Q.length}`;
     $('#caAsk').innerHTML=free?'点下面的数字改变未知元素的化合价，看天平什么时候平衡。':`${PNM[q[0]]}（${fmB(q[0])}）中，<b class="ky">${NM[q[1]]}元素</b>的化合价是多少？`;
-    setSt($('#caSt'),'',free?'自由模式不计分。':'先在草稿纸上列式计算，再选答案提交；提交后天平验算。答对 +5');keys();}
+    setSt($('#caSt'),'',free?'自由模式不计分。':'先列式计算，再提交。答对 +5');keys();}
   $('#caSub').onclick=()=>{if(free||phase!=='ask')return;if(pick===null){setSt($('#caSt'),'warn','请先选一个化合价');return;}phase='rev';x=pick;revT=0;const q=Q[qi],tm=TEAM.cur,ok=pick===q[3];
     const eq=q[2].map(([s,n,v])=>`(${v===null?'x':vs(v)})×${n}`).join(' + ')+' = 0';
     setTimeout(()=>{phase='done';keys();if(ok){teamAdd(5,tm);sfx('ok');setSt($('#caSt'),'ok',`<b>${tname(tm)}答对 +5</b>　${eq}，x = ${vs(q[3])}`);}
@@ -44,7 +44,7 @@ S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phas
     const pans=[[],[]];q[2].forEach(([s,n,v])=>{const vv=v===null?x:v;for(let i=0;i<n;i++){if(vv===null)continue;if(vv>0)pans[0].push([s,vv,v===null]);else if(vv<0)pans[1].push([s,vv,v===null]);}});
     ends.forEach(([ex,ey],k)=>{const py=ey+90;chalkLine(ctx,ex,ey,ex-70,py,{col:'rgba(241,238,228,.6)',w:2,seed:10+k});chalkLine(ctx,ex,ey,ex+70,py,{col:'rgba(241,238,228,.6)',w:2,seed:12+k});
       chalkPath(ctx,[[ex-86,py],[ex-70,py+14],[ex+70,py+14],[ex+86,py]],{col:INK,w:3,seed:14+k});
-      hand(ctx,k?'负价':'正价',ex,py+38,{size:22,col:k?CP:CB});
+      hand(ctx,k?'需要盘（负价）':'供给盘（正价）',ex,py+38,{size:22,col:k?CP:CB});
       const items=pans[k],per=Math.min(7,Math.max(1,items.length)),bw=Math.min(40,160/per);
       items.forEach(([s,v,unk],i)=>{const col=i%per,row=Math.floor(i/per),bh=14+Math.abs(v)*7,bx=ex-per*bw/2+col*bw,by=py-bh-row*(bh+4)-2;
         ctx.fillStyle=unk?'rgba(255,226,122,.85)':k?'rgba(255,158,181,.75)':'rgba(143,211,255,.75)';rr(ctx,bx+1,by,bw-2,bh,4);ctx.fill();
@@ -53,12 +53,19 @@ S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phas
     // 算式
     const eq=q[2].map(([s,n,v])=>`(${v===null?(x===null?'x':vs(x)):vs(v)})×${n}`).join(' + ');
     const by2=h-160;hand(ctx,`${eq} = ${locked?'0':vs(sum)}`,w/2,by2,{size:28,col:INK});
-    if(!locked){const ok=sum===0;hand(ctx,ok?'代数和为 0，天平平衡 ✓':`代数和 ${vs(sum)} ≠ 0，天平不平衡`,w/2,by2+40,{size:24,col:ok?CG:CP});
+    if(!locked){const ok=sum===0,sup=q[2].reduce((a,[s,n,v])=>{const vv=v===null?x:v;return a+(vv>0?vv*n:0);},0),ned=q[2].reduce((a,[s,n,v])=>{const vv=v===null?x:v;return a+(vv<0?-vv*n:0);},0);
+      hand(ctx,ok?`供给 ${sup} = 需要 ${ned}，天平平衡 ✓`:`供给 ${sup} ≠ 需要 ${ned}，天平不平衡`,w/2,by2+40,{size:24,col:ok?CG:CP});
       if(ok&&!free&&phase==='done')hand(ctx,`${NM[q[1]]}元素的化合价：${vs(q[3])}`,w/2,by2-42,{size:26,col:CY});}}
   ask();
-  notes('calc','由化学式求化合价',['依据：化合物里<mark>正、负化合价的代数和为 0</mark>。','步骤：① 写出化学式，标出已知元素的化合价；② 未知的设为 x；③ 列式：各元素（化合价 × 原子个数）之和 = 0；④ 解出 x，写成“+7”的形式。',
-    `例：${fmB('KMnO4')}：(+1)×1 + x + (−2)×4 = 0，x = <mark>+7</mark>；${fmB('K2MnO4')} 中 Mn 为 +6；${fmB('MnO2')} 中 Mn 为 +4。`],
-    '别忘了乘原子个数：K₂Cr₂O₇ 中 (+1)×2 + 2x + (−2)×7 = 0，x = +6，不是 +12。');
+  notes('calc','由化学式求化合价',['依据：化合物里<mark>正、负化合价的代数和为 0</mark>（供给 = 需要）。','步骤：标出已知化合价 → 未知设为 x → 列式（化合价 × 原子个数，求和 = 0）→ 解出 x。',
+    `${fmB('KMnO4')}：(+1)×1 + x + (−2)×4 = 0，x = <mark>+7</mark>。`],
+    '别忘了乘原子个数：K₂Cr₂O₇ 中 2x = +12，x = +6。',
+    (ctx,w,h)=>{const fx=w/2,fy=h*.42,L=w*.3;chalkPath(ctx,[[fx,fy],[fx-30,fy+90],[fx+30,fy+90]],{col:PEN.ink,w:2.5,closed:true,seed:2});chalkLine(ctx,fx-L,fy,fx+L,fy,{col:PEN.ink,w:4,seed:3});
+      [[-1,'供给盘',PEN.red,[['K','+1'],['Mn','+7']]],[1,'需要盘',PEN.blue,[['O','−2'],['O','−2'],['O','−2'],['O','−2']]]].forEach(([sg,lab,c,items])=>{const ex=fx+sg*L,py=fy+64;
+        chalkLine(ctx,ex,fy,ex-48,py,{col:PEN.dim,w:1.5,seed:5});chalkLine(ctx,ex,fy,ex+48,py,{col:PEN.dim,w:1.5,seed:6});chalkLine(ctx,ex-58,py,ex+58,py,{col:PEN.ink,w:3,seed:7});
+        items.forEach(([e,v],i)=>{const bw=26,x=ex-items.length*bw/2+i*bw,bh=Math.abs(+v.replace('−','-'))*9;ctx.fillStyle=c;ctx.globalAlpha=.25;ctx.fillRect(x+1,py-bh,bw-2,bh);ctx.globalAlpha=1;ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.strokeRect(x+1,py-bh,bw-2,bh);txt(ctx,e,x+bw/2,py-bh-11,{size:15,weight:700,col:c});});
+        hand(ctx,lab,ex,py+26,{size:20,col:c});});
+      fmDraw(ctx,'KMn{+7}O4',w/2,48,38,{col:PEN.ink,cols:{val:PEN.red}});hand(ctx,'供给 1 + 7 = 需要 2×4',w/2,h*.88,{size:22,col:PEN.green});});
   return{tick};})();
 
 /* ================= 7 同种元素的多种化合价：氯的电梯、亚铁与铁、NH₄NO₃ ================= */
@@ -116,8 +123,12 @@ S.multi=(()=>{const cv=$('#cvMulti');let t=0,scene='cl',place={},sel=null,done=f
       if(nStep>=4){hand(ctx,'同一种化合物里，同种元素也可以显不同的化合价',w/2,y+130+4*52+20,{size:26,col:CG});
         txt(ctx,'（根中各元素化合价的代数和，等于根的化合价）',w/2,y+130+4*52+58,{size:16,weight:700,col:DIM});}
       else txt(ctx,'点黑板，下一步',w/2,h-30,{size:15,weight:700,col:DIM});}}
-  notes('multi','同种元素的多种化合价',['一些元素在不同物质中可显<mark>不同的化合价</mark>：氯在 HCl 中为 −1 价，在 KClO₃ 中为 +5 价。','在<mark>单质</mark>里，元素的化合价为 <mark>0</mark>：Cl₂ 中氯为 0 价。','铁显 +2 价时读作“<mark>亚铁</mark>”：FeCl₂ 氯化亚铁、FeO 氧化亚铁；显 +3 价时读作“铁”：FeCl₃ 氯化铁、Fe₂O₃ 氧化铁。',
-    '同一种化合物里，同种元素也可能显不同的化合价：NH₄NO₃ 中氮分别为 −3 价和 +5 价。'],'非金属元素不一定显负价：与氧结合时常显正价，如 CO₂ 中碳为 +4 价。');
+  notes('multi','同种元素的多种化合价',['同一种元素在不同物质里可显<mark>不同的化合价</mark>。','<mark>单质</mark>里元素的化合价为 <mark>0</mark>。','铁显 +2 价读作“<mark>亚铁</mark>”：FeCl₂ 氯化亚铁；+3 价读作“铁”：FeCl₃ 氯化铁。','同一种化合物里，同种元素也可显不同化合价：NH₄NO₃ 中 N 为 −3 和 +5。'],
+    '非金属元素不一定显负价：CO₂ 中碳为 +4 价。',
+    (ctx,w,h)=>{const F=[['+7','HClO₄'],['+5','KClO₃'],['+1','NaClO'],['0','Cl₂'],['−1','HCl']],fh=(h-60)/F.length;
+      hand(ctx,'氯的化合价',w/2,24,{size:22,col:PEN.green});
+      F.forEach(([v,f],i)=>{const y=50+i*fh+fh/2;chalkLine(ctx,40,y+fh/2,w-40,y+fh/2,{col:'rgba(42,42,36,.3)',w:1.5,seed:i});txt(ctx,v,70,y,{size:24,weight:700,col:v[0]==='−'?PEN.blue:v==='0'?PEN.ink:PEN.red});txt(ctx,f,w*.6,y,{size:22,weight:700,col:PEN.ink});});
+      chalkPath(ctx,[[w-30,h-30],[w-30,60],[w-40,72],[w-30,60],[w-20,72]],{col:PEN.gold,w:2.5,seed:9});});
   setScene('cl');
   return{tick};})();
 
@@ -164,7 +175,7 @@ S.write=(()=>{const cv=$('#cvWrite');let t=0,step=0,auto=null,special=false,pa='
     // 五步
     const B=build(),x0=60,y0=150,rh=Math.min(78,(h-y0-70)/6);
     const lines=[['① 写出元素（或根）的符号，正价在左、负价在右，标出化合价',''],
-      ['② 求正、负化合价绝对值的最小公倍数',B.A===B.B?`${B.A} 和 ${B.B} 的最小公倍数 = ${B.L}`:B.L===B.A*B.B?`${B.A} × ${B.B} = ${B.L}`:`${B.A} 和 ${B.B} 的最小公倍数 = ${B.L}`],
+      ['② 求正、负化合价绝对值的最小公倍数（= 供给、需要的电子总数）',B.A===B.B?`${B.A} 和 ${B.B} 的最小公倍数 = ${B.L}`:B.L===B.A*B.B?`${B.A} × ${B.B} = ${B.L}`:`${B.A} 和 ${B.B} 的最小公倍数 = ${B.L}`],
       ['③ 求各原子（或根）的个数 = 最小公倍数 ÷ 化合价绝对值',`${sb(B.a)}：${B.L} ÷ ${B.A} = ${B.na}　　${sb(B.b)}：${B.L} ÷ ${B.B} = ${B.nb}`],
       ['④ 把个数写在右下角（“1”省略，根不止 1 个加括号）',B.f],
       ['⑤ 检查：正、负化合价的代数和为 0',`(${vs(B.va)})×${B.na} + (${vs(B.vb)})×${B.nb} = 0 ✓`],
@@ -192,7 +203,11 @@ S.write=(()=>{const cv=$('#cvWrite');let t=0,step=0,auto=null,special=false,pa='
     else{sfx('bad');setSt(cst,'bad',`<b>${tname(tm)}拼错，不加分</b>　${n}的化学式是 ${fmB(f)}。`);}teamNext();};
   $('#wrReset').onclick=()=>{pa='P';pb='O';step=0;stop();if(special)toggleSp();ti=0;target();};
   target();
-  notes('write','根据化合价写化学式（教材例题）',['① 写符号：<mark>正价在左、负价在右</mark>，标出化合价。','② 求正、负化合价绝对值的<mark>最小公倍数</mark>。','③ 求原子（或根）的个数：<mark>最小公倍数 ÷ 化合价绝对值</mark>。',
-    '④ 把个数写在元素符号（或括号）右下角，“1”省略；根不止 1 个要加括号。','⑤ <mark>检查</mark>：正、负化合价的代数和为 0，化学式才可能正确。'],
-    '“正价在左”是通常的写法，也有特殊情况：NH₃、CH₄ 中负价元素写在左边；ClO₂ 中氯为 +4 价，按名称写。');
+  notes('write','根据化合价写化学式',['① 写符号：<mark>正价在左、负价在右</mark>，标出化合价。','② 求化合价绝对值的<mark>最小公倍数</mark>。','③ 个数 = 最小公倍数 ÷ 化合价绝对值。','④ 个数写在右下角（“1”省略，根不止 1 个加括号）。','⑤ <mark>检查</mark>：正、负化合价的代数和为 0。'],
+    '通常正价在左；特殊情况：NH₃、CH₄ 负价元素写在左边。',
+    (ctx,w,h)=>{const y=70;fmDraw(ctx,'P',w*.3,y,56,{col:PEN.ink});txt(ctx,'+5',w*.3,y-50,{size:24,weight:700,col:PEN.red});fmDraw(ctx,'O',w*.7,y,56,{col:PEN.ink});txt(ctx,'−2',w*.7,y-50,{size:24,weight:700,col:PEN.blue});
+      hand(ctx,'5 × 2 = 10',w/2,y+64,{size:24,col:PEN.gold});
+      txt(ctx,'P：10 ÷ 5 = 2',w*.3,y+108,{size:18,weight:700,col:PEN.red});txt(ctx,'O：10 ÷ 2 = 5',w*.7,y+108,{size:18,weight:700,col:PEN.blue});
+      chalkPath(ctx,[[w*.3,y+124],[w*.38,y+168]],{col:PEN.red,w:2,seed:2});chalkPath(ctx,[[w*.7,y+124],[w*.56,y+168]],{col:PEN.blue,w:2,seed:3});
+      fmDraw(ctx,'P2O5',w/2,y+196,52,{col:PEN.ink,cols:{sub:PEN.green}});hand(ctx,'(+5)×2 + (−2)×5 = 0 ✓',w/2,h-22,{size:20,col:PEN.green});});
   return{tick,leave(){stop();}};})();

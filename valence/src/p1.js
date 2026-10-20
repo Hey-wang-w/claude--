@@ -48,14 +48,11 @@ S.ratio=(()=>{
         txt(ctx,'离子按 2∶3 排列（示意）',cx,h-10,{size:12,weight:700,col:DIM});}});}
   const RO=[['1∶1','1∶2','2∶1'],['1∶1','2∶1','1∶2'],['1∶1','1∶2','2∶1'],['1∶1','3∶2','2∶3']];
   const AN=[0,1,1,2];
-  const quiz=rowQuiz($('#raQ'),$('#raSub'),$('#raRedo'),$('#raSt'),D.map((d,i)=>[`${fmB(d[0])} <span class="hint">${d[5][0]}∶${d[5][1]}</span>`,RO[i],AN[i]]),{okMsg:'不同元素的原子个数比并不都是 1∶1。'});
+  const quiz=rowQuiz($('#raQ'),$('#raSub'),$('#raRedo'),$('#raSt'),D.map((d,i)=>[`${fmB(d[0])} <span class="hint">${d[5][0]}∶${d[5][1]}</span>`,RO[i],AN[i]]),{okMsg:'个数比不都是 1∶1。'});
   const sub0=$('#raSub').onclick;$('#raSub').onclick=()=>{sub0();if($$('#raQ .qrow.right,#raQ .qrow.wrong').length){answered=true;fill();}};
   function fill(){$$('.rc',cols).forEach((c,i)=>{$('.ans',c).textContent=answered||shown?`${D[i][5][0]}∶${D[i][5][1]} = ${D[i][4]}`:'';
-      $('.fm',c).innerHTML=fm(shown?D[i][2]:D[i][0]);$('.eq',c).textContent=shown?D[i][3]:'';});$('#raRule').classList.toggle('on',shown);requestAnimationFrame(draw);}
-  $('#raShow').onclick=()=>{shown=true;fill();sfx('whoosh');$$('.rc',cols).forEach((c,i)=>setTimeout(()=>burstAt($('.eq',c),10,[CY,CG]),i*160));};
+      $('.fm',c).innerHTML=fm(D[i][0]);$('.eq',c).textContent='';});$('#raRule').classList.toggle('on',answered);requestAnimationFrame(draw);}
   $('#raReset').onclick=()=>{shown=false;answered=false;quiz.reset();fill();};
-  notes('ratio','化合价',['化合物有固定的组成，即形成化合物的元素有固定的<mark>原子个数比</mark>。','元素的化合价有<mark>正</mark>有<mark>负</mark>。在化合物里，<mark>正、负化合价的代数和为 0</mark>。','在化合物里 O 通常显 <mark>−2</mark> 价，H 通常显 <mark>+1</mark> 价，Cl 通常显 −1 价。','→ 由化合价可以认识不同元素以什么样的原子个数比相结合。'],
-    '“代数和”要乘上原子个数：H₂O 中 (+1)×2 + (−2)×1 = 0，不是 (+1) + (−2)。');
   fill();
   return{enter(){requestAnimationFrame(draw);}};})();
 
@@ -109,7 +106,15 @@ S.mark=(()=>{const cv=$('#cvMark');let t=0,base='Mg',val='',ion='',warn='',warnT
     [vlH('+','Na'),['化合价','离子','写法错'],2],[fmB('Cl^-'),['化合价','离子','写法错'],1],[`${fmB('H2O{-2}')} <span class="hint">（O 上的 −2）</span>`,['化合价','离子','写法错'],0]],
     {okMsg:'化合价：正上方、符号在前、“1”不省略；离子：右上角、数字在前、“1”省略。'});
   $('#maReset').onclick=()=>{base='Mg';val='';ion='';bar();quiz.reset();};
-  notes('mark','化合价的表示方法',[`化合价标在元素符号的<mark>正上方</mark>，<mark>正负号在前、数字在后</mark>，“1”不能省略：如 ${vlH('+1','Na')}、${vlH('−2','O')}。`,
-    `离子符号的电荷写在<mark>右上角</mark>，<mark>数字在前、正负号在后</mark>，“1”省略：如 ${fmB('Na^+')}、${fmB('O^2-')}。`,'同种元素的化合价与它的离子所带电荷，<mark>数值相等、正负相同</mark>。',`在化学式里标化合价：${fmB('H2O{-2}')} 表示水中氧元素显 −2 价。`],
-    `${fmB('Mg^2+')} 中的“2”表示 1 个镁离子带 2 个单位正电荷，不表示镁元素的化合价。`);
+  notes('mark','化合价的表示方法',[`化合价标在元素符号<mark>正上方</mark>：<mark>正负号在前、数字在后</mark>，“1”不省略。`,
+    `离子符号的电荷写在<mark>右上角</mark>：<mark>数字在前、正负号在后</mark>，“1”省略。`,'同种元素的化合价与它的离子所带电荷：<mark>数值相等、正负相同</mark>。'],
+    `${fmB('Mg^2+')} 表示镁离子，不表示镁元素的化合价。`,
+    (ctx,w,h)=>{const L=(s,x,y,o={})=>txt(ctx,s,x,y,Object.assign({size:16,weight:700,col:PEN.ink},o)),my=h*.5,a=w*.25,b=w*.72;
+      hand(ctx,'化合价',a,h*.09,{size:26,col:PEN.red});hand(ctx,'离子符号',b,h*.09,{size:26,col:PEN.blue});
+      fmDraw(ctx,'Mg',a,my,60,{col:PEN.ink});txt(ctx,'+2',a,my-64,{size:30,weight:700,col:PEN.red});
+      chalkCircle(ctx,a,my-64,22,{col:PEN.red,w:1.5,seed:2});L('正上方',a,my-104,{col:PEN.red});
+      fmDraw(ctx,'Mg^2+',b,my,60,{col:PEN.ink,cols:{sup:PEN.blue}});chalkCircle(ctx,b+50,my-38,22,{col:PEN.blue,w:1.5,seed:3});L('右上角',b+50,my-78,{col:PEN.blue});
+      L('符号在前，“1”不省',a,my+56);L('数字在前，“1”省略',b,my+56);
+      chalkLine(ctx,w/2,h*.16,w/2,h*.8,{col:'rgba(42,42,36,.3)',w:2,seed:6});
+      hand(ctx,'数值相等  正负相同',w/2,h*.92,{size:24,col:PEN.green});});
   return{tick};})();

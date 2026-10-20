@@ -3,7 +3,7 @@ S.song=(()=>{
   const LY=['一价氢氯钾钠银，二价氧钙钡镁锌，','三铝四硅五氮磷，二三铁、二四碳，','二四六硫都齐全，铜汞二价最常见，','单质零价永不变！','负一硝酸氢氧根，负二硫酸碳酸根；','负三记住磷酸根，正一价的是铵根。'];
   const NEG={'0,3':1,'0,10':1,'2,0':1};// 歌谣里标红的负价：氯、氧、“二四六硫”的二
   const NUM='一二三四五六零';
-  const lyr=$('#soLyr');let play=null,hole=false,p3=false;
+  const lyr=$('#soLyr');let play=null,hole=false;
   lyr.innerHTML=LY.map((l,i)=>`<div class="ln${i===4?' sec':''}">${[...l].map((c,j)=>`<span data-k="${i},${j}" class="${NEG[i+','+j]?'neg':''}">${c}</span>`).join('')}</div>`).join('');
   const spans=$$('span',lyr);
   function stop(){if(play){clearTimeout(play);play=null;}spans.forEach(s=>s.classList.remove('now'));$('#soPlay').textContent='跟读';}
@@ -11,21 +11,10 @@ S.song=(()=>{
     const step=()=>{if(i>=spans.length){stop();sfx('win');return;}spans.forEach(s=>s.classList.remove('now'));const s=spans[i];const c=s.textContent;
       if(!/[，。；！、]/.test(c)){s.classList.add('now');s.classList.add('done');sfx('tick');}
       i++;play=setTimeout(step,/[，。；！]/.test(c)?420:/、/.test(c)?200:360);};step();}
-  $('#soPlay').onclick=()=>{if(p3)toggleP3();if(play){stop();return;}sing();};
+  $('#soPlay').onclick=()=>{if(play){stop();return;}sing();};
   function setHole(on){hole=on;$('#soHole').setAttribute('aria-pressed',String(on));spans.forEach(s=>{const n=NUM.includes(s.textContent);s.classList.toggle('hole',on&&n);s.classList.remove('show');});}
   spans.forEach(s=>s.onclick=()=>{if(s.classList.contains('hole')){s.classList.add('show');sfx('pop');burstAt(s,6,[CY,CG]);}});
-  $('#soHole').onclick=()=>{if(p3)toggleP3();stop();setHole(!hole);sfx('click');};
-  // 提升：第三周期元素的最外层电子数与化合价
-  const P3=[['Na',1,'+1','—'],['Mg',2,'+2','—'],['Al',3,'+3','—'],['Si',4,'+4','−4'],['P',5,'+5','−3'],['S',6,'+6','−2'],['Cl',7,'+7','−1']];
-  const tbl=$('#soTbl');
-  tbl.innerHTML=`<tr><th>元素</th>${P3.map(r=>`<th>${r[0]}</th>`).join('')}</tr>`+[['最外层电子数',1],['最高正价',2],['最低负价',3]].map(([n,c])=>`<tr><th>${n}</th>${P3.map(r=>`<td class="cell hide">${r[c]}</td>`).join('')}</tr>`).join('');
-  const law=$('#soLaw');
-  $$('td.cell',tbl).forEach(td=>td.onclick=()=>{td.classList.remove('hide');sfx('pop');if(!$$('td.cell.hide',tbl).length)law.classList.add('on');});
-  law.onclick=()=>{$$('td.cell',tbl).forEach(td=>td.classList.remove('hide'));law.classList.add('on');sfx('whoosh');};
-  law.style.cursor='pointer';
-  function toggleP3(){p3=!p3;stop();$('#soSong').hidden=p3;$('#soP3').hidden=!p3;$('#soP3Btn').textContent=p3?'返回歌谣':'提升：规律探究';$('#soP3Btn').setAttribute('aria-pressed',String(p3));
-    if(p3)law.classList.toggle('on',!$$('td.cell.hide',tbl).length);sfx('whoosh');}
-  $('#soP3Btn').onclick=toggleP3;
+  $('#soHole').onclick=()=>{stop();setHole(!hole);sfx('click');};
   // 快问快答：一组 5 张，全部选完再提交
   const POOL=[['K','钾',0],['Na','钠',0],['Ag','银',0],['H','氢',0],['Ca','钙',1],['Ba','钡',1],['Mg','镁',1],['Zn','锌',1],['Al','铝',2],['O','氧（化合物中）',4],
     ['OH','氢氧根',3],['NO3','硝酸根',3],['SO4','硫酸根',4],['CO3','碳酸根',4],['NH4','铵根',0],['PO4','磷酸根',5]];
@@ -41,11 +30,15 @@ S.song=(()=>{
   $('#soSub').onclick=()=>{if(done)return;if(cur<5){setSt(st,'warn',`还有 ${5-cur} 张没选`);return;}done=true;const tm=TEAM.cur,bad=set.filter((c,i)=>pick[i]!==c[2]).length;render();
     if(!bad){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}错 ${bad} 张，不加分</b>　黄色是正确的化合价。`);}teamNext();};
   $('#soRedo').onclick=()=>{deal();sfx('whoosh');};
-  $('#soReset').onclick=()=>{if(p3)toggleP3();stop();setHole(false);spans.forEach(s=>s.classList.remove('done'));$$('td.cell',tbl).forEach(td=>td.classList.add('hide'));law.classList.remove('on');deal();};
+  $('#soReset').onclick=()=>{stop();setHole(false);spans.forEach(s=>s.classList.remove('done'));deal();};
   deal();
-  notes('song','常见元素和根的化合价（教材表 4-3）',['金属元素与非金属元素化合时，<mark>金属元素显正价，非金属元素显负价</mark>。','一些元素在不同物质中可显<mark>不同的化合价</mark>：Fe 有 +2、+3；Cu 有 +1、+2；S 有 −2、+4、+6；N、Cl 也有多种化合价。',
-    '在单质里，元素的化合价为 <mark>0</mark>。',`常见的根：${fmB('OH^-')}、${fmB('NO3^-')} 为 −1 价；${fmB('SO4^2-')}、${fmB('CO3^2-')} 为 −2 价；${fmB('PO4^3-')} 为 −3 价；${fmB('NH4^+')} 为 <mark>+1</mark> 价。`],
-    '铵根 NH₄ 显 +1 价，是常见的根里唯一显正价的；非金属元素在化合物里不一定显负价（如 CO₂ 中 C 为 +4 价）。');
+  notes('song','常见元素和根的化合价',['金属元素与非金属元素化合时，<mark>金属元素显正价</mark>，<mark>非金属元素显负价</mark>。','一些元素可显<mark>不同的化合价</mark>：Fe 有 +2、+3，Cu 有 +1、+2，S 有 −2、+4、+6。','在<mark>单质</mark>里，元素的化合价为 <mark>0</mark>。'],
+    '铵根 NH₄ 显 +1 价，是常见的根里唯一显正价的。',
+    (ctx,w,h)=>{const R=[['+1',PEN.red,'K Na Ag H','NH₄'],['+2',PEN.red,'Ca Ba Mg Zn',''],['+3',PEN.red,'Al',''],['−1',PEN.blue,'Cl','OH NO₃'],['−2',PEN.blue,'O','SO₄ CO₃'],['−3',PEN.blue,'','PO₄']];
+      hand(ctx,'元素',w*.45,22,{size:20,col:PEN.dim});hand(ctx,'根',w*.82,22,{size:20,col:PEN.dim});
+      R.forEach(([v,c,el,rt],i)=>{const y=58+i*(h-70)/6;chalkCircle(ctx,34,y,22,{col:c,w:2.5,seed:i+1});txt(ctx,v,34,y+1,{size:20,weight:700,col:c});
+        txt(ctx,el,w*.45,y,{size:20,weight:700,col:PEN.ink});txt(ctx,rt,w*.82,y,{size:20,weight:700,col:PEN.gold});
+        chalkLine(ctx,64,y+(h-70)/12,w-10,y+(h-70)/12,{col:'rgba(42,42,36,.18)',w:1.2,seed:i+9});});});
   return{leave(){stop();}};})();
 
 /* ================= 5 原子团（根）：作为一个整体；括号与读法 ================= */
@@ -103,7 +96,12 @@ S.group=(()=>{const cv=$('#cvGroup');let t=0,cur='OH',cntT=-1;
   $('#grRedo').onclick=()=>{link={};selL=null;done=false;render();setSt(st,'','全对 +5 分');};
   $('#grReset').onclick=()=>{cur='OH';cntT=-1;mark();$('#grRedo').click();};
   render();
-  notes('group','原子团（根）',['有些物质中的一些带电荷的原子团，常作为<mark>一个整体</mark>参加反应，这样的原子团叫作<mark>根</mark>。','根也有化合价，如 OH⁻ 为 −1 价：根的化合价与它所带的电荷<mark>数值相等、正负相同</mark>。',
-    `化学式里同一种根不止 1 个时，用<mark>括号</mark>括起来，个数写在括号右下角：${fmB('Ca(OH)2')}、${fmB('Al2(SO4)3')}；只有 1 个时不加括号：${fmB('CaCO3')}。`,'读法：含 OH 读作“<mark>氢氧化某</mark>”；含酸根读作“<mark>某酸某</mark>”；含铵根读作“某化铵”“某酸铵”。'],
-    `${fmB('Ca(OH)2')} 不能写成 CaOH₂ 或 CaO₂H₂：括号外的 2 表示 2 个 OH。`);
+  notes('group','原子团（根）',['常作为<mark>一个整体</mark>参加反应的原子团，叫作<mark>根</mark>。','根也有化合价：与它所带的电荷<mark>数值相等、正负相同</mark>，如 OH⁻ 为 −1 价。',
+    `同一种根不止 1 个时加<mark>括号</mark>，个数写在括号右下角：${fmB('Ca(OH)2')}。`,'读法：含 OH 读“<mark>氢氧化某</mark>”，含酸根读“<mark>某酸某</mark>”。'],
+    `${fmB('Ca(OH)2')} 不能写成 CaOH₂ 或 CaO₂H₂。`,
+    (ctx,w,h)=>{fmDraw(ctx,'Ca(OH)2',w/2,62,52,{col:PEN.ink,cols:{sub:PEN.red}});hand(ctx,'氢氧化钙',w/2,112,{size:24,col:PEN.green});
+      const y=190;chalkCircle(ctx,64,y,26,{col:PEN.ink,w:2,seed:1});txt(ctx,'Ca',64,y+1,{size:18,weight:700,col:PEN.ink});txt(ctx,'+2',64,y-40,{size:18,weight:700,col:PEN.red});
+      [0,1].forEach(k=>{const x=170+k*110;ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle=PEN.blue;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,46,30,0,0,TAU);ctx.stroke();ctx.restore();
+        fmDraw(ctx,'OH',x,y,24,{col:PEN.blue});txt(ctx,'−1',x,y-44,{size:18,weight:700,col:PEN.blue});});
+      hand(ctx,'2 个 OH 是 2 个整体',w/2,y+62,{size:20,col:PEN.blue});hand(ctx,'(+2) + (−1)×2 = 0',w/2,y+100,{size:20,col:PEN.green});});
   return{tick};})();

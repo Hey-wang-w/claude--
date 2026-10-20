@@ -13,8 +13,8 @@ def between(a,b):
 js_head=between("(()=>{\n'use strict';","/* ================= 1 封面")
 js_deck=between("/* ================= 翻页框架 ================= */","</script>")
 dock=between("</main>\n","<script>")
-dock=dock.replace('<span class="pg" id="pg">1 / 12</span>','<span class="pg" id="pg">1 / 10</span>').replace('建议用时合计约 46 分钟','建议用时合计约 45 分钟')
-assert '1 / 10' in dock and '约 45 分钟' in dock
+dock=dock.replace('<span class="pg" id="pg">1 / 12</span>','<span class="pg" id="pg">1 / 11</span>').replace('建议用时合计约 46 分钟','建议用时合计约 45 分钟')
+assert '1 / 11' in dock and '约 45 分钟' in dock
 bg_old=between('const BG=(()=>{','const S={};')
 BG=r"""const BG=(()=>{
   // 黑板：墨绿底色、擦痕、淡淡的旧粉笔字（只在窗口尺寸变化时重画）
@@ -46,7 +46,7 @@ FCSS=os.path.join(pf,'fonts.css')
 FONT_DIR=os.environ.get('FONT_DIR')
 if FONT_DIR and os.path.isdir(FONT_DIR):
     subprocess.run([sys.executable,os.path.join(ROOT,'.claude','skills','interactive-courseware','scripts','font_subset.py')]+[os.path.join(pf,f) for f in os.listdir(pf) if f.endswith(('.js','.html'))]+[src,'-o',FCSS],check=True,env=dict(os.environ))
-JS=['fit.js','icons.js','core.js','p1.js','p2.js','p3.js','p4.js']
+JS=['fit.js','icons.js','core.js','p1.js','pe.js','p2.js','p3.js','p4.js']
 # 站酷快乐体不负责数字、拉丁字母和运算符号（它的“0”像方块）：从它的 unicode-range 里去掉，浏览器自动改用思源黑体
 def zcool_no_digits(css):
     def fix(m):

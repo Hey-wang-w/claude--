@@ -114,12 +114,30 @@ function domDrag(el,{onDrop,onTap}){let st=null;
     if(!m){onTap&&onTap(el);return;}const under=document.elementFromPoint(e.clientX,e.clientY);onDrop&&onDrop(el,under);};
   el.addEventListener('pointerup',fin);el.addEventListener('pointercancel',()=>{st=null;el.style.transform='';el.style.pointerEvents='';});}
 
-/* ---------- 弹出笔记：笔记默认隐藏，点舞台工具栏里的“笔记”弹出，点空白处或 × 关闭 ---------- */
-function notes(id,title,items,warn){const stage=$(`[data-id="${id}"] .stage`),bar=$('.ctlbar',stage);
-  const pop=document.createElement('div');pop.className='notepop';pop.innerHTML=`<div class="card"><button class="x" aria-label="关闭">×</button><h4>${title}</h4><ol>${items.map(s=>`<li>${s}</li>`).join('')}</ol>${warn?`<div class="warn"><b>易错：</b>${warn}</div>`:''}</div>`;
-  stage.appendChild(pop);const btn=document.createElement('button');btn.className='btn note';btn.textContent='笔记';
-  if(bar.children.length){const sp=document.createElement('span');sp.className='sep';bar.appendChild(sp);}bar.appendChild(btn);
-  const close=()=>pop.classList.remove('on');btn.onclick=()=>{pop.classList.toggle('on');sfx('whoosh');};$('.x',pop).onclick=close;pop.addEventListener('click',e=>{if(e.target===pop)close();});
-  return{close};}
+/* ---------- 弹出笔记：页眉“笔记”按钮（重新开始前面），点开是一张带插图的横线笔记纸；点 ×、空白处、Esc、翻页都会关闭 ----------
+   fig(ctx,w,h)：在笔记纸右侧画插图（深色墨水 + 彩笔），用来配合文字的图图画画 */
+const NOTEPOPS=[];
+function notes(id,title,items,warn,fig){const slide=$(`[data-id="${id}"]`),stage=$('.stage',slide),tools=$('.hd .tools',slide);
+  const pop=document.createElement('div');pop.className='notepop';
+  pop.innerHTML=`<div class="card${fig?' wfig':''}"><button class="x" aria-label="关闭">×</button><h4>${title}</h4><div class="nb"><div><ol>${items.map(s=>`<li>${s}</li>`).join('')}</ol>${warn?`<div class="warn"><b>易错：</b>${warn}</div>`:''}</div>${fig?'<canvas class="nfig"></canvas>':''}</div></div>`;
+  stage.appendChild(pop);const btn=document.createElement('button');btn.className='btn sm note';btn.textContent='笔记';tools.insertBefore(btn,tools.firstChild);
+  const cv=$('canvas.nfig',pop);
+  const draw=()=>{if(!fig||!cv)return;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);fig(ctx,w,h);};
+  const open=()=>{pop.classList.add('on');btn.setAttribute('aria-pressed','true');requestAnimationFrame(draw);setTimeout(draw,350);sfx('whoosh');};
+  const close=()=>{pop.classList.remove('on');btn.setAttribute('aria-pressed','false');};
+  btn.onclick=()=>pop.classList.contains('on')?close():open();$('.x',pop).onclick=close;pop.addEventListener('click',e=>{if(e.target===pop)close();});
+  new MutationObserver(()=>{if(!slide.classList.contains('active'))close();}).observe(slide,{attributes:true,attributeFilter:['class']});
+  NOTEPOPS.push(close);return{close};}
+addEventListener('keydown',e=>{if(e.key==='Escape')NOTEPOPS.forEach(f=>f());});
+/* 笔记插图用的“墨水”颜色（笔记纸是浅色） */
+const PEN={ink:'#2a2a24',red:'#c2410c',blue:'#1d4ed8',green:'#15803d',gold:'#b45309',dim:'#6b6b5e'};
+/* 原子结构示意图（教材画法：圆圈 + 核电荷数，弧线 + 电子数），可画在画布或生成内联 SVG */
+function shellDraw(ctx,x,y,Z,shells,{col=PEN.ink,size=1,hiLast=null}={}){const r=13*size;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();
+  txt(ctx,`+${Z}`,x,y+1,{size:11*size,weight:700,col});
+  shells.forEach((n,i)=>{const ax=x+r+10*size+i*16*size;ctx.beginPath();ctx.arc(ax-8*size,y,15*size,-0.9,0.9);ctx.strokeStyle=col;ctx.stroke();
+    txt(ctx,String(n),ax+7*size,y-12*size,{size:11*size,weight:700,col:i===shells.length-1&&hiLast?hiLast:col});});ctx.restore();}
+function shellSvg(Z,shells){const W=34+shells.length*15;let s=`<svg class="shsv" viewBox="0 0 ${W} 30" width="${W*1.1}" height="33"><circle cx="13" cy="17" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="13" y="21" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">+${Z}</text>`;
+  shells.forEach((n,i)=>{const ax=30+i*15;s+=`<path d="M${ax-2} 6 Q${ax+6} 17 ${ax-2} 28" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="${ax+6}" y="11" font-size="9.5" font-weight="700" fill="currentColor">${n}</text>`;});
+  return s+'</svg>';}
 const CN=['','一','二','三','四','五','六','七','八','九','十'];
 const gcd=(a,b)=>b?gcd(b,a%b):a;
