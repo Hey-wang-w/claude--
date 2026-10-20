@@ -1,0 +1,228 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 为什么是 H₂O？" data-min="2">
+  <div class="cov">
+    <div>
+      <span class="unit">人教版 · 九年级化学上册 · 第四单元 课题3</span>
+      <h1>化合价</h1>
+      <p class="sub">物质组成的表示 · 课时2</p>
+      <p class="lead">水是 <b class="fm">H<sub>2</sub>O</b>，不是 HO，也不是 H<sub>3</sub>O；氯化氢是 <b class="fm">HCl</b>，不是 H<sub>2</sub>Cl。不同元素的原子，为什么总按固定的个数比结合？</p>
+      <div class="qs">
+        <p style="--i:0"><b>1</b>化合价是什么？怎样表示？</p>
+        <p style="--i:1"><b>2</b>怎样由化学式求某元素的化合价？</p>
+        <p style="--i:2"><b>3</b>怎样由化合价写出化学式？</p>
+      </div>
+      <div class="row" style="margin-top:24px"><button class="btn pri big" data-go="next">开始探索 →</button></div>
+    </div>
+    <div class="covbd"><canvas id="cvCover"></canvas></div>
+  </div>
+</section>
+
+<!-- 2 原子个数比与化合价 -->
+<section class="slide" data-id="ratio" data-title="原子个数比的规律" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">概念 · 化合价</p><h2>原子个数比，藏着什么规律？</h2></div>
+      <div class="tools"><button class="btn sm" id="raReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="ratio">
+          <div class="rcols" id="raCols"></div>
+          <div class="rule0" id="raRule"><span>在化合物里，</span><span class="big">正、负化合价的代数和为 0</span></div>
+        </div>
+        <div class="ctlbar"><button class="btn pri" id="raShow">揭晓化合价</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="lightbulb-on-outline"></span>猜一猜原子个数比 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">先看左边的粒子模型，再选出两种原子的个数比。</p>
+          <div class="tflist" id="raQ"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="raSub">提交</button><button class="btn sm" id="raRedo">重做</button></div>
+          <div class="status" id="raSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3 化合价的表示方法 -->
+<section class="slide" data-id="mark" data-title="化合价的表示方法" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">重点 · 表示方法</p><h2>化合价标在哪？和离子符号有什么不同？</h2></div>
+      <div class="tools"><button class="btn sm" id="maReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="markbench"><canvas id="cvMark"></canvas></div>
+        <div class="ctlbar" id="maBar"></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="clipboard-check-outline"></span>它表示什么？ <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="tflist" id="maQ"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="maSub">提交</button><button class="btn sm" id="maRedo">重做</button></div>
+          <div class="status" id="maSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 化合价歌谣 -->
+<section class="slide" data-id="song" data-title="常见化合价 · 歌谣" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">记忆 · 常见元素和根的化合价</p><h2>唱一唱化合价歌谣</h2></div>
+      <div class="tools"><button class="btn sm" id="soReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="song" id="soSong"><h4>化合价歌谣</h4><div class="lyr" id="soLyr"></div></div>
+        <div class="p3wrap" id="soP3" hidden>
+          <table class="p3tbl" id="soTbl"></table>
+          <p class="law" id="soLaw">规律：最高正价 = 最外层电子数；最低负价 = 最外层电子数 − 8（金属元素一般没有负价）</p>
+        </div>
+        <div class="ctlbar"><button class="btn pri" id="soPlay">跟读</button><button class="btn" id="soHole">挖空挑战</button><button class="btn" id="soP3Btn">提升：规律探究</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="timer-outline"></span>快问快答 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="flash" id="soFlash"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="soSub">提交</button><button class="btn sm" id="soRedo">换一组</button></div>
+          <div class="status" id="soSt" style="margin-top:10px">一组 5 张，全部选完再提交；全对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 原子团（根） -->
+<section class="slide" data-id="group" data-title="原子团（根）" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">认识 · 原子团</p><h2>“根”是一个整体</h2></div>
+      <div class="tools"><button class="btn sm" id="grReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="grp"><div class="gstk" id="grStk"></div><div class="gview"><canvas id="cvGroup"></canvas></div></div>
+        <div class="ctlbar"><button class="btn pri" id="grCount">数一数原子</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="hand-pointing-up"></span>连一连：化学式与名称 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">先点左边的化学式，再点右边的名称，全部连好后提交。</p>
+          <div class="match" id="grMatch"></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="grSub">提交</button><button class="btn sm" id="grRedo">重做</button></div>
+          <div class="status" id="grSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 求化合价：化合价天平 -->
+<section class="slide" data-id="calc" data-title="由化学式求化合价" data-min="6">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">重点 · 求化合价</p><h2>化合价天平：代数和为 0</h2></div>
+      <div class="tools"><button class="btn sm" id="caReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvCalc"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="caMode" aria-pressed="false">自由调天平</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="pencil"></span><span id="caTitle">求化合价</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div id="caAsk" style="font-size:19px;line-height:1.7"></div>
+          <div class="flash" style="margin-top:10px"><div class="vals" id="caKeys" style="grid-template-columns:repeat(6,minmax(0,1fr))"></div></div>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="caSub">提交</button><button class="btn sm" id="caNext">下一题</button></div>
+          <div class="status" id="caSt" style="margin-top:10px">先在草稿纸上列式计算，再选答案提交；提交后天平验算。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 7 一种元素，多种化合价 -->
+<section class="slide" data-id="multi" data-title="同种元素的多种化合价" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">规律 · 可变化合价</p><h2>氯元素坐电梯</h2></div>
+      <div class="tools"><button class="btn sm" id="muReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvMulti"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="muCl" aria-pressed="true">氯的电梯</button><button class="btn" id="muFe" aria-pressed="false">铁：亚铁与铁</button><button class="btn" id="muN" aria-pressed="false">一种物质两种价</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <h3><span data-i="hand-pointing-up"></span><span id="muTitle">送它们上楼</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" id="muHint">把含氯物质拖到氯元素化合价对应的楼层（也可以先点物质、再点楼层），全部放好后提交。</p>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="muSub">提交</button><button class="btn sm" id="muRedo">重做</button></div>
+          <div class="status" id="muSt" style="margin-top:10px">全对 +5 分</div>
+        </div>
+        <div class="panel grow">
+          <h3><span data-i="magnify"></span>判一判 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="tflist" id="muTF"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="muTSub">提交</button><button class="btn sm" id="muTRedo">重做</button></div>
+          <div class="status" id="muTSt" style="margin-top:8px">全对 +5 分</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 根据化合价写化学式 -->
+<section class="slide" data-id="write" data-title="根据化合价写化学式" data-min="6">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">重点 · 写化学式</p><h2>五步写出化学式</h2></div>
+      <div class="tools"><button class="btn sm" id="wrReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvWrite"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="wrStep">下一步</button><button class="btn" id="wrAll">演示五步</button><button class="btn" id="wrSpecial" aria-pressed="false">特殊情况</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow">
+          <h3><span data-i="pencil"></span>按名称写化学式 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="wtask" id="wrTask"></div>
+          <div class="slots" id="wrSlots"></div>
+          <div class="ttray" id="wrTray"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="wrSub">提交</button><button class="btn sm" id="wrBack">退格</button><button class="btn sm" id="wrNext">换一题</button></div>
+          <div class="status" id="wrSt" style="margin-top:8px">点符号、原子团、数字和括号拼出化学式（数字自动写成右下角的小字）。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 竞赛：拆弹倒计时 -->
+<section class="slide" data-id="bomb" data-title="竞赛：拆弹倒计时" data-min="8">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">竞赛 · 红蓝对抗</p><h2>拆弹倒计时</h2></div>
+      <div class="tools"><button class="btn sm" id="boReset">重新开始</button></div></header>
+    <div class="body q">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvBomb"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="boGo">开始计时</button><span class="sep"></span><button class="btn" data-min="3">每队 3 分钟</button><button class="btn" data-min="4" aria-pressed="true">每队 4 分钟</button><button class="btn" data-min="5">每队 5 分钟</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow"><div class="qcard" id="boCard"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 化合价" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">小结</p><h2>化合价，一张黑板带走</h2></div>
+      <div class="tools"></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="sumgrid" id="suGrid"></div>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部揭晓</button><button class="btn" id="suHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div class="score" id="suScore"></div></div>
+        <div class="panel grow"><h3><span data-i="lightbulb-on-outline"></span>说一说</h3>
+          <p style="line-height:1.9">1. <b class="fm">Mg<sup>2+</sup></b> 和 <span class="fm"><span class="vl"><i>+2</i><b>Mg</b></span></span> 有什么不同？<br>2. 求 <b class="fm">KClO<sub>3</sub></b> 中氯元素的化合价。<br>3. 写出硫酸铝、氢氧化亚铁的化学式。</p>
+          <p class="credit" style="margin-top:auto;padding-top:10px">图标几何：Material Design Icons（Apache 2.0）；字体：站酷快乐体、思源黑体（SIL OFL）；黑板、粉笔效果与动画均为代码绘制。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
