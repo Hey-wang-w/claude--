@@ -1,20 +1,52 @@
-/* ================= 4 化合价歌谣：跟读、挖空挑战、规律探究；快问快答 ================= */
+/* ================= 5 化合价歌谣：跟读、随机挖空、接龙排序、化合价归队；快问快答 ================= */
 S.song=(()=>{
   const LY=['一价氢氯钾钠银，二价氧钙钡镁锌，','三铝四硅五氮磷，二三铁、二四碳，','二四六硫都齐全，铜汞二价最常见，','单质零价永不变！','负一硝酸氢氧根，负二硫酸碳酸根；','负三记住磷酸根，正一价的是铵根。'];
   const NEG={'0,3':1,'0,10':1,'2,0':1};// 歌谣里标红的负价：氯、氧、“二四六硫”的二
   const NUM='一二三四五六零';
-  const lyr=$('#soLyr');let play=null,hole=false;
+  const lyr=$('#soLyr');let play=null,mode='read';
   lyr.innerHTML=LY.map((l,i)=>`<div class="ln${i===4?' sec':''}">${[...l].map((c,j)=>`<span data-k="${i},${j}" class="${NEG[i+','+j]?'neg':''}">${c}</span>`).join('')}</div>`).join('');
   const spans=$$('span',lyr);
-  function stop(){if(play){clearTimeout(play);play=null;}spans.forEach(s=>s.classList.remove('now'));$('#soPlay').textContent='跟读';}
-  function sing(){stop();spans.forEach(s=>s.classList.remove('done'));let i=0;$('#soPlay').textContent='停止';
+  function stop(){if(play){clearTimeout(play);play=null;}spans.forEach(s=>s.classList.remove('now'));if(mode==='read')$('#soAct').textContent='开始跟读';}
+  function sing(){stop();spans.forEach(s=>s.classList.remove('done'));let i=0;$('#soAct').textContent='停止';
     const step=()=>{if(i>=spans.length){stop();sfx('win');return;}spans.forEach(s=>s.classList.remove('now'));const s=spans[i];const c=s.textContent;
       if(!/[，。；！、]/.test(c)){s.classList.add('now');s.classList.add('done');sfx('tick');}
       i++;play=setTimeout(step,/[，。；！]/.test(c)?420:/、/.test(c)?200:360);};step();}
-  $('#soPlay').onclick=()=>{if(play){stop();return;}sing();};
-  function setHole(on){hole=on;$('#soHole').setAttribute('aria-pressed',String(on));spans.forEach(s=>{const n=NUM.includes(s.textContent);s.classList.toggle('hole',on&&n);s.classList.remove('show');});}
-  spans.forEach(s=>s.onclick=()=>{if(s.classList.contains('hole')){s.classList.add('show');sfx('pop');burstAt(s,6,[CY,CG]);}});
-  $('#soHole').onclick=()=>{stop();setHole(!hole);sfx('click');};
+  // 随机挖空：数字、元素名、根名里随机挖 9 个，每次不同
+  const KEYS=[...'一二三四五六零氢氯钾钠银氧钙钡镁锌铝硅氮磷铁碳硫铜汞铵'];
+  const cand=spans.filter(s=>KEYS.includes(s.textContent));
+  function holes(){spans.forEach(s=>{s.classList.remove('hole','show','done');});const a=cand.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    a.slice(0,9).forEach(s=>s.classList.add('hole'));sfx('whoosh');}
+  spans.forEach(s=>s.onclick=()=>{if(s.classList.contains('hole')&&!s.classList.contains('show')){s.classList.add('show');sfx('pop');burstAt(s,6,[CY,CG]);}});
+  // 接龙排序：11 个半句打乱，按顺序点
+  const HALF=LY.flatMap(l=>l.split(/[，；！。]/).filter(Boolean));let oNext=0;
+  function order(){oNext=0;const idx=HALF.map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+    $('#soOL').innerHTML=HALF.map((h,i)=>`<span class="oslot" data-i="${i}">${i+1}</span>`).join('');
+    $('#soOP').innerHTML=idx.map(i=>`<button class="ocard" data-i="${i}">${HALF[i]}</button>`).join('');
+    $$('#soOP .ocard').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i===oNext){const sl=$$('#soOL .oslot')[i];sl.textContent=HALF[i];sl.classList.add('ok');b.classList.add('used');b.disabled=true;oNext++;sfx('pop');burstAt(sl,8,[CY,CG]);
+        if(oNext===HALF.length){FX.confetti();sfx('win');}}
+      else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');sfx('bad');}});}
+  // 化合价归队：拖卡片进格子，点“检查”
+  const SORT=[['K',1],['Na',1],['Ag',1],['H',1],['NH4',1],['Ca',2],['Ba',2],['Mg',2],['Zn',2],['Al',3],['Cl',-1],['OH',-1],['NO3',-1],['O',-2],['SO4',-2],['CO3',-2],['PO4',-3]];
+  const BINV=[1,2,3,-1,-2,-3],vs=v=>(v>0?'+':'−')+Math.abs(v);let sel=null,checked=false;
+  $('#soSB').innerHTML=BINV.map(v=>`<div class="sbin ${v>0?'pos':'neg'}" data-v="${v}"><b>${vs(v)}</b><div class="sdrop"></div></div>`).join('');
+  function sortDeal(){checked=false;sel=null;const a=SORT.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    $$('#soSB .sdrop').forEach(d=>d.innerHTML='');$('#soST').innerHTML=a.map(([e,v])=>`<span class="schip" data-v="${v}">${fm(e)}</span>`).join('');
+    $$('#soST .schip').forEach(c=>domDrag(c,{onDrop:(el,under)=>{const b=under&&under.closest('.sbin');if(b)put(el,$('.sdrop',b));else if(under&&under.closest('#soST'))put(el,$('#soST'));},
+      onTap:el=>{if(checked)return;if(sel)sel.classList.remove('sel');sel=sel===el?null:el;if(sel)sel.classList.add('sel');sfx('click');}}));}
+  function put(el,host){if(checked)return;el.classList.remove('sel','right','wrong');sel=null;host.appendChild(el);sfx('drop');}
+  $$('#soSB .sbin').forEach(b=>b.addEventListener('click',e=>{if(sel&&!e.target.closest('.schip'))put(sel,$('.sdrop',b));}));
+  function sortCheck(){const left=$$('#soST .schip').length;if(left){$('#soSort .sotip').textContent=`还有 ${left} 张没放`;sfx('bad');return;}checked=true;let bad=0;
+    $$('#soSB .sbin').forEach(b=>$$('.schip',b).forEach(c=>{const ok=c.dataset.v===b.dataset.v;if(!ok)bad++;c.classList.add(ok?'right':'wrong');}));
+    $('#soSort .sotip').textContent=bad?`放错 ${bad} 张（红色），再想一想歌谣`:'全部正确！';sfx(bad?'bad':'win');if(!bad)FX.confetti();}
+  // 模式切换：工具栏右侧的主按钮随模式变化
+  const ACT={read:'开始跟读',hole:'换一批',order:'重新打乱',sort:'检查'};
+  const TIP={read:'跟着高亮一起读',hole:'点虚线框揭晓；点“换一批”重新挖空'};
+  function setMode(m){stop();mode=m;$$('#soBar [data-m]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===m)));$('#soAct').textContent=ACT[m];
+    $('#soSong').hidden=!(m==='read'||m==='hole');$('#soOrder').hidden=m!=='order';$('#soSort').hidden=m!=='sort';$('#soTip').textContent=TIP[m]||'';
+    spans.forEach(s=>s.classList.remove('hole','show','done'));if(m==='hole')holes();if(m==='order')order();if(m==='sort'){sortDeal();$('#soSort .sotip').textContent='把元素和根拖进对应的化合价（也可以先点卡片、再点格子），放好后点“检查”';}sfx('click');}
+  $$('#soBar [data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+  $('#soAct').onclick=()=>{if(mode==='read'){if(play){stop();return;}sing();}else if(mode==='hole')holes();else if(mode==='order')order();else if(checked){sortDeal();$('#soAct').textContent='检查';}else{sortCheck();if(checked)$('#soAct').textContent='再来一次';}};
+  $('#soTip').textContent=TIP.read;
   // 快问快答：一组 5 张，全部选完再提交
   const POOL=[['K','钾',0],['Na','钠',0],['Ag','银',0],['H','氢',0],['Ca','钙',1],['Ba','钡',1],['Mg','镁',1],['Zn','锌',1],['Al','铝',2],['O','氧（化合物中）',4],
     ['OH','氢氧根',3],['NO3','硝酸根',3],['SO4','硫酸根',4],['CO3','碳酸根',4],['NH4','铵根',0],['PO4','磷酸根',5]];
@@ -30,7 +62,7 @@ S.song=(()=>{
   $('#soSub').onclick=()=>{if(done)return;if(cur<5){setSt(st,'warn',`还有 ${5-cur} 张没选`);return;}done=true;const tm=TEAM.cur,bad=set.filter((c,i)=>pick[i]!==c[2]).length;render();
     if(!bad){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}错 ${bad} 张，不加分</b>　黄色是正确的化合价。`);}teamNext();};
   $('#soRedo').onclick=()=>{deal();sfx('whoosh');};
-  $('#soReset').onclick=()=>{stop();setHole(false);spans.forEach(s=>s.classList.remove('done'));deal();};
+  $('#soReset').onclick=()=>{setMode('read');deal();};
   deal();
   notes('song','常见元素和根的化合价',['金属元素与非金属元素化合时，<mark>金属元素显正价</mark>，<mark>非金属元素显负价</mark>。','一些元素可显<mark>不同的化合价</mark>：Fe 有 +2、+3，Cu 有 +1、+2，S 有 −2、+4、+6。','在<mark>单质</mark>里，元素的化合价为 <mark>0</mark>。'],
     '铵根 NH₄ 显 +1 价，是常见的根里唯一显正价的。',

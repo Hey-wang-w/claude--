@@ -123,7 +123,7 @@ canvas{touch-action:none}
 .notepop canvas.nfig{position:static;width:400px;height:350px;border:2px dashed rgba(42,42,36,.25);border-radius:12px;background:rgba(255,255,255,.35)}
 .notepop .x{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:30px;line-height:1;cursor:pointer;color:#555}
 .side.mid{justify-content:center}
-.shsv{vertical-align:middle;color:var(--cb);width:auto;height:40px}
+.shsv{vertical-align:middle;color:var(--cb)}
 
 /* ---------- 选项 ---------- */
 .opts{display:grid;gap:8px}
@@ -306,3 +306,44 @@ canvas{touch-action:none}
 .ttray button:hover{background:rgba(241,238,228,.1)}
 .ttray button.dg{color:var(--cg);border-color:var(--cg)}
 .ttray button.pr{color:var(--co);border-color:var(--co)}
+
+/* 3 化合价从哪来：原子卡片题、第三周期表 */
+#elQ{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#elQ .qrow{grid-template-columns:1fr;justify-items:center;padding:8px 6px;gap:6px;min-width:0}
+#elQ .qrow:last-child{grid-column:1/3;grid-template-columns:1fr auto;justify-items:start}
+#elQ .ac{display:flex;align-items:center;gap:8px}
+#elQ .ac .fm{font-size:26px}
+#elQ .qrow .cs button{min-width:40px;padding:0 4px}
+#elQ .shsv{height:auto;color:var(--ink)}
+#elQ .qrow .cs{justify-content:center}
+.p3tbl .shr td{padding:4px 2px}
+.p3tbl .shsv{height:auto;color:var(--ink)}
+.p3tbl th small{display:block;font:700 12px var(--f-body);color:var(--co)}
+.p3tbl th.met{background:rgba(255,179,107,.1)}
+.p3tbl td.cell.no:not(.hide){color:var(--faint);font-size:16px}
+.p3wrap .law{line-height:1.8;font-size:19px}
+.p3wrap .law b{color:var(--cy)}
+
+/* 5 歌谣：提示、接龙、归队 */
+.song .sotip{text-align:center;color:var(--dim);font-size:15px;font-weight:700;margin:-4px 0 0;min-height:1.4em}
+.olist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
+.oslot{display:flex;align-items:center;justify-content:center;height:46px;border:2px dashed rgba(241,238,228,.35);border-radius:12px;font:400 26px var(--f-hand);color:var(--faint)}
+.oslot:nth-child(7){grid-column:1/3}
+.oslot.ok{border-style:solid;border-color:var(--cg);color:var(--ink)}
+.opool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:auto}
+.ocard{border:2px solid rgba(241,238,228,.7);border-radius:12px;background:rgba(0,0,0,.18);font:400 24px var(--f-hand);padding:6px 14px;cursor:pointer;color:var(--ink)}
+.ocard:hover{background:rgba(241,238,228,.1)}
+.ocard.used{opacity:.2}
+.ocard.shake{animation:wig .4s;border-color:var(--badc)}
+@keyframes wig{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.stray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:56px;padding:8px;border:2px dashed rgba(241,238,228,.35);border-radius:14px}
+.schip{touch-action:none;user-select:none;cursor:grab;border:2px solid rgba(241,238,228,.75);border-radius:10px;padding:4px 12px;font:700 22px var(--f-num);background:var(--board2)}
+.schip.sel{border-color:var(--cy);box-shadow:0 0 0 3px rgba(255,226,122,.35)}
+.schip.right{border-color:var(--okc);background:rgba(168,230,161,.18)}.schip.wrong{border-color:var(--badc);background:rgba(255,143,143,.2)}
+.sbins{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr 1fr;gap:12px;min-height:0}
+.sbin{border:2px solid rgba(241,238,228,.5);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.sbin b{font:700 26px var(--f-num)}
+.sbin.pos b{color:var(--cy)}.sbin.neg b{color:var(--cp)}
+.sdrop{flex:1;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.p3h{margin:0;font:400 30px var(--f-hand);color:var(--cb);text-align:center}
+.p3wrap .law{margin:0}

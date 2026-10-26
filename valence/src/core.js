@@ -20,15 +20,25 @@ function stampOff(host){const s=host.querySelector(':scope>.stamp');if(s)s.class
 
 /* ---------- 粉笔笔触：同一条线画两三遍、略有抖动和透明度变化，看起来像粉笔 ---------- */
 function chalkPath(ctx,pts,{col=INK,w=3,a=.9,seed=1,closed=false}={}){const R=rng(seed*7919+13);ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=col;
-  for(let pass=0;pass<2;pass++){ctx.globalAlpha=a*(pass?.45:.9);ctx.lineWidth=w*(pass?1.5:1);ctx.beginPath();
-    pts.forEach(([x,y],i)=>{const jx=(R()-.5)*1.4,jy=(R()-.5)*1.4;i?ctx.lineTo(x+jx,y+jy):ctx.moveTo(x+jx,y+jy);});if(closed)ctx.closePath();ctx.stroke();}
+  for(let pass=0;pass<2;pass++){ctx.globalAlpha=a*(pass?.35:.95);ctx.lineWidth=w*(pass?1.45:1);ctx.beginPath();
+    pts.forEach(([x,y],i)=>{const jx=pass?(R()-.5)*.8:0,jy=pass?(R()-.5)*.8:0;i?ctx.lineTo(x+jx,y+jy):ctx.moveTo(x+jx,y+jy);});if(closed)ctx.closePath();ctx.stroke();}
   ctx.restore();}
-function chalkLine(ctx,x1,y1,x2,y2,o={}){const n=Math.max(2,Math.round(Math.hypot(x2-x1,y2-y1)/18)),p=[];for(let i=0;i<=n;i++)p.push([lerp(x1,x2,i/n),lerp(y1,y2,i/n)]);chalkPath(ctx,p,o);}
-function chalkRect(ctx,x,y,w,h,o={}){const{fill=null,r=10}=o;if(fill){ctx.save();ctx.fillStyle=fill;rr(ctx,x,y,w,h,r);ctx.fill();ctx.restore();}
-  const p=[];const seg=(x1,y1,x2,y2)=>{const n=Math.max(2,Math.round(Math.hypot(x2-x1,y2-y1)/22));for(let i=0;i<n;i++)p.push([lerp(x1,x2,i/n),lerp(y1,y2,i/n)]);};
-  seg(x+r,y,x+w-r,y);seg(x+w,y+r,x+w,y+h-r);seg(x+w-r,y+h,x+r,y+h);seg(x,y+h-r,x,y+r);p.push(p[0]);chalkPath(ctx,p,o);}
-function chalkCircle(ctx,x,y,r,o={}){const{fill=null}=o;if(fill){ctx.save();ctx.fillStyle=fill;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.restore();}
-  const n=Math.max(12,Math.round(r/2.5)),p=[];for(let i=0;i<=n;i++){const a=i/n*TAU;p.push([x+Math.cos(a)*r,y+Math.sin(a)*r]);}chalkPath(ctx,p,o);}
+function chalkLine(ctx,x1,y1,x2,y2,o={}){chalkPath(ctx,[[x1,y1],[x2,y2]],o);}
+/* 圆角框：实线圆角 + 一层淡的粉笔晕，四角是真正的圆角（不再是切角） */
+function chalkRect(ctx,x,y,w,h,o={}){const{fill=null,r=10,col=INK,w:lw=3,a=.9}=o;ctx.save();
+  if(fill){ctx.fillStyle=fill;rr(ctx,x,y,w,h,r);ctx.fill();}
+  ctx.strokeStyle=col;ctx.globalAlpha=a*.3;ctx.lineWidth=lw*1.6;rr(ctx,x,y,w,h,r);ctx.stroke();ctx.globalAlpha=a;ctx.lineWidth=lw;rr(ctx,x,y,w,h,r);ctx.stroke();ctx.restore();}
+function chalkCircle(ctx,x,y,r,o={}){const{fill=null,col=INK,w:lw=3,a=.9}=o;ctx.save();if(fill){ctx.fillStyle=fill;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();}
+  ctx.strokeStyle=col;ctx.globalAlpha=a*.3;ctx.lineWidth=lw*1.6;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();ctx.globalAlpha=a;ctx.lineWidth=lw;ctx.stroke();ctx.restore();}
+/* 二次曲线箭头：指定控制点 */
+function arrowQ(ctx,x1,y1,qx,qy,x2,y2,{col=INK,w=3,head=12,a=1}={}){const ang=Math.atan2(y2-qy,x2-qx);ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(qx,qy,x2-Math.cos(ang)*head*.8,y2-Math.sin(ang)*head*.8);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-Math.cos(ang-.42)*head,y2-Math.sin(ang-.42)*head);ctx.lineTo(x2-Math.cos(ang+.42)*head,y2-Math.sin(ang+.42)*head);ctx.closePath();ctx.fill();ctx.restore();}
+/* 箭头：直线或弧线（bend 为弯曲量，正值向左弯），箭头头部是实心三角形，方向沿曲线末端切线 */
+function arrow(ctx,x1,y1,x2,y2,{col=INK,w=3,bend=0,head=12,a=1}={}){const mx=(x1+x2)/2,my=(y1+y2)/2,L=Math.hypot(x2-x1,y2-y1)||1,nx=-(y2-y1)/L,ny=(x2-x1)/L,cx=mx+nx*bend,cy=my+ny*bend;
+  const ang=Math.atan2(y2-cy,x2-cx),ex=x2-Math.cos(ang)*head*.8,ey=y2-Math.sin(ang)*head*.8;
+  ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);bend?ctx.quadraticCurveTo(cx,cy,ex,ey):ctx.lineTo(ex,ey);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-Math.cos(ang-.42)*head,y2-Math.sin(ang-.42)*head);ctx.lineTo(x2-Math.cos(ang+.42)*head,y2-Math.sin(ang+.42)*head);ctx.closePath();ctx.fill();ctx.restore();}
 /* 粉笔“原子”：彩色粉笔涂满的圆 + 白色轮廓 + 元素符号 */
 const ACOL={H:'#f1eee4',O:'#ff9eb5',C:'#b9c4b8',N:'#8fd3ff',Cl:'#a8e6a1',Na:'#c7b8ff',Mg:'#ffd59e',Fe:'#ffb36b',Ca:'#ffe27a',K:'#d9b8ff',Al:'#cfd8dc',S:'#ffe27a',P:'#ffb36b'};
 function chalkAtom(ctx,x,y,r,el,{a=1,seed=3}={}){ctx.save();ctx.globalAlpha=a;const c=ACOL[el]||'#dddddd';
@@ -132,12 +142,16 @@ addEventListener('keydown',e=>{if(e.key==='Escape')NOTEPOPS.forEach(f=>f());});
 /* 笔记插图用的“墨水”颜色（笔记纸是浅色） */
 const PEN={ink:'#2a2a24',red:'#c2410c',blue:'#1d4ed8',green:'#15803d',gold:'#b45309',dim:'#6b6b5e'};
 /* 原子结构示意图（教材画法：圆圈 + 核电荷数，弧线 + 电子数），可画在画布或生成内联 SVG */
-function shellDraw(ctx,x,y,Z,shells,{col=PEN.ink,size=1,hiLast=null}={}){const r=13*size;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();
-  txt(ctx,`+${Z}`,x,y+1,{size:11*size,weight:700,col});
-  shells.forEach((n,i)=>{const ax=x+r+10*size+i*16*size;ctx.beginPath();ctx.arc(ax-8*size,y,15*size,-0.9,0.9);ctx.strokeStyle=col;ctx.stroke();
-    txt(ctx,String(n),ax+7*size,y-12*size,{size:11*size,weight:700,col:i===shells.length-1&&hiLast?hiLast:col});});ctx.restore();}
-function shellSvg(Z,shells){const W=34+shells.length*15;let s=`<svg class="shsv" viewBox="0 0 ${W} 30" width="${W*1.1}" height="33"><circle cx="13" cy="17" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="13" y="21" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">+${Z}</text>`;
-  shells.forEach((n,i)=>{const ax=30+i*15;s+=`<path d="M${ax-2} 6 Q${ax+6} 17 ${ax-2} 28" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="${ax+6}" y="11" font-size="9.5" font-weight="700" fill="currentColor">${n}</text>`;});
+function shellGeom(n,size){const r=15*size,g=13*size;return{r,arcs:[...Array(n)].map((_,i)=>r+8*size+(i+1)*g),w:r+8*size+n*g+8*size};}
+function shellDraw(ctx,x,y,Z,shells,{col=PEN.ink,size=1,hiLast=null,bg='#f6f1df',lw=1.8}={}){const G=shellGeom(shells.length,size);ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw;
+  ctx.beginPath();ctx.arc(x,y,G.r,0,TAU);ctx.stroke();txt(ctx,`+${Z}`,x,y+1,{size:12*size,weight:700,col});
+  shells.forEach((n,i)=>{const R=G.arcs[i];ctx.beginPath();ctx.arc(x,y,R,-.62,.62);ctx.strokeStyle=col;ctx.stroke();const c=i===shells.length-1&&hiLast?hiLast:col;
+    ctx.fillStyle=bg;ctx.fillRect(x+R-5.5*size,y-8*size,11*size,16*size);txt(ctx,String(n),x+R,y+1,{size:13*size,weight:700,col:c});});ctx.restore();return G;}
+/* 同样画法的内联 SVG（用于 HTML 面板），size 控制大小，颜色跟随 currentColor */
+function shellSvg(Z,shells,{size=1.6,hi=null}={}){const G=shellGeom(shells.length,1),W=G.w+G.r+4,H=G.arcs[G.arcs.length-1]*2*Math.sin(.62)+10,cx=G.r+2,cy=H/2;
+  let s=`<svg class="shsv" viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" width="${(W*size).toFixed(0)}" height="${(H*size).toFixed(0)}"><circle cx="${cx}" cy="${cy}" r="${G.r}" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">+${Z}</text>`;
+  shells.forEach((n,i)=>{const R=G.arcs[i],a=.62,x1=cx+R*Math.cos(a),y1=cy-R*Math.sin(a),y2=cy+R*Math.sin(a),xm=cx+R;
+    s+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${xm} ${cy-7} M${xm} ${cy+7} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="${xm}" y="${cy+4.5}" text-anchor="middle" font-size="12.5" font-weight="700" fill="${i===shells.length-1&&hi?hi:'currentColor'}">${n}</text>`;});
   return s+'</svg>';}
 const CN=['','一','二','三','四','五','六','七','八','九','十'];
 const gcd=(a,b)=>b?gcd(b,a%b):a;

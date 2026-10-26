@@ -1,10 +1,10 @@
 /* ================= 1 封面：粉笔推演“HO ✗ → H₂O ✓” ================= */
-S.cover=(()=>{const cv=$('#cvCover');let t=0,k=0,dust=[];
+S.cover=(()=>{const cv=$('#cvCover');let t=0,k=0,dust=[],rang=false,bad=false;
   // [错误写法, 错误的原子, 错误算式, 正确写法, 正确的原子, 正确算式]
   const EX=[['HO',[['H',1],['O',-2]],'(+1) + (−2) = −1','H2O',[['H',1],['H',1],['O',-2]],'(+1)×2 + (−2) = 0'],
     ['H2Cl',[['H',1],['H',1],['Cl',-1]],'(+1)×2 + (−1) = +1','HCl',[['H',1],['Cl',-1]],'(+1) + (−1) = 0'],
     ['AlO',[['Al',3],['O',-2]],'(+3) + (−2) = +1','Al2O3',[['Al',3],['Al',3],['O',-2],['O',-2],['O',-2]],'(+3)×2 + (−2)×3 = 0']];
-  const T=9;cv.addEventListener('pointerdown',()=>{k=(k+1)%EX.length;t=0;sfx('whoosh');});
+  const T=9;cv.addEventListener('pointerdown',()=>{k=(k+1)%EX.length;t=0;rang=false;bad=false;sfx('whoosh');});
   const vs=v=>(v>0?'+':'−')+Math.abs(v);
   function scene(ctx,w,y0,f,atoms,eq,p,ok,show){// p：书写进度 0..1
     const fy=y0+70;ctx.save();ctx.globalAlpha=show;
@@ -19,12 +19,12 @@ S.cover=(()=>{const cv=$('#cvCover');let t=0,k=0,dust=[];
     if(p>=1){if(ok){chalkCircle(ctx,w/2+full/2+46,fy-22,24,{col:CG,w:4,seed:9});hand(ctx,'✓',w/2+full/2+46,fy-20,{size:34,col:CG});}
       else{chalkLine(ctx,w/2-full/2-16,fy-50,w/2+full/2+16,fy+10,{col:CP,w:5,seed:4});chalkLine(ctx,w/2-full/2-16,fy+10,w/2+full/2+16,fy-50,{col:CP,w:5,seed:5});hand(ctx,'≠ 0',w/2,ay+160,{size:30,col:CP});}}
     ctx.restore();return{px:w/2-full/2+(full)*clamp(p*2.2,0,1),py:fy};}
-  function tick(dt){t+=dt;if(t>T){t=0;k=(k+1)%EX.length;}const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const e=EX[k];
+  function tick(dt){t+=dt;if(t>T){t=0;k=(k+1)%EX.length;rang=false;bad=false;}const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const e=EX[k];
     hand(ctx,'试一试：原子能这样结合吗？',w/2,46,{size:28,col:CB});
     const pw=clamp(t/2.6,0,1),pr=clamp((t-4)/2.6,0,1);let pen=null;
     if(t<4.2){const fade=t>3.6?1-(t-3.6)/.6:1;pen=scene(ctx,w,90,e[0],e[1],e[2],pw,false,fade);}
-    else{pen=scene(ctx,w,90,e[3],e[4],e[5],pr,true,1);if(pr>=1&&!dust.burst){dust.burst=1;sfx('ok');}}
-    if(t<.05)dust.burst=0;
+    else{pen=scene(ctx,w,90,e[3],e[4],e[5],pr,true,1);if(pr>=1&&!rang){rang=true;sfx('ok');}}
+    if(t<4.2&&pw>=1&&!bad){bad=true;sfx('bad');}if(t<.05){rang=false;bad=false;}
     // 粉笔灰
     if(!LOW&&pen&&((pw>0&&pw<1&&t<4)||(pr>0&&pr<1))&&Math.random()<.6)dust.push({x:pen.px,y:pen.py+Math.random()*20-10,vx:(Math.random()-.5)*20,vy:20+Math.random()*30,l:1});
     dust=dust.filter(d=>{d.x+=d.vx*dt;d.y+=d.vy*dt;d.l-=dt*1.2;if(d.l<=0)return false;ctx.globalAlpha=d.l*.6;ctx.fillStyle=INK;ctx.fillRect(d.x,d.y,2,2);ctx.globalAlpha=1;return true;});
@@ -109,12 +109,13 @@ S.mark=(()=>{const cv=$('#cvMark');let t=0,base='Mg',val='',ion='',warn='',warnT
   notes('mark','化合价的表示方法',[`化合价标在元素符号<mark>正上方</mark>：<mark>正负号在前、数字在后</mark>，“1”不省略。`,
     `离子符号的电荷写在<mark>右上角</mark>：<mark>数字在前、正负号在后</mark>，“1”省略。`,'同种元素的化合价与它的离子所带电荷：<mark>数值相等、正负相同</mark>。'],
     `${fmB('Mg^2+')} 表示镁离子，不表示镁元素的化合价。`,
-    (ctx,w,h)=>{const L=(s,x,y,o={})=>txt(ctx,s,x,y,Object.assign({size:16,weight:700,col:PEN.ink},o)),my=h*.5,a=w*.25,b=w*.72;
-      hand(ctx,'化合价',a,h*.09,{size:26,col:PEN.red});hand(ctx,'离子符号',b,h*.09,{size:26,col:PEN.blue});
-      fmDraw(ctx,'Mg',a,my,60,{col:PEN.ink});txt(ctx,'+2',a,my-64,{size:30,weight:700,col:PEN.red});
-      chalkCircle(ctx,a,my-64,22,{col:PEN.red,w:1.5,seed:2});L('正上方',a,my-104,{col:PEN.red});
-      fmDraw(ctx,'Mg^2+',b,my,60,{col:PEN.ink,cols:{sup:PEN.blue}});chalkCircle(ctx,b+50,my-38,22,{col:PEN.blue,w:1.5,seed:3});L('右上角',b+50,my-78,{col:PEN.blue});
+    (ctx,w,h)=>{const L=(s,x,y,o={})=>txt(ctx,s,x,y,Object.assign({size:16,weight:700,col:PEN.ink},o)),my=h*.56,a=w*.25,b=w*.72;
+      hand(ctx,'化合价',a,h*.08,{size:26,col:PEN.red});hand(ctx,'离子符号',b,h*.08,{size:26,col:PEN.blue});
+      fmDraw(ctx,'Mg',a,my,60,{col:PEN.ink});txt(ctx,'+2',a,my-62,{size:30,weight:700,col:PEN.red});
+      L('正上方',a-40,my-128,{col:PEN.red});arrow(ctx,a-30,my-116,a-8,my-84,{col:PEN.red,w:2,head:9});
+      const mw=fmDraw(ctx,'Mg',0,0,60,{measure:true});fmDraw(ctx,'Mg^2+',b-14,my,60,{col:PEN.ink,cols:{sup:PEN.blue}});
+      const sx=b-14+mw/2+14;L('右上角',sx+40,my-128,{col:PEN.blue});arrow(ctx,sx+34,my-116,sx+12,my-56,{col:PEN.blue,w:2,head:9});
       L('符号在前，“1”不省',a,my+56);L('数字在前，“1”省略',b,my+56);
-      chalkLine(ctx,w/2,h*.16,w/2,h*.8,{col:'rgba(42,42,36,.3)',w:2,seed:6});
+      ctx.save();ctx.strokeStyle='rgba(42,42,36,.3)';ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(w/2,h*.15);ctx.lineTo(w/2,h*.8);ctx.stroke();ctx.restore();
       hand(ctx,'数值相等  正负相同',w/2,h*.92,{size:24,col:PEN.green});});
   return{tick};})();

@@ -43,22 +43,20 @@
 </section>
 
 <!-- 3 化合价从哪来：供给电子与需要电子 -->
-<section class="slide" data-id="elec" data-title="化合价从哪来" data-min="5">
+<section class="slide" data-id="elec" data-title="化合价从哪来" data-min="4">
   <div class="frame">
     <header class="hd"><div><p class="eyebrow">重点 · 化合价从哪来</p><h2>供给电子，需要电子</h2></div>
       <div class="tools"><button class="btn sm" id="elReset">重新开始</button></div></header>
     <div class="body two">
       <div class="stage">
         <div class="cvwrap" id="elMain"><canvas id="cvElec"></canvas></div>
-        <div class="p3wrap" id="elP3" hidden>
-          <table class="p3tbl" id="elTbl"></table>
-          <p class="law" id="elLaw">最高正价 = 最多供给的电子数；最低负价 = −需要的电子数</p>
-        </div>
-        <div class="ctlbar"><button class="btn pri" id="elGo">配对</button><span class="sep"></span><button class="btn" id="elP3Btn">提升：第三周期</button></div>
+
+        <div class="ctlbar"><button class="btn pri" id="elGo">配对</button></div>
       </div>
       <aside class="side mid">
         <div class="panel">
           <h3><span data-i="clipboard-check-outline"></span>看结构，判化合价 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint" style="margin-bottom:8px">O、Cl 与金属化合时</p>
           <div class="tflist" id="elQ"></div>
           <div class="row" style="margin-top:10px"><button class="btn pri sm" id="elSub">提交</button><button class="btn sm" id="elRedo">重做</button></div>
           <div class="status" id="elSt" style="margin-top:10px">全对 +5 分</div>
@@ -97,8 +95,10 @@
       <div class="tools"><button class="btn sm" id="soReset">重新开始</button></div></header>
     <div class="body two">
       <div class="stage">
-        <div class="song" id="soSong"><h4>化合价歌谣</h4><div class="lyr" id="soLyr"></div></div>
-        <div class="ctlbar"><button class="btn pri" id="soPlay">跟读</button><button class="btn" id="soHole">挖空挑战</button></div>
+        <div class="song" id="soSong"><h4>化合价歌谣</h4><p class="sotip" id="soTip"></p><div class="lyr" id="soLyr"></div></div>
+        <div class="song" id="soOrder" hidden><h4>歌谣接龙</h4><p class="sotip">按歌谣顺序依次点下面的句子</p><div class="olist" id="soOL"></div><div class="opool" id="soOP"></div></div>
+        <div class="song" id="soSort" hidden><h4>化合价归队</h4><p class="sotip">把元素和根拖进对应的化合价（也可以先点卡片、再点格子），放好后点“检查”</p><div class="stray" id="soST"></div><div class="sbins" id="soSB"></div></div>
+        <div class="ctlbar" id="soBar"><button class="btn" data-m="read" aria-pressed="true">跟读</button><button class="btn" data-m="hole">随机挖空</button><button class="btn" data-m="order">接龙排序</button><button class="btn" data-m="sort">化合价归队</button><span class="sep"></span><button class="btn pri" id="soAct">开始跟读</button></div>
       </div>
       <aside class="side mid">
         <div class="panel">
@@ -136,14 +136,20 @@
 </section>
 
 <!-- 6 求化合价：化合价天平 -->
-<section class="slide" data-id="calc" data-title="由化学式求化合价" data-min="5">
+<section class="slide" data-id="calc" data-title="由化学式求化合价" data-min="6">
   <div class="frame">
     <header class="hd"><div><p class="eyebrow">重点 · 求化合价</p><h2>化合价天平：供给 = 需要</h2></div>
       <div class="tools"><button class="btn sm" id="caReset">重新开始</button></div></header>
     <div class="body two">
       <div class="stage">
-        <div class="cvwrap"><canvas id="cvCalc"></canvas></div>
-        <div class="ctlbar"><button class="btn" id="caMode" aria-pressed="false">自由调天平</button></div>
+        <div class="p3wrap" id="caP3">
+          <h4 class="p3h">为什么要计算化合价？（拓展：第三周期）</h4>
+          <table class="p3tbl" id="caTbl"></table>
+          <p class="law" id="caLaw1">金属原子最外层电子一般少于 4 个，容易供给电子，一般不需要电子 → <b>金属只显正价，不显负价</b></p>
+          <p class="law" id="caLaw2">Si、P、S、Cl 既能供给电子，也能需要电子 → <b>同一种元素可以有不同的化合价</b>（如 S 有 −2、+4、+6）<br>它在某种物质里显几价，现阶段常常要根据化学式<b>计算</b>才能确定</p>
+        </div>
+        <div class="cvwrap" id="caMain" hidden><canvas id="cvCalc"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="caWhy" aria-pressed="true">为什么要计算</button><button class="btn" id="caBal" aria-pressed="false">化合价天平</button><button class="btn" id="caMode" aria-pressed="false">自由调天平</button></div>
       </div>
       <aside class="side mid">
         <div class="panel">
@@ -189,12 +195,12 @@
 <!-- 8 根据化合价写化学式 -->
 <section class="slide" data-id="write" data-title="根据化合价写化学式" data-min="6">
   <div class="frame">
-    <header class="hd"><div><p class="eyebrow">重点 · 写化学式</p><h2>五步写出化学式</h2></div>
+    <header class="hd"><div><p class="eyebrow">重点 · 写化学式</p><h2>由化合价写出化学式</h2></div>
       <div class="tools"><button class="btn sm" id="wrReset">重新开始</button></div></header>
     <div class="body two">
       <div class="stage">
         <div class="cvwrap"><canvas id="cvWrite"></canvas></div>
-        <div class="ctlbar"><button class="btn pri" id="wrStep">下一步</button><button class="btn" id="wrAll">演示五步</button><button class="btn" id="wrSpecial" aria-pressed="false">特殊情况</button></div>
+        <div class="ctlbar"><button class="btn" data-meth="five" aria-pressed="true">五步法</button><button class="btn" data-meth="cross" aria-pressed="false">十字交叉法</button><span class="sep"></span><button class="btn pri" id="wrStep">下一步</button><button class="btn" id="wrAll">演示</button><span class="sep"></span><button class="btn" id="wrSpecial" aria-pressed="false">特殊情况</button></div>
       </div>
       <aside class="side">
         <div class="panel grow">

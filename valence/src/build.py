@@ -36,7 +36,7 @@ assert 'const dt=Math.min(.05,(now-last)/1000);' in js_deck
 js_deck=js_deck.replace('const dt=Math.min(.05,(now-last)/1000);','const dt=Math.max(0,Math.min(.05,(now-last)/1000));')
 g_old="if(e.target.closest('canvas,input,.gal,.bins,.items'))return;"
 assert g_old in js_deck
-js_deck=js_deck.replace(g_old,"if(e.target.closest('canvas,input,.gal,.bins,.items,.match,.ttray,.notepop'))return;")
+js_deck=js_deck.replace(g_old,"if(e.target.closest('canvas,input,.gal,.bins,.items,.match,.ttray,.notepop,.stray,.sbins'))return;")
 rd=lambda f:open(os.path.join(pf,f),encoding='utf-8').read()
 head=S[:S.index('<style>')].replace('<title>元素符号与元素周期表</title>','<title>化合价</title>')
 import re,subprocess
