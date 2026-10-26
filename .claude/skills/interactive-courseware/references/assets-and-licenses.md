@@ -3,7 +3,7 @@
 ## 1. 网络访问现状（云端会话实测）
 
 - **能访问**：GitHub（`git clone`、raw.githubusercontent.com）、npm（registry.npmjs.org）、PyPI（`pip install`，例如 bpy、fonttools）和 Ubuntu 软件源（`apt-get`）。
-- **不能访问**：Unsplash、Wikimedia、Poly Pizza、Sketchfab、Poly Haven、kenney.nl、quaternius.com、cdnjs / jsDelivr（容器内被拦截）、百度和中国水网等中文网站。WebFetch 也解析不了这些中文域名。
+- **不能访问**：Unsplash、Wikimedia、Poly Pizza、Sketchfab、Poly Haven、kenney.nl、quaternius.com、itch.io、OpenGameArt、cdnjs / jsDelivr（容器内被拦截）、百度和中国水网等中文网站，以及 Aholo（群核 Manycore 的 AI 3D 生成服务 aholo.ai）。WebFetch 也解析不了这些中文域名。
 - 因此所有素材都要从 GitHub、npm 或 PyPI 获取，转码后 base64 内联进 HTML。发布后的课件不依赖任何外部 CDN 或字体服务。
 - 遇到官方标志、教材插图这类必须“原样”的图，又查不到时：**请老师把图片文件发过来**（聊天里贴的截图不一定会保存到文件系统），然后按原图描画或嵌入。
 
@@ -13,6 +13,7 @@
 |---|---|---|---|
 | 低多边形模型：房屋、拖拉机、树、鱼、农场、风车、马、船、各类食物等 | `pmndrs/market-assets`（`files/models/*/model.gltf`，`info.json` 中 `license:1` 表示 CC0） | CC0 | `git clone --filter=blob:none --no-checkout`，再用 sparse checkout 取需要的目录 |
 | 城市模型：建筑、垃圾箱、垃圾袋、水塔、灌木、汽车、路灯 | `KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0`（`addons/.../Assets/gltf`） | CC0 | `git clone --depth 1` |
+| 带骨骼的 Q 版角色（骑士、盗贼、野蛮人、法师等）及动作库 | `KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0` | CC0 | `git clone --depth 1`；在 Blender 里摆姿势渲染成精灵图，见 `3d-playbook.md` 第 1.6 节 |
 | 家具模型 | `KayKit-Game-Assets/KayKit-Furniture-Bits-1.0` | CC0 | 同上 |
 | 城市建筑与道路 | `KenneyNL/Starter-Kit-City-Builder`（`.glb`） | CC0 | 同上 |
 | 地球贴图（日间、夜间、凹凸 / 粗糙度 / 云层合成图） | `mrdoob/three.js` 的 `examples/textures/planets/`，来自 Solar System Scope | **CC BY 4.0，须署名** | sparse checkout |

@@ -1,0 +1,204 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 哪袋化肥含氮最多" data-min="2">
+  <div class="cov">
+    <div>
+      <span class="unit">人教版 · 九年级化学上册 · 第四单元 课题3</span>
+      <h1>物质组成的<br><em>定量认识</em></h1>
+      <p class="sub">物质组成的表示 · 课时3</p>
+      <p class="lead">化学式不只告诉我们“有什么”，还能算出“有多少”。</p>
+      <div class="qs">
+        <p style="--i:0"><b>1</b>一个分子有多“重”？</p>
+        <p style="--i:1"><b>2</b>各元素的质量比是多少？</p>
+        <p style="--i:2"><b>3</b>某种元素占多大比例、有多少克？</p>
+      </div>
+      <div class="row" style="margin-top:24px"><button class="btn pri big" data-go="next">启动分析 →</button></div>
+    </div>
+    <div class="covbd"><canvas id="cvCover"></canvas></div>
+  </div>
+</section>
+
+<!-- 2 相对分子质量 -->
+<section class="slide" data-id="mr" data-title="计算相对分子质量" data-min="6">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">计算 1 · 相对分子质量</p><h2>分子秤：一个分子有多“重”</h2></div>
+      <div class="tools"><button class="btn sm" id="mrReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvMr"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="mrAuto">自动称量</button><button class="btn" id="mrClear">清空秤盘</button><span class="sep"></span><button class="btn" id="mrThink" aria-pressed="false">想一想</button></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="calculator-variant-outline"></span><span>算一算 M<sub>r</sub></span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="kpad" id="mrKp"></div>
+          <div class="status" style="margin-top:10px">心算或打草稿，用键盘输入后提交。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3 易错诊所 -->
+<section class="slide" data-id="diag" data-title="相对分子质量易错诊所" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">纠错 · 易错诊所</p><h2>这些计算错在哪？</h2></div>
+      <div class="tools"><button class="btn sm" id="dgReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="diag"><div class="dtabs" id="dgTabs"></div><div class="dcase" id="dgCase"></div></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="magnify"></span>找出出错的地方 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <p class="hint">点算式里出错的部分（可以点多处），再提交。</p>
+          <div class="row" style="margin-top:10px"><button class="btn pri sm" id="dgSub">提交</button><button class="btn sm" id="dgNext">下一位</button></div>
+          <div class="status" id="dgSt" style="margin-top:10px">找对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 元素质量比 -->
+<section class="slide" data-id="ratio" data-title="计算元素质量比" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">计算 2 · 元素质量比</p><h2>个数比 ≠ 质量比</h2></div>
+      <div class="tools"><button class="btn sm" id="raReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvRatio"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="raGo">算质量</button><button class="btn" id="raSimp">约成最简比</button></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="scale-balance"></span>算一算质量比 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="kpad" id="raKp"></div>
+          <div class="status" style="margin-top:10px">比用“∶”键隔开，写最简整数比。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 元素质量分数 -->
+<section class="slide" data-id="pct" data-title="计算元素质量分数" data-min="6">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">计算 3 · 元素质量分数</p><h2>某元素在物质中占多少</h2></div>
+      <div class="tools"><button class="btn sm" id="pcReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvPct"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="pcPie" aria-pressed="true">质量饼图</button><button class="btn" id="pcEx" aria-pressed="false">教材例题</button><span class="sep"></span><button class="btn pri" id="pcStep">下一步</button></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="chart-donut"></span>算一算质量分数 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="kpad" id="pcKp"></div>
+          <div class="status" style="margin-top:10px">结果写成百分数，除不尽时保留一位小数。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 揭晓化肥 -->
+<section class="slide" data-id="fert" data-title="揭晓：哪袋化肥含氮最多" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">应用 · 化肥含氮量</p><h2>开奖：哪袋化肥含氮最多？</h2></div>
+      <div class="tools"><button class="btn sm" id="feReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvFert"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="feGo">开奖</button></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="sprout-outline"></span>先算尿素 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="kpad" id="feKp"></div>
+          <div class="status" style="margin-top:10px">算完再开奖。答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 7 物质质量 ⇄ 元素质量 -->
+<section class="slide" data-id="mass" data-title="物质质量与元素质量" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">应用 · 正算与反算</p><h2>元素质量 = 物质质量 × 质量分数</h2></div>
+      <div class="tools"><button class="btn sm" id="maReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvMass"></canvas></div>
+        <div class="ctlbar" id="maBar"><button class="btn" id="maFwd" aria-pressed="true">正算：物质 → 元素</button><button class="btn" id="maBack" aria-pressed="false">反算：元素 → 物质</button></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="pill"></span>说明书里的计算 <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="kpad" id="maKp"></div>
+          <div class="status" style="margin-top:10px">答对 +5</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 提升：化学式侦探 -->
+<section class="slide" data-id="det" data-title="提升：由质量比推化学式" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">提升 · 化学式侦探</p><h2>由质量比推出化学式</h2></div>
+      <div class="tools"><button class="btn sm" id="deReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvDet"></canvas></div>
+        <div class="ctlbar" id="deBar"></div>
+      </div>
+      <aside class="side mid">
+        <div class="panel">
+          <h3><span data-i="account-search-outline"></span><span id="deTitle">写出它的化学式</span> <span class="hint" data-teamlbl>红队答题</span></h3>
+          <div class="slots" id="deSlots"></div>
+          <div class="ttray" id="deTray" style="margin-top:8px"></div>
+          <div class="row" style="margin-top:8px"><button class="btn pri sm" id="deSub">提交</button><button class="btn sm" id="deBack">退格</button></div>
+          <div class="status" id="deSt" style="margin-top:8px">数字自动写成右下角小字。答对 +20（提升题）</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 竞赛：拔河 -->
+<section class="slide" data-id="tug" data-title="竞赛：化学拔河" data-min="10">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">竞赛 · 红蓝对抗</p><h2>化学拔河</h2></div>
+      <div class="tools"><button class="btn sm" id="tgReset">重新开始</button></div></header>
+    <div class="body q">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvTug"></canvas></div>
+      </div>
+      <aside class="side">
+        <div class="panel grow"><div class="qcard" id="tgCard"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 定量认识物质" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">小结</p><h2>根据化学式，可以算出……</h2></div>
+      <div class="tools"></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="sumgrid" id="suGrid"></div>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部揭晓</button><button class="btn" id="suHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div class="score" id="suScore"></div></div>
+        <div class="panel grow"><h3><span data-i="lightbulb-on-outline"></span>说一说</h3>
+          <p style="line-height:1.9">乙酸（CH<sub>3</sub>COOH）是食醋的主要成分：<br>1. 乙酸的相对分子质量是多少？<br>2. 乙酸中碳、氢、氧三种元素的质量比是多少？<br>3. 120 g 乙酸中含碳元素多少克？</p>
+          <p class="credit" style="margin-top:auto;padding-top:10px">拔河角色：KayKit Adventurers（Kay Lousberg，CC0）经 Blender 渲染；图标几何：Material Design Icons（Apache 2.0）；字体：站酷快乐体、思源黑体（SIL OFL）。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

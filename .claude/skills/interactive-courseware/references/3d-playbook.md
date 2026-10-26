@@ -1,7 +1,7 @@
 # 3D 场景手册（three.js）
 
 ## 目录
-1. 什么时候用 3D
+1. 什么时候用 3D（1.5 Blender 建模；1.6 Blender 渲染 2D 精灵动画）
 2. 引擎搭建（打包、共享渲染器、轨道控制、标签）
 3. 材质与光照
 4. 常用构件：水、水流、粒子、地形沙盘、模型
@@ -36,6 +36,19 @@ python3 -m venv <scratchpad>/bl && <scratchpad>/bl/bin/pip install bpy   # 约 4
 - 预览：用 Cycles CPU 低采样渲一张 PNG 检查造型；或者直接放进 three.js 查看器，用 Playwright 截图检查。
 - 动态（水位上升、倒水、粒子）仍在 three.js 里做：Blender 负责静态的精美模型，交互和动画在课件里实现。
 - 内联：GLB 转 base64 放进 `ASSET.glb`，用 `glb(name)` 加载（见第 4 节）。
+
+## 1.6 Blender 渲染 2D 精灵动画（带骨骼的 CC0 角色，已在定量认识课拔河中实测）
+
+老师要“精美游戏素材”、但课件仍是 2D 画布时，用这条路：真 3D 角色的质感 + 2D 画布的性能和可控性。脚本在 `scripts/blender_sprites/`（`common.py`、`render_all.py`、`pack_sheets.py`），成品见 `quant/src/blender/`、`quant/src/assets/`。
+
+1. 素材：`git clone --depth 1 https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0`（Knight、Rogue、Barbarian、Mage 等，CC0，带骨骼和动作库，含 Cheer、Sit_Floor_Down 等现成动作）。用 `KAYKIT_GLTF` 环境变量指向 `addons/.../Characters/gltf/`。
+2. 摆姿势：在 Idle 第 1 帧上叠加骨骼旋转；手臂、腿用**双骨 IK**（`two_bone`）把手、脚放到世界坐标目标点上。Q 版角色胳膊短、躯干深，拔河姿势要“双手在胸前中线握绳、身体后仰约 28°、双脚踩地”（`pull6`）；后仰过大、手放太低会像坐在空中或手臂被身体挡住。每改一次先渲一张小图看。
+3. 状态：循环的“用力”（轻微起伏、头部颤动）+ 一次性的“猛拉”“踉跄”，直接借用动作库里的“欢呼”“坐倒”。不要自己做“扑倒”，脸朝下很难看。
+4. 换队服：材质是一张颜色图集，用 HSV 掩码把某一色相段换成队色（`recolor`），不动皮肤和金属。
+5. 渲染：正交侧视镜头对准身体中部（target ≈ (0,-.05,.95)，scale ≈ 3.3，头顶和欢呼举手都不出框），透明背景，Cycles 低采样 + 降噪，360 px。每帧用 `world_to_camera_view` 导出双手中点和脚底原点的像素坐标。
+6. 打包：`pack_sheets.py` 用所有帧共同的裁剪框裁边、8 列拼成 WebP 精灵图，`meta.json` 记录每个状态的起始帧、帧数、是否循环、手和原点坐标。四个角色共约 1 MB。
+7. 课件里：`drawChar` 按 13 帧/秒播放，以脚底原点为锚点，蓝队水平镜像；绳子是一条折线，依次穿过每个角色当前帧的手部坐标。一次性动作播完回到“用力”循环，摔倒停在最后一帧。
+8. 注意：`pkill -f 脚本名` 会连自己所在的 shell 一起杀掉，按进程号结束；长时间渲染放后台并加超时。
 
 ## 2. 引擎搭建
 

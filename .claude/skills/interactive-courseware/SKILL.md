@@ -53,7 +53,8 @@ description: 为初中化学教师（人教版九年级，最新教材）制作�
 - **微观粒子、杂质要画得形象、数得清**：杆菌带鞭毛，泥沙是带明暗的不规则颗粒；可溶性杂质（色素、异味分子、钙镁离子）也要可视化，全课画法一致。
 - 物理逻辑正确：冰浮在水上；装溶液的容器要画出液体；按真实比例呈现，需要看细节时用放大镜或镜头推近。
 - 图标用代码绘制、风格统一（几何取自 Material Design Icons），老师不喜欢 3D 表情包式图标。官方标志必须与原图一致，查不到就请老师发图。
-- **默认不做 3D**：只有老师主动要求时才做，而且必须用 Blender 建模（见 `references/3d-playbook.md`）。
+- **默认不做 3D**：只有老师主动要求时才做，而且必须用 Blender 建模（见 `references/3d-playbook.md`）。老师要精美的游戏角色时，可以用 Blender 把 CC0 带骨骼角色渲染成 2D 精灵动画（第 1.6 节）。
+- **未揭晓的数值显示“??”**，不用随机数字滚动占位；**画布主体按画布大小铺开**，不留大片空白。
 
 ## 3. 由老师选择的部分与每套要换新的部分
 
@@ -89,10 +90,10 @@ description: 为初中化学教师（人教版九年级，最新教材）制作�
 - `references/lab-apparatus.md`：实验装置画法与空间关系核对表（过滤、蒸馏、加热、净水流程），动画因果与颜色规范。
 - `references/framework.md`：单文件框架、共享 API、固定画布、页面骨架、交互模式、代码坑、工具栏与直接操作、字体内嵌。
 - `references/catalog.md`：视觉风格、竞赛玩法、小游戏、互动方式、“哇”时刻，并注明哪些已用过。
-- `references/style-history.md`：8 套课件各自的风格、互动、竞赛和评价。
+- `references/style-history.md`：已交付的 11 套课件各自的风格、互动、竞赛和评价。
 - `references/question-writing.md`：出题规范和已核对过的事实数据。
 - `references/qa-and-publish.md`：Playwright 审计、截图、模拟拖动、发布与提交流程。
 - `references/assets-and-licenses.md`：可访问的素材源、字体、授权与署名。
-- `references/3d-playbook.md`：仅在老师要求 3D 时读。
-- `scripts/`：`build_2d_template.py`（2D 构建模板）、`build_3d_template.py`（3D 构建示例）、`font_subset.py`（字体裁剪内嵌）、`audit_layout.js`、`shoot_pages.js`、`strip_for_artifact.sh`、`three-bundle/`、`convert_glb.mjs`。
+- `references/3d-playbook.md`：老师要求 3D 时读；老师要“精美游戏素材”（角色动画）时读第 1.6 节。
+- `scripts/`：`build_2d_template.py`（2D 构建模板）、`build_3d_template.py`（3D 构建示例）、`font_subset.py`（字体裁剪内嵌）、`audit_layout.js`、`shoot_pages.js`、`strip_for_artifact.sh`、`three-bundle/`、`convert_glb.mjs`、`blender_sprites/`（带骨骼角色摆姿势 → 精灵图，见 `3d-playbook.md` 第 1.6 节）。
 - `assets/`：`fit.js`（固定画布缩放）、`icons.js`（图标系统）、`lab-draw.js`（实验仪器绘图库与 `canvasUI`）、`engine3d.js`（3D 引擎层）。
