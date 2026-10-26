@@ -170,10 +170,6 @@ canvas{touch-action:none}
 .kkeys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .kkeys button{height:42px;border-radius:8px;border:1.5px solid rgba(63,216,255,.35);background:rgba(63,216,255,.06);font:700 19px var(--f-num);cursor:pointer;color:var(--ink)}
 .kkeys button:hover{background:rgba(63,216,255,.16)}
-.kkeys.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
-.kkeys button.op{color:var(--c);border-color:rgba(63,216,255,.55);background:rgba(63,216,255,.12)}
-.kkeys button[data-k="="]{color:#04220f;background:var(--g);border-color:var(--g)}
-.kscreen .khist{position:absolute;left:14px;top:4px;font:400 13px var(--f-num);color:var(--dim);font-style:normal;text-shadow:none}
 .kkeys button.fn{font-size:16px;color:var(--a);border-color:rgba(255,176,0,.45)}
 .kkeys button:active{transform:translateY(1px)}
 .kprog{display:flex;gap:5px}
@@ -315,3 +311,17 @@ canvas{touch-action:none}
 .credit{font-size:12px;color:var(--dim)}
 
 [data-id="tug"] .body.q{grid-template-columns:1.6fr 1fr}
+/* 计算器面板（放在题目卡下面） */
+.panel.calc{padding:12px 16px}
+.ctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.ctop b{display:flex;align-items:center;gap:6px;font-size:16px}
+.cscreen{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;height:46px;padding:2px 12px;border-radius:8px;background:#03070a;border:1.5px solid rgba(63,216,255,.4);margin-bottom:8px;overflow:hidden}
+.cscreen em{font:400 12px var(--f-num);color:var(--dim);font-style:normal;white-space:nowrap}
+.cscreen span{font:700 22px var(--f-num);color:var(--c);text-shadow:0 0 10px rgba(63,216,255,.5);white-space:nowrap}
+.ckeys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.ckeys button{height:30px;border-radius:7px;border:1.5px solid rgba(63,216,255,.3);background:rgba(63,216,255,.05);font:700 16px var(--f-num);cursor:pointer;color:var(--ink)}
+.ckeys button:hover{background:rgba(63,216,255,.16)}.ckeys button:active{transform:translateY(1px)}
+.ckeys button.op{color:var(--c);border-color:rgba(63,216,255,.55);background:rgba(63,216,255,.12)}
+.ckeys button.fn{color:var(--a);border-color:rgba(255,176,0,.45);font-size:14px}
+.ckeys button.eq{color:#04220f;background:var(--g);border-color:var(--g)}
+/* 题目卡下面还有计算器时，键盘稍微压扁 */
+.kkeys.w7{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.kpad.cmp .kkeys button{height:38px}.kpad.cmp .kkeys button.fn{font-size:14px}.kpad.cmp .kq{font-size:17px;line-height:1.5}.kpad.cmp .kscreen{height:48px}

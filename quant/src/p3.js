@@ -125,12 +125,13 @@ S.fert=(()=>{const cv=$('#cvFert');let t=0,go=false,gT=0,lastTk=0,fin=false;cons
     if(fin){const v=VOTES[0],tot=VOTES.reduce((a,b)=>a+b,0);txt(ctx,tot?`全班 ${tot} 票中，有 ${v} 票猜中尿素`:'尿素中氮元素的质量分数最高',w/2,66,{size:16,weight:700,col:CG});}}
   // 三种化肥都算；数字除不尽，键盘带计算器（+ − × ÷ =）
   const kp=kpQuiz($('#feKp'),[
-    {q:`尿素 ${fmB('CO(NH2)2')} 中氮元素的质量分数（保留一位小数）`,ans:46.7,unit:'%',tol:.06,bag:0,why:'14×2 ÷ 60 × 100% ≈ 46.7%'},
-    {q:`碳酸氢铵 ${fmB('NH4HCO3')} 中氮元素的质量分数（保留一位小数）`,ans:17.7,unit:'%',tol:.06,bag:1,why:'14 ÷ 79 × 100% ≈ 17.7%'},
-    {q:`硫酸铵 ${fmB('(NH4)2SO4')} 中氮元素的质量分数（保留一位小数）`,ans:21.2,unit:'%',tol:.06,bag:2,why:'14×2 ÷ 132 × 100% ≈ 21.2%（教材例题）'},
-    {q:'一袋 50 kg 的尿素中含氮元素约多少千克？（保留一位小数）',ans:23.3,unit:'kg',tol:.06,why:'50 kg × 28/60 ≈ 23.3 kg'}],
-    {calc:true,onJudge:(ok,it)=>{if(it&&it.bag!=null)judged[it.bag]=ok?1:2;}});
-  $('#feReset').onclick=()=>{go=false;fin=false;gT=0;sp.length=0;judged.fill(0);kp.reset();};
+    {q:`尿素 ${fmB('CO(NH2)2')} 中氮元素的质量分数（保留一位小数）`,ans:46.7,unit:'%',tol:.06,dp:1,bag:0,why:'14×2 ÷ 60 × 100% ≈ 46.7%'},
+    {q:`碳酸氢铵 ${fmB('NH4HCO3')} 中氮元素的质量分数（保留一位小数）`,ans:17.7,unit:'%',tol:.06,dp:1,bag:1,why:'14 ÷ 79 × 100% ≈ 17.7%'},
+    {q:`硫酸铵 ${fmB('(NH4)2SO4')} 中氮元素的质量分数（保留一位小数）`,ans:21.2,unit:'%',tol:.06,dp:1,bag:2,why:'14×2 ÷ 132 × 100% ≈ 21.2%（教材例题）'},
+    {q:'一袋 50 kg 的尿素中含氮元素约多少千克？（保留一位小数）',ans:23.3,unit:'kg',tol:.06,dp:1,why:'50 kg × 28/60 ≈ 23.3 kg'}],
+    {wide:true,onJudge:(ok,it)=>{if(it&&it.bag!=null)judged[it.bag]=ok?1:2;}});
+  const calc=calcPad($('#feCalc'),{onFill:v=>{if(!kp.fill(v)){setSt($('[data-id="fert"] .status'),'warn','这题已经提交了，点“下一题”再填');return false;}}});
+  $('#feReset').onclick=()=>{go=false;fin=false;gT=0;sp.length=0;judged.fill(0);kp.reset();calc.reset();};
   return{tick};})();
 
 /* ================= 7 物质质量 ⇄ 元素质量：质量转换器 ================= */

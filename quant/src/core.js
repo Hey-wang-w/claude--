@@ -92,36 +92,43 @@ function molTabs(ctx,G,list,cur,nEx,w,{y=12,maxW=130}={}){const gap=nEx&&nEx<lis
     fmDraw(ctx,f,G.cx(i)+9,y+20,f.length>6?16:19,{col:on?CG:INK});
     const bx=G.cx(i)-G.cw/2+4,by=y+4;ctx.fillStyle=ex?CA:'rgba(63,216,255,.85)';rr(ctx,bx,by,18,16,4);ctx.fill();txt(ctx,ex?'例':'练',bx+9,by+8.5,{size:11,weight:700,col:'#04121a'});});}
 /* ---------- 数字键盘计算题：items=[{q, ans, kind:'num'|'ratio', unit, tol, why}]，一题一题做，每题提交后判分、换队
-   calc:true 时键盘带 + − × ÷ ( ) =，可以当计算器用：按“=”算出结果，再改成要求的位数提交 ---------- */
+   题目卡只负责出题和输入答案；需要计算器时另放 calcPad（在题目卡下面），算好后“填入答案” ---------- */
 function calcEval(s){const e=s.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');if(!/^[0-9.+\-*/() ]+$/.test(e))return NaN;
   try{const v=Function('"use strict";return ('+e+')')();return typeof v==='number'&&isFinite(v)?v:NaN;}catch(_){return NaN;}}
 const calcFmt=v=>String(Math.round(v*10000)/10000);
-function kpQuiz(box,items,{pts=5,onJudge,calc=false}={}){let i=0,val='',done=false,res=[],hist='';
-  const OPS=/[+−×÷()]/;
+function kpQuiz(box,items,{pts=5,onJudge,wide=false}={}){let i=0,val='',done=false,res=[];// wide：键盘排成两行（下面还有计算器时省高度）
   // 比值：等比例就算对（不是最简比时提示看题目要求）
   const ratioOK=(s,ans)=>{const p=s.split('∶').filter(x=>x!=='').map(Number);if(p.length!==ans.length||p.some(x=>!(x>0)))return 'bad';
     if(p.every((x,k)=>Math.abs(x-ans[k])<1e-9))return 'ok';const k0=p[0]/ans[0];return p.every((x,k)=>Math.abs(x/ans[k]-k0)<1e-6)?'notmin':'bad';};
-  const KEYS=it=>calc?['7','8','9','÷','⌫','4','5','6','×','C','1','2','3','−','(','0','.','=','+',')']
-    :['7','8','9','⌫','4','5','6','C','1','2','3',it.kind==='ratio'?'∶':'%','0','.','',''];
   function render(){const it=items[i];box.innerHTML=`<div class="kprog">${items.map((_,k)=>`<i class="${res[k]===true?'ok':res[k]===false?'no':k===i?'cur':''}"></i>`).join('')}</div>
-      <div class="kq">${it.q}</div><div class="kscreen${done?(res[i]?' right':' wrong'):''}">${calc&&hist&&!done?`<em class="khist">${hist}</em>`:''}<span>${val||'&nbsp;'}</span>${done?'':'<span class="cur"></span>'}${it.unit?`<span class="unit">${it.unit}</span>`:''}</div>
-      <div class="kkeys${calc?' c5':''}">${KEYS(it).map(k=>k?`<button data-k="${k}" class="${/[⌫C∶%]/.test(k)?'fn':/[+−×÷()=]/.test(k)?'op':''}">${k==='⌫'?'退格':k==='C'?'清空':k}</button>`:'<span></span>').join('')}</div>
-      <div class="row"><button class="btn pri sm" data-a="sub">提交</button><button class="btn sm" data-a="next">${i<items.length-1?'下一题':'从头再做'}</button>${calc?'<span class="hint">计算器：+ − × ÷ = 算完再按要求取舍</span>':''}</div>`;
-    $$('.kkeys button',box).forEach(b=>b.onclick=()=>{if(done)return;const k=b.dataset.k;
-      if(k==='⌫')val=val.slice(0,-1);else if(k==='C'){val='';hist='';}
-      else if(k==='='){const v=calcEval(val);if(isNaN(v)){setSt(box.parentElement.querySelector('.status'),'warn','算式不完整，检查一下括号和运算符');return;}hist=val+' =';val=calcFmt(v);}
-      else if(k==='%'){if(!val.endsWith('%'))val+='%';}
-      else if(val.length<(calc?28:12)&&!val.endsWith('%'))val+=k;sfx('tick');render();});
-    $('[data-a="sub"]',box).onclick=submit;$('[data-a="next"]',box).onclick=()=>{if(i<items.length-1)i++;else{i=0;res=[];}val='';hist='';done=false;render();onJudge&&onJudge(null);sfx('whoosh');};}
+      <div class="kq">${it.q}</div><div class="kscreen${done?(res[i]?' right':' wrong'):''}"><span>${val||'&nbsp;'}</span>${done?'':'<span class="cur"></span>'}${it.unit?`<span class="unit">${it.unit}</span>`:''}</div>
+      <div class="kkeys${wide?' w7':''}">${(wide?['1','2','3','4','5','6','7','8','9','0','.',it.kind==='ratio'?'∶':'%','⌫','C']:['7','8','9','⌫','4','5','6','C','1','2','3',it.kind==='ratio'?'∶':'%','0','.','','']).map(k=>k?`<button data-k="${k}" class="${/[⌫C∶%]/.test(k)?'fn':''}">${k==='⌫'?'退格':k==='C'?'清空':k}</button>`:'<span></span>').join('')}</div>
+      <div class="row"><button class="btn pri sm" data-a="sub">提交</button><button class="btn sm" data-a="next">${i<items.length-1?'下一题':'从头再做'}</button></div>`;
+    $$('.kkeys button',box).forEach(b=>b.onclick=()=>{if(done)return;const k=b.dataset.k;if(k==='⌫')val=val.slice(0,-1);else if(k==='C')val='';else if(k==='%'){if(!val.endsWith('%'))val+='%';}else if(val.length<12&&!val.endsWith('%'))val+=k;sfx('tick');render();});
+    $('[data-a="sub"]',box).onclick=submit;$('[data-a="next"]',box).onclick=()=>{if(i<items.length-1)i++;else{i=0;res=[];}val='';done=false;render();onJudge&&onJudge(null);sfx('whoosh');};}
   function submit(){if(done)return;const it=items[i],st=box.parentElement.querySelector('.status');if(!val){setSt(st,'warn','先用键盘输入答案');return;}
-    if(calc&&OPS.test(val)){const v=calcEval(val);if(isNaN(v)){setSt(st,'warn','算式不完整，检查一下括号和运算符');return;}hist=val+' =';val=calcFmt(v);}
     let ok,msg='';
     if(it.kind==='ratio'){const r=ratioOK(val,it.ans);ok=r!=='bad';if(r==='notmin')msg=`比值正确。<b>注意看题目要求</b>：若要求最简整数比，应写成 ${it.ans.join(' ∶ ')}。`;}
-    else{const v=parseFloat(val.replace('%',''));ok=Math.abs(v-it.ans)<=(it.tol??1e-9);if(!ok&&it.unit==='%'&&Math.abs(v-it.ans*100)<.5)msg='注意：答案写成百分数。';}
+    else{const v=parseFloat(val.replace('%',''));ok=Math.abs(v-it.ans)<=(it.tol??1e-9);if(!ok&&it.unit==='%'&&Math.abs(v-it.ans*100)<.5)msg='注意：答案写成百分数。';
+      if(ok&&it.dp!=null&&((val.replace('%','').split('.')[1]||'').length!==it.dp))msg=`数值正确。<b>注意题目要求保留${['零','一','两','三'][it.dp]??it.dp}位小数</b>，应写成 ${it.ans}。`;}
     done=true;res[i]=ok;const tm=TEAM.cur;
     if(ok){teamAdd(pts,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}答对 +${pts}</b>　${msg}${it.why}`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}答错，不加分</b>　${msg}${it.why}`);}
     teamNext();render();onJudge&&onJudge(ok,it,i);}
-  render();return{reset(){i=0;val='';hist='';done=false;res=[];render();},get i(){return i;}};}
+  render();return{reset(){i=0;val='';done=false;res=[];render();},fill(v){if(done)return false;val=String(v).slice(0,12);render();return true;},get i(){return i;}};}
+/* ---------- 计算器（独立面板）：+ − × ÷ ( ) =，“填入答案”把结果交给题目卡 ---------- */
+function calcPad(box,{onFill}={}){let ex='',hist='',res=null;
+  function render(){box.innerHTML=`<div class="ctop"><b><span class="ico">${icon('calculator-variant-outline','')}</span>计算器</b><button class="btn sm" data-a="fill">填入答案 ↑</button></div>
+      <div class="cscreen"><em>${hist||'算完按题目要求取舍，再填入'}</em><span>${ex||'0'}</span></div>
+      <div class="ckeys">${['7','8','9','÷','⌫','4','5','6','×','C','1','2','3','−','(','0','.','=','+',')'].map(k=>`<button data-k="${k}" class="${/[⌫C]/.test(k)?'fn':/[+−×÷()]/.test(k)?'op':k==='='?'eq':''}">${k==='⌫'?'退格':k==='C'?'清空':k}</button>`).join('')}</div>
+`;
+    $$('.ckeys button',box).forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+      if(k==='⌫')ex=ex.slice(0,-1);else if(k==='C'){ex='';hist='';res=null;}
+      else if(k==='='){const v=calcEval(ex);if(isNaN(v)){hist='算式不完整';sfx('bad');render();return;}hist=ex+' =';ex=calcFmt(v);res=v;}
+      else if(ex.length<30){if(res!==null&&/[0-9.(]/.test(k)&&hist.endsWith('=')){ex='';hist='';}res=null;ex+=k;}
+      sfx('tick');render();});
+    $('[data-a="fill"]',box).onclick=()=>{const v=/[+−×÷()]/.test(ex)?calcEval(ex):parseFloat(ex);if(isNaN(v)){sfx('bad');return;}
+      if(onFill&&onFill(calcFmt(v))!==false)sfx('pop');};}
+  render();return{reset(){ex='';hist='';res=null;render();}};}
 
 /* ---------- 画布直接操作（触屏 / 鼠标通用） ---------- */
 function canvasUI(cv,{tools=()=>[],hots=()=>[],onDrop=()=>false,onTap=null}={}){
