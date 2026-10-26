@@ -52,13 +52,13 @@ S.song=(()=>{
     ['OH','氢氧根',3],['NO3','硝酸根',3],['SO4','硫酸根',4],['CO3','碳酸根',4],['NH4','铵根',0],['PO4','磷酸根',5]];
   const OPT=['+1','+2','+3','−1','−2','−3'];
   const box=$('#soFlash'),st=$('#soSt');let set=[],cur=0,pick=[],done=false;
-  function deal(){const a=POOL.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}set=a.slice(0,5);cur=0;pick=[];done=false;render();setSt(st,'','一组 5 张，全部选完再提交；全对 +5');}
+  function deal(){clearTimeout(box._t);delete box.dataset.lock;const a=POOL.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}set=a.slice(0,5);cur=0;pick=[];done=false;render();setSt(st,'','一组 5 张，全部选完再提交；全对 +5');}
   function render(){const c=set[Math.min(cur,4)];
     if(done){box.innerHTML=`<div class="tflist">${set.map((c,i)=>`<div class="tf ${pick[i]===c[2]?'right':'wrong'}"><div>${fmB(c[0])} <span class="hint">${c[1]}</span></div><b class="fm" style="color:var(--cy)">${OPT[c[2]]}${pick[i]!==c[2]?` <span class="hint">（选了 ${OPT[pick[i]]}）</span>`:''}</b></div>`).join('')}</div>`;return;}
     box.innerHTML=`<div class="prog5">${set.map((_,i)=>`<i class="${i<cur?'ok':i===cur?'cur':''}"></i>`).join('')}</div>`+
       (cur<5?`<div class="big"><span class="fm">${fm(c[0])}</span><small>${c[1]}的化合价是？</small></div><div class="vals" style="grid-template-columns:repeat(3,minmax(0,1fr))">${OPT.map((o,k)=>`<button data-k="${k}">${o}</button>`).join('')}</div>`
         :`<div class="big" style="font-size:22px"><small>5 张都选好了，点“提交”看结果</small></div><div class="row" style="justify-content:center">${set.map((c,i)=>`<span class="tag y">${fm(c[0])} ${OPT[pick[i]]}</span>`).join('')}</div>`);
-    $$('.vals button',box).forEach(b=>b.onclick=()=>{pick[cur]=+b.dataset.k;b.setAttribute('aria-pressed','true');sfx('click');setTimeout(()=>{cur++;render();},180);});}
+    $$('.vals button',box).forEach(b=>b.onclick=()=>{if(box.dataset.lock)return;box.dataset.lock='1';pick[cur]=+b.dataset.k;b.setAttribute('aria-pressed','true');sfx('click');box._t=setTimeout(()=>{delete box.dataset.lock;cur++;render();},180);});}// 加锁：连点两下不会跳过下一张
   $('#soSub').onclick=()=>{if(done)return;if(cur<5){setSt(st,'warn',`还有 ${5-cur} 张没选`);return;}done=true;const tm=TEAM.cur,bad=set.filter((c,i)=>pick[i]!==c[2]).length;render();
     if(!bad){teamAdd(5,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}全对 +5</b>`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}错 ${bad} 张，不加分</b>　黄色是正确的化合价。`);}teamNext();};
   $('#soRedo').onclick=()=>{deal();sfx('whoosh');};

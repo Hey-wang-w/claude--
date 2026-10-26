@@ -1,5 +1,5 @@
 /* ================= 6 由化学式求化合价：化合价天平 ================= */
-S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phase='ask',revT=0,ang=0;
+S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phase='ask',revT=0,ang=0,tok=0;// tok：换题后作废上一题未完成的天平动画
   // [化学式, 未知元素, 各部分 [符号, 个数, 化合价（未知为 null）], 答案]
   const Q=[['KMnO4','Mn',[['K',1,1],['Mn',1,null],['O',4,-2]],7],['K2MnO4','Mn',[['K',2,1],['Mn',1,null],['O',4,-2]],6],['MnO2','Mn',[['Mn',1,null],['O',2,-2]],4],
     ['H2SO4','S',[['H',2,1],['S',1,null],['O',4,-2]],6],['NaClO','Cl',[['Na',1,1],['Cl',1,null],['O',1,-2]],1],['K2Cr2O7','Cr',[['K',2,1],['Cr',2,null],['O',7,-2]],6]];
@@ -9,15 +9,17 @@ S.calc=(()=>{const cv=$('#cvCalc');let t=0,qi=0,x=null,pick=null,free=false,phas
   $$('#caKeys button').forEach(b=>b.onclick=()=>{if(phase!=='ask'&&!free)return;pick=+b.dataset.v;if(free)x=pick;keys();sfx('click');});
   const keys=()=>$$('#caKeys button').forEach(b=>{b.setAttribute('aria-pressed',String(+b.dataset.v===pick));b.classList.remove('right','wrong');
     if(phase==='done'&&!free){if(+b.dataset.v===Q[qi][3])b.classList.add('right');else if(+b.dataset.v===pick)b.classList.add('wrong');}});
-  function ask(){const q=Q[qi];phase='ask';pick=null;x=free?0:null;revT=0;
+  function ask(){const q=Q[qi];phase='ask';pick=null;x=free?0:null;revT=0;tok++;$('#caSub').hidden=free;$('#caNext').textContent=free?'换一个化学式':'下一题';
     $('#caTitle').textContent=free?'自由调天平':`求化合价 ${qi+1} / ${Q.length}`;
-    $('#caAsk').innerHTML=free?'点下面的数字改变未知元素的化合价，看天平什么时候平衡。':`${PNM[q[0]]}（${fmB(q[0])}）中，<b class="ky">${NM[q[1]]}元素</b>的化合价是多少？`;
+    $('#caAsk').innerHTML=free?'点下面的数字改变未知元素的化合价，看天平什么时候平衡；点“换一个化学式”换题。':`${PNM[q[0]]}（${fmB(q[0])}）中，<b class="ky">${NM[q[1]]}元素</b>的化合价是多少？`;
     setSt($('#caSt'),'',free?'自由模式不计分。':'先列式计算，再提交。答对 +5');keys();}
-  $('#caSub').onclick=()=>{if(free||phase!=='ask')return;if(pick===null){setSt($('#caSt'),'warn','请先选一个化合价');return;}if(why)scene(false);phase='rev';x=pick;revT=0;const q=Q[qi],tm=TEAM.cur,ok=pick===q[3];
-    const eq=q[2].map(([s,n,v])=>`(${v===null?'x':vs(v)})×${n}`).join(' + ')+' = 0';
-    setTimeout(()=>{phase='done';keys();if(ok){teamAdd(5,tm);sfx('ok');setSt($('#caSt'),'ok',`<b>${tname(tm)}答对 +5</b>　${eq}，x = ${vs(q[3])}`);}
-      else{x=q[3];revT=0;sfx('bad');setSt($('#caSt'),'bad',`<b>${tname(tm)}答错，不加分</b>　${eq}，x = ${vs(q[3])}`);}teamNext();},1500);};
-  $('#caNext').onclick=()=>{if(free)return;qi=(qi+1)%Q.length;ask();sfx('whoosh');};
+  // 提交后立即判分；天平先按学生的值倾斜，答错时 1.5 秒后再换成正确值让天平回平（换题后作废）
+  $('#caSub').onclick=()=>{if(free||phase!=='ask')return;if(pick===null){setSt($('#caSt'),'warn','请先选一个化合价');return;}if(why)scene(false);phase='done';x=pick;revT=0;const q=Q[qi],tm=TEAM.cur,ok=pick===q[3],my=tok;
+    const eq=q[2].map(([s,n,v])=>`(${v===null?'x':vs(v)})×${n}`).join(' + ')+' = 0';keys();
+    if(ok){teamAdd(5,tm);sfx('ok');setSt($('#caSt'),'ok',`<b>${tname(tm)}答对 +5</b>　${eq}，x = ${vs(q[3])}`);}
+    else{sfx('bad');setSt($('#caSt'),'bad',`<b>${tname(tm)}答错，不加分</b>　${eq}，x = ${vs(q[3])}　看天平：按你的答案不平衡`);setTimeout(()=>{if(my===tok&&!free){x=q[3];revT=0;}},1500);}
+    teamNext();};
+  $('#caNext').onclick=()=>{qi=(qi+1)%Q.length;ask();sfx('whoosh');};
   // 场景：先看“为什么要计算”（第三周期拓展），再上天平
   let why=true;const P3=[['Na',11,[2,8,1],'+1','不需要'],['Mg',12,[2,8,2],'+2','不需要'],['Al',13,[2,8,3],'+3','不需要'],['Si',14,[2,8,4],'+4','−4'],['P',15,[2,8,5],'+5','−3'],['S',16,[2,8,6],'+6','−2'],['Cl',17,[2,8,7],'+7','−1']];
   const tbl=$('#caTbl');

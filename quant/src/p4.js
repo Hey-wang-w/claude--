@@ -106,9 +106,10 @@ S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0
     for(let i=0;i<14;i++)dust.push({x:0,y:0,side:toward==='r'?'b':'r',vx:(Math.random()-.2)*80,vy:-Math.random()*60,l:1});
     if(ok){teamAdd(p,tm);setSt($('#tgSt'),'ok',`<b>${tname(tm)}答对 +${p}，向本队拉 ${steps} 格！</b><br>${ex}`);}
     else{setSt($('#tgSt'),'bad',`<b>${tname(tm)}答错，不加分，被${tname(oth)}拉过去 1 格</b><br>${ex}`);}
+    if(Math.abs(pos)>=WIN){setTimeout(()=>finish(pos<0?'r':'b'),1100);return;}// 已到胜利线：不再给“下一题”，避免结束前又答一题
     const nx=document.createElement('div');nx.className='row';nx.innerHTML=`<button class="btn pri sm">下一题</button>`;card.appendChild(nx);
     $('button',nx).onclick=()=>{qi++;teamSet(TEAM.cur==='r'?'b':'r');ask();sfx('whoosh');};
-    if(Math.abs(pos)>=WIN)setTimeout(()=>finish(pos<0?'r':'b'),1100);}
+}
   function finish(w){if(winner)return;winner=w||'tie';phase='end';
     if(w){teamPlay(w,'cheer');teamPlay(w==='r'?'b':'r','stumble',c=>play(c,'fall',c2=>{c2.hold=true;}));teamAdd(20,w);FX.confetti();sfx('win');stampOn($('[data-id="tug"] .stage'),`${tname(w)}获胜！+20`,true,'50%','22%');}
     card.innerHTML=`<div class="qmeta"><span class="tag a">比赛结束</span></div><div class="qtext" style="font-size:26px">${w?`${tag(w)} 赢得拔河！`:'两队势均力敌，平局！'}</div>
