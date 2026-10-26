@@ -110,7 +110,10 @@ function kpQuiz(box,items,{pts=5,onJudge,wide=false}={}){let i=0,val='',done=fal
     let ok,msg='';
     if(it.kind==='ratio'){const r=ratioOK(val,it.ans);ok=r!=='bad';if(r==='notmin')msg=`比值正确。<b>注意看题目要求</b>：若要求最简整数比，应写成 ${it.ans.join(' ∶ ')}。`;}
     else{const v=parseFloat(val.replace('%',''));ok=Math.abs(v-it.ans)<=(it.tol??1e-9);if(!ok&&it.unit==='%'&&Math.abs(v-it.ans*100)<.5)msg='注意：答案写成百分数。';
-      if(ok&&it.dp!=null&&((val.replace('%','').split('.')[1]||'').length!==it.dp))msg=`数值正确。<b>注意题目要求保留${['零','一','两','三'][it.dp]??it.dp}位小数</b>，应写成 ${it.ans}。`;}
+      // 题目要求保留 dp 位小数：位数和数值都对才算对；接近时说明错在哪里
+      if(it.dp!=null){const decs=(val.replace('%','').split('.')[1]||'').length,cn=['零','一','两','三'][it.dp]??it.dp,d=Math.abs(v-it.ans);ok=decs===it.dp&&d<1e-9;
+        if(!ok&&decs!==it.dp&&d<=.06)msg=`数值接近，但<b>题目要求保留${cn}位小数</b>，应写成 ${it.ans}。`;
+        else if(!ok&&decs===it.dp&&d<=.1+1e-9)msg=`保留${cn}位小数时要<b>四舍五入</b>，应写成 ${it.ans}。`;}}
     done=true;res[i]=ok;const tm=TEAM.cur;
     if(ok){teamAdd(pts,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}答对 +${pts}</b>　${msg}${it.why}`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}答错，不加分</b>　${msg}${it.why}`);}
     teamNext();render();onJudge&&onJudge(ok,it,i);}
