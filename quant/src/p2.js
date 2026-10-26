@@ -37,7 +37,7 @@ S.diag=(()=>{
 
 /* ================= 4 元素质量比：个数比 vs 质量比 ================= */
 S.ratio=(()=>{const cv=$('#cvRatio');let t=0,cur='CO2',stage=0,stT=0;const G={};
-  const MOLS=['CO2','H2O','H2O2','SO2','Fe2O3','C2H5OH','CO(NH2)2'];
+  const MOLS=['CO2','H2O2','H2O','SO2','Fe2O3','C2H5OH','CO(NH2)2'],NEX=2;// 前 2 个是讲解例子，后 5 个对应右侧练习
   const NAME={CO2:'二氧化碳',H2O:'水',H2O2:'过氧化氢',SO2:'二氧化硫',Fe2O3:'氧化铁',C2H5OH:'乙醇','CO(NH2)2':'尿素'};
   const ORDER={C2H5OH:['C','H','O'],'CO(NH2)2':['C','O','N','H']};
   const parts=()=>{const m=new Map(comp(cur));return(ORDER[cur]||[...m.keys()]).map(e=>[e,m.get(e)]);};
@@ -47,8 +47,7 @@ S.ratio=(()=>{const cv=$('#cvRatio');let t=0,cur='CO2',stage=0,stT=0;const G={};
   $('#raSimp').onclick=()=>{if(stage<1){stage=1;}stage=2;stT=0;sfx('pop');};
   const ui=canvasUI(cv,{hots:()=>G.w?MOLS.map((f,i)=>({hit:(x,y)=>Math.abs(x-G.cx(i))<G.cw/2&&Math.abs(y-32)<20,act:()=>setMol(f)})):[]});
   function tick(dt){t+=dt;stT+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);G.w=w;
-    G.cw=Math.min(118,(w-40)/MOLS.length-8);G.cx=i=>w/2+(i-(MOLS.length-1)/2)*(G.cw+8);
-    MOLS.forEach((f,i)=>{const on=f===cur;hudBox(ctx,G.cx(i)-G.cw/2,12,G.cw,40,{col:on?CG:'rgba(63,216,255,.5)',fill:on?'rgba(57,255,136,.14)':'rgba(0,0,0,.35)',corner:8,glowA:on?1:0});fmDraw(ctx,f,G.cx(i),32,f.length>6?16:19,{col:on?CG:INK});});
+    molTabs(ctx,G,MOLS,cur,NEX,w,{maxW:124});
     const P=parts(),cols=[CC,CA,CG,CM],nE=P.length;
     // 标题
     fmDraw(ctx,cur,w/2,96,44,{col:INK,glowB:8});txt(ctx,NAME[cur],w/2+fmDraw(ctx,cur,0,0,44,{measure:true})/2+44,96,{size:16,weight:700,col:DIM});
@@ -85,11 +84,11 @@ S.ratio=(()=>{const cv=$('#cvRatio');let t=0,cur='CO2',stage=0,stT=0;const G={};
     {q:`乙醇 ${fmB('C2H5OH')} 中，碳、氢、氧三种元素的质量比`,kind:'ratio',ans:[12,3,8],why:'(12×2) ∶ (1×6) ∶ 16 = 24 ∶ 6 ∶ 16 = 12 ∶ 3 ∶ 8'},
     {q:`尿素 ${fmB('CO(NH2)2')} 中，氮元素与氢元素的质量比`,kind:'ratio',ans:[7,1],why:'(14×2) ∶ (1×4) = 28 ∶ 4 = 7 ∶ 1'}]);
   $('#raReset').onclick=()=>{setMol('CO2');kp.reset();};
-  notes('ratio','计算物质组成元素的质量比',['元素质量比 = <mark>（相对原子质量 × 原子个数）之比</mark>。','结果一般化成<mark>最简整数比</mark>。','元素的顺序要和题目要求一致。'],
+  notes('ratio','计算物质组成元素的质量比',['元素质量比 = <mark>（相对原子质量 × 原子个数）之比</mark>。','结果一般化成<mark>最简整数比</mark>（2∶32 和 1∶16 是同一个比，按题目要求作答）。','元素的顺序要和题目要求一致。'],
     '原子个数比 ≠ 元素质量比：CO₂ 中 C、O 原子个数比 1∶2，质量比 3∶8。',
     (ctx,w,h)=>{txt(ctx,'CO₂',w/2,30,{size:26,weight:700,col:PEN.ink});
       txt(ctx,'原子个数比',70,86,{size:15,weight:700,col:PEN.blue,align:'left'});[[0,'C'],[1,'O'],[2,'O']].forEach(([i,e])=>{ctx.fillStyle=e==='C'?'#5b6878':'#e85d5d';ctx.beginPath();ctx.arc(200+i*44,86,16,0,TAU);ctx.fill();});txt(ctx,'1 ∶ 2',w-50,86,{size:20,weight:700,col:PEN.blue});
       txt(ctx,'质量',70,150,{size:15,weight:700,col:PEN.red,align:'left'});ctx.fillStyle='#5b6878';ctx.fillRect(130,138,12*4,24);ctx.fillStyle='#e85d5d';ctx.fillRect(130,174,32*4,24);
       txt(ctx,'C：12',130+48+8,150,{size:15,weight:700,col:PEN.ink,align:'left'});txt(ctx,'O：16×2 = 32',130+128+8,186,{size:15,weight:700,col:PEN.ink,align:'left'});
-      hand(ctx,'12 ∶ 32 = 3 ∶ 8',w/2,250,{size:30,col:PEN.red});penBox(ctx,40,280,w-80,48,PEN.green,[6,5]);txt(ctx,'记得约成最简整数比',w/2,304,{size:17,weight:700,col:PEN.green});});
+      hand(ctx,'12 ∶ 32 = 3 ∶ 8',w/2,250,{size:30,col:PEN.red});penBox(ctx,40,280,w-80,48,PEN.green,[6,5]);txt(ctx,'题目要求最简整数比时要约分',w/2,304,{size:17,weight:700,col:PEN.green});});
   return{tick};})();

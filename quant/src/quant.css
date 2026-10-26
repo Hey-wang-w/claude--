@@ -170,6 +170,10 @@ canvas{touch-action:none}
 .kkeys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .kkeys button{height:42px;border-radius:8px;border:1.5px solid rgba(63,216,255,.35);background:rgba(63,216,255,.06);font:700 19px var(--f-num);cursor:pointer;color:var(--ink)}
 .kkeys button:hover{background:rgba(63,216,255,.16)}
+.kkeys.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.kkeys button.op{color:var(--c);border-color:rgba(63,216,255,.55);background:rgba(63,216,255,.12)}
+.kkeys button[data-k="="]{color:#04220f;background:var(--g);border-color:var(--g)}
+.kscreen .khist{position:absolute;left:14px;top:4px;font:400 13px var(--f-num);color:var(--dim);font-style:normal;text-shadow:none}
 .kkeys button.fn{font-size:16px;color:var(--a);border-color:rgba(255,176,0,.45)}
 .kkeys button:active{transform:translateY(1px)}
 .kprog{display:flex;gap:5px}

@@ -1,11 +1,12 @@
 /* ================= 8 提升：化学式侦探（由元素质量比推出原子个数比） ================= */
-S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],showT=-1,seq=[],done=false;
+S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],ds=0,stT=0,seq=[],done=false;// ds：推理已揭晓到第几步（点一次走一步）
   // [标题, 元素, 质量比, 答案, 额外条件]
   const CASES=[['案件 A：神秘的氮氧化物',['N','O'],[7,16],'NO2',''],['案件 B：红棕色的铁锈',['Fe','O'],[7,3],'Fe2O3',''],['案件 C：消毒液里的分子',['H','O'],[1,16],'H2O2','相对分子质量为 34']];
   const bar=$('#deBar');bar.innerHTML=CASES.map((c,i)=>`<button class="btn" data-c="${i}">${'ABC'[i]}</button>`).join('')+'<span class="sep"></span><button class="btn pri" id="deShow">看推理</button>';
   $$('[data-c]',bar).forEach(b=>b.onclick=()=>{ci=+b.dataset.c;reset1();sfx('whoosh');});
-  $('#deShow').onclick=()=>{rev=[1,1,1];showT=0;sfx('pop');};
-  function reset1(){rev=[0,0,0];showT=-1;seq=[];done=false;$$('[data-c]',bar).forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.c===ci)));slots();setSt($('#deSt'),'','数字自动写成右下角小字。答对 +20（提升题）');$('#deTitle').textContent='写出它的化学式';}
+  const maxDs=()=>CASES[ci][4]?6:5;
+  $('#deShow').onclick=()=>{if(!rev.every(Boolean)){rev=[1,1,1];sfx('pop');return;}if(ds<maxDs()){ds++;stT=0;sfx(ds===maxDs()?'ok':'pop');}};
+  function reset1(){rev=[0,0,0];ds=0;seq=[];done=false;$$('[data-c]',bar).forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.c===ci)));slots();setSt($('#deSt'),'','数字自动写成右下角小字。答对 +20（提升题）');$('#deTitle').textContent='写出它的化学式';}
   const TILES=['H','N','O','Fe','2','3','4'];
   $('#deTray').innerHTML=TILES.map(s=>`<button data-s="${s}" class="${/\d/.test(s)?'dg':''}">${s}</button>`).join('');
   $$('#deTray button').forEach(b=>b.onclick=()=>{if(done||seq.length>=8)return;seq.push(b.dataset.s);sfx('tick');slots();});
@@ -14,9 +15,10 @@ S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],showT=-1,seq=[],done=false;
   $('#deBack').onclick=()=>{if(done)return;seq.pop();slots();};
   $('#deSub').onclick=()=>{if(done)return;if(!seq.length){setSt($('#deSt'),'warn','先拼出化学式');return;}done=true;const c=CASES[ci],tm=TEAM.cur,ok=seq.join('')===c[3];
     if(ok){teamAdd(20,tm);sfx('win');burstAt($('#deSlots'),30,[CG,CA]);setSt($('#deSt'),'ok',`<b>${tname(tm)}破案 +20</b>　${fmB(c[3])}`);}
-    else{sfx('bad');setSt($('#deSt'),'bad',`<b>${tname(tm)}推错了，不加分</b>　答案是 ${fmB(c[3])}，点“看推理”。`);}rev=[1,1,1];showT=0;teamNext();};
-  cv.addEventListener('pointerdown',e=>{const[x,y]=ptIn(cv,e);const k=(cv._clue||[]).findIndex(b=>x>b[0]&&x<b[0]+b[2]&&y>b[1]&&y<b[1]+b[3]);if(k>=0&&!rev[k]){rev[k]=1;sfx('pop');if(rev.every(Boolean))showT=0;}});
-  function tick(dt){t+=dt;if(showT>=0)showT+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);const[title,E,R,ans,extra]=CASES[ci];
+    else{sfx('bad');setSt($('#deSt'),'bad',`<b>${tname(tm)}推错了，不加分</b>　答案是 ${fmB(c[3])}，点“看推理”逐步看过程。`);}teamNext();};
+  cv.addEventListener('pointerdown',e=>{const[x,y]=ptIn(cv,e);const k=(cv._clue||[]).findIndex(b=>x>b[0]&&x<b[0]+b[2]&&y>b[1]&&y<b[1]+b[3]);if(k>=0&&!rev[k]){rev[k]=1;sfx('pop');}});
+  function tick(dt){t+=dt;stT+=dt;const{ctx,w,h}=fitS(cv);
+    $('#deShow').textContent=!rev.every(Boolean)?'解锁全部线索':ds===0?'看推理（第 1 步）':ds<maxDs()?`下一步（第 ${ds+1} 步）`:'推理完毕';ctx.clearRect(0,0,w,h);const[title,E,R,ans,extra]=CASES[ci];
     glow(ctx,title,w/2,36,{size:26,col:CA,font:HAND,weight:400});
     // 线索卡
     const clues=[`这种物质只含 ${E.map(e=>ELN[e]).join('、')} 两种元素${extra?'，'+extra:''}`,`${ELN[E[0]]}、${ELN[E[1]]}元素的质量比为 ${R[0]} ∶ ${R[1]}`,`相对原子质量：${E[0]} = ${AM[E[0]]}，${E[1]} = ${AM[E[1]]}`];
@@ -26,7 +28,7 @@ S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],showT=-1,seq=[],done=false;
       else{glow(ctx,'点击解锁',x+cw/2,y+50,{size:18,col:CA,blur:6+4*Math.sin(t*4)});}});
     // 推理过程：质量 ÷ 相对原子质量 = 原子个数比
     const y0=196;hudBox(ctx,30,y0,w-60,h-y0-80,{col:'rgba(63,216,255,.5)',fill:'rgba(0,0,0,.3)',corner:14});
-    if(showT<0){const bh=h-y0-80,rcx=w/2,rcy=y0+bh*.44,R0=Math.min(120,bh*.34);
+    if(ds===0){const bh=h-y0-80,rcx=w/2,rcy=y0+bh*.44,R0=Math.min(120,bh*.34);
       // 雷达扫描：未知分子里的原子以“?”闪现
       ctx.save();ctx.strokeStyle='rgba(63,216,255,.3)';ctx.lineWidth=1.2;for(let k=1;k<=3;k++){ctx.beginPath();ctx.arc(rcx,rcy,R0*k/3,0,TAU);ctx.stroke();}
       line(ctx,rcx-R0,rcy,rcx+R0,rcy,{col:'rgba(63,216,255,.2)',w:1});line(ctx,rcx,rcy-R0,rcx,rcy+R0,{col:'rgba(63,216,255,.2)',w:1});
@@ -36,8 +38,8 @@ S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],showT=-1,seq=[],done=false;
         ctx.globalAlpha=.15+.85*fade;ctx.fillStyle=k%2?'rgba(255,93,108,.8)':'rgba(63,169,255,.8)';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=14*fade;ctx.beginPath();ctx.arc(bx,by,12,0,TAU);ctx.fill();ctx.shadowBlur=0;txt(ctx,'?',bx,by+1,{size:15,weight:700,col:'#fff'});});
       ctx.restore();
       glow(ctx,`${E[0]} ∶ ${E[1]} = ? ∶ ?`,rcx,rcy+R0+34,{size:26,col:CA,blur:8});
-      txt(ctx,nUn<3?`已解锁 ${nUn} / 3 条线索`:'想一想：知道了质量比，怎样得到原子个数比？',rcx,rcy+R0+70,{size:16,weight:700,col:DIM});return;}
-    const q=k=>clamp((showT-k*.9)/.6,0,1);const cxs=[w*.3,w*.7];
+      txt(ctx,nUn<3?`已解锁 ${nUn} / 3 条线索`:'想一想：知道了质量比，怎样得到原子个数比？想好后点“看推理”',rcx,rcy+R0+70,{size:16,weight:700,col:DIM});return;}
+    const q=k=>k<ds-1?1:k===ds-1?clamp(stT/.6,0,1):0;const cxs=[w*.3,w*.7];
     E.forEach((e,i)=>{const x=cxs[i],a=q(0);ctx.save();ctx.globalAlpha=a;
       // 质量块
       const m=R[i],bw=Math.min(240,150+m*4);ctx.fillStyle=i?'rgba(255,93,108,.35)':'rgba(63,169,255,.35)';ctx.strokeStyle=i?RED:BLUE;ctx.lineWidth=2;rr(ctx,x-bw/2,y0+30,bw,40,8);ctx.fill();ctx.stroke();
@@ -49,20 +51,20 @@ S.det=(()=>{const cv=$('#cvDet');let t=0,ci=0,rev=[],showT=-1,seq=[],done=false;
     // 原子球
     const tot=a+b,sx=w/2-(tot-1)*22;for(let k=0;k<tot;k++)atomBall(ctx,sx+k*44,y0+290,k<a?(E[0]==='H'?13:17):(E[1]==='H'?13:17),k<a?E[0]:E[1]);ctx.restore();
     if(extra){ctx.save();ctx.globalAlpha=q(4);const base=`${E[0]}${a>1?a:''}${E[1]}${b>1?b:''}`,m1=Mr(base);txt(ctx,`${base.replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d])} 的相对分子质量 = ${m1}，而题目给的是 34 = ${m1} × ${34/m1}`,w/2,y0+342,{size:17,weight:700,col:CA});ctx.restore();}
-    if(done||showT>4.2){ctx.save();ctx.globalAlpha=q(extra?5:4);fmDraw(ctx,ans,w/2,h-118,48,{col:CG,glowB:16});ctx.restore();}}
+    if(ds>=maxDs()){ctx.save();ctx.globalAlpha=q(extra?5:4);fmDraw(ctx,ans,w/2,h-118,48,{col:CG,glowB:16});ctx.restore();}}
   $('#deReset').onclick=()=>{ci=0;reset1();};
   reset1();
   notes('det','由元素质量比推化学式（提升）',['原子个数比 = <mark>各元素的质量 ÷ 各自的相对原子质量</mark> 之比。','化成最简整数比，就是化学式中的原子个数比。','如果还知道相对分子质量，用它确定分子中原子的实际个数。'],
-    '质量比不是原子个数比：Fe∶O 质量比 7∶3，原子个数比是 2∶3。',
-    (ctx,w,h)=>{txt(ctx,'N∶O 质量比 = 7∶16',w/2,32,{size:20,weight:700,col:PEN.ink});
-      [[w*.3,'7 ÷ 14 = 1/2',PEN.blue],[w*.7,'16 ÷ 16 = 1',PEN.red]].forEach(([x,s,c])=>{txt(ctx,s,x,90,{size:20,weight:700,col:c});});
-      hand(ctx,'1/2 ∶ 1 = 1 ∶ 2',w/2,150,{size:30,col:PEN.green});
-      [[w/2-50,'N','#2f6fd6'],[w/2,'O','#e85d5d'],[w/2+50,'O','#e85d5d']].forEach(([x,e,c])=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,210,20,0,TAU);ctx.fill();txt(ctx,e,x,211,{size:16,weight:700,col:'#fff'});});
-      txt(ctx,'→  NO₂',w/2,270,{size:28,weight:700,col:PEN.ink});});
+    '质量比不是原子个数比：CuO 中 Cu∶O 质量比 4∶1，原子个数比是 1∶1。',
+    (ctx,w,h)=>{txt(ctx,'S∶O 质量比 = 1∶1',w/2,32,{size:20,weight:700,col:PEN.ink});
+      [[w*.3,'1 ÷ 32 = 1/32',PEN.blue],[w*.7,'1 ÷ 16 = 2/32',PEN.red]].forEach(([x,s,c])=>{txt(ctx,s,x,90,{size:20,weight:700,col:c});});
+      hand(ctx,'1/32 ∶ 2/32 = 1 ∶ 2',w/2,150,{size:30,col:PEN.green});
+      [[w/2-50,'S','#d4a514'],[w/2,'O','#e85d5d'],[w/2+50,'O','#e85d5d']].forEach(([x,e,c])=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,210,20,0,TAU);ctx.fill();txt(ctx,e,x,211,{size:16,weight:700,col:'#fff'});});
+      txt(ctx,'→  SO₂',w/2,270,{size:28,weight:700,col:PEN.ink});});
   return{tick,enter(){}};})();
 
 /* ================= 9 竞赛：化学拔河（KayKit 角色经 Blender 渲染成逐帧精灵） ================= */
-S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0,winner=null,order=[],sweat=[],dust=[],pullT=-9,pullDir=0,pullN=1,shakeT=0;
+S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0,winner=null,order=[],sweat=[],dust=[],pullT=-9,pullDir=0,pullN=1,shakeT=0,ropeY=null;
   const STEP=4,WIN=4;// 绳子中点每次移动 1 格，到达 ±4 格获胜
   const IMG={};Object.keys(SPR).forEach(k=>{const im=new Image();im.src=SPR[k];IMG[k]=im;});
   // 每个角色一个动画播放器
@@ -73,7 +75,7 @@ S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0
   // 题库：[分值, 题干, 选项, 正确项, 解析]
   const Q=[
     [10,`葡萄糖 ${fmB('C6H12O6')} 的相对分子质量是`,['180','29','180 g','90'],0,'12×6 + 1×12 + 16×6 = 180，相对分子质量单位是“1”，不写 g。'],
-    [10,`过氧化氢 ${fmB('H2O2')} 中氢、氧元素的质量比为`,['1∶1','1∶16','2∶32','1∶8'],1,'(1×2)∶(16×2) = 2∶32 = 1∶16；1∶1 是原子个数比。'],
+    [10,`过氧化氢 ${fmB('H2O2')} 中氢、氧元素的质量比为`,['1∶1','1∶16','1∶32','1∶8'],1,'(1×2)∶(16×2) = 2∶32 = 1∶16；1∶1 是原子个数比，1∶32 漏乘了 H 的个数，1∶8 是水。'],
     [10,`关于乙醇 ${fmB('C2H5OH')}，下列说法正确的是`,['乙醇由 2 个碳原子、6 个氢原子和 1 个氧原子构成','乙醇的相对分子质量为 46 g','乙醇中碳元素的质量分数最大','乙醇中碳、氢、氧元素的质量比为 2∶6∶1'],2,'C、H、O 质量比 24∶6∶16，碳最大；1 个乙醇分子才含 9 个原子；相对分子质量不带 g。'],
     [10,'下列化肥中，氮元素的质量分数最大的是',[fmB('NH4NO3'),fmB('CO(NH2)2'),fmB('NH4HCO3'),fmB('(NH4)2SO4')],1,'尿素约 46.7%，硝酸铵 35%，硫酸铵约 21.2%，碳酸氢铵约 17.7%。'],
     [10,`碳酸钙 ${fmB('CaCO3')} 中钙、碳、氧三种元素的质量比为`,['1∶1∶3','10∶3∶12','40∶12∶16','10∶3∶4'],1,'40∶12∶(16×3) = 40∶12∶48 = 10∶3∶12。'],
@@ -111,7 +113,7 @@ S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0
     if(w){teamPlay(w,'cheer');teamPlay(w==='r'?'b':'r','stumble',c=>play(c,'fall',c2=>{c2.hold=true;}));teamAdd(20,w);FX.confetti();sfx('win');stampOn($('[data-id="tug"] .stage'),`${tname(w)}获胜！+20`,true,'50%','22%');}
     card.innerHTML=`<div class="qmeta"><span class="tag a">比赛结束</span></div><div class="qtext" style="font-size:26px">${w?`${tag(w)} 赢得拔河！`:'两队势均力敌，平局！'}</div>
       <p class="hint">${w?'绳子中点到达本队的胜利线，额外 +20。':'题目答完时绳子中点在正中间。'}</p>
-      <div class="tflist">${Q.map((q,i)=>i<=qi?`<div class="tf"><div>第 ${i+1} 题</div><b class="hint">${q[2][q[3]].replace(/<[^>]+>/g,'')}</b></div>`:'').join('').slice(0,4000)}</div>`;}
+      <div class="tflist">${Q.map((q,i)=>i<=qi?`<div class="tf"><div>第 ${i+1} 题</div><b class="hint">${q[2][q[3]].replace(/<sub>(\d+)<\/sub>/g,(m,d)=>d.replace(/\d/g,x=>'₀₁₂₃₄₅₆₇₈₉'[x])).replace(/<[^>]+>/g,'')}</b></div>`:'').join('').slice(0,4000)}</div>`;}
   // 画一个角色：side='r' 面向右（原图方向），'b' 镜像；锚点是原点（地面）
   function drawChar(ctx,c,gx,gy,s,dt){const M=SMETA[c.name],S=M.st[c.st];c.ft+=dt*13;
     while(c.ft>=1){c.ft-=1;if(c.f<S.n-1)c.f++;else if(S.loop)c.f=0;else if(c.next&&!c.hold){const n=c.next;c.next=null;n(c);}}
@@ -140,11 +142,15 @@ S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0
     // 后排先画
     const hands={};[...crew].sort((a,b)=>b.slot-a.slot).forEach(c=>{const[gx,gy2]=P[c.name];const r=drawChar(ctx,c,gx+jit,gy2,s,dt);hands[c.name]=r;});
     // 绳子：从左后到右后，穿过每个人的手和中点标记
-    const pts=[[hands.Rogue.hand[0]-110*s,ropeY0+30*s],hands.Rogue.hand,hands.Knight.hand,[cx+off,ropeY0+(winner?24:0)+Math.sin(t*9)*1.5],hands.Barbarian.hand,hands.Mage.hand,[hands.Mage.hand[0]+110*s,ropeY0+30*s]];
+    // 绳子拉直放平：高度取正在拉绳的角色双手的平均高度（平滑过渡），整条绳水平
+    // 比赛结束：大家松手，绳子落到地上
+    if(winner){ropeY=ropeY==null?gy-5:lerp(ropeY,gy-5,1-Math.exp(-dt*4));}
+    else{const hy=crew.filter(c=>c.st!=='fall'&&c.st!=='cheer').map(c=>hands[c.name].hand[1]);if(hy.length){const m=hy.reduce((a,b)=>a+b,0)/hy.length;ropeY=ropeY==null?m:lerp(ropeY,m,1-Math.exp(-dt*6));}}
+    const ry=(ropeY??ropeY0)+(phase==='ask'&&!winner?Math.sin(t*9)*1:0),pts=[[hands.Rogue.hand[0]-110*s,ry],[hands.Mage.hand[0]+110*s,ry]];
     ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#6d5332';ctx.lineWidth=9;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
     ctx.strokeStyle='#c9a46a';ctx.lineWidth=6;ctx.stroke();ctx.setLineDash([5,7]);ctx.lineDashOffset=-off;ctx.strokeStyle='#8a6a3c';ctx.lineWidth=6;ctx.stroke();ctx.restore();
     // 中点标记：发光红蓝丝带
-    const mx=cx+off,my=ropeY0+Math.sin(t*9)*1.5;ctx.save();ctx.shadowColor=CA;ctx.shadowBlur=18;ctx.fillStyle=CA;ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx-10,my+34);ctx.lineTo(mx+10,my+34);ctx.closePath();ctx.fill();ctx.restore();
+    const mx=cx+off,my=ry;ctx.save();ctx.shadowColor=CA;ctx.shadowBlur=18;ctx.fillStyle=CA;ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx-10,my+34);ctx.lineTo(mx+10,my+34);ctx.closePath();ctx.fill();ctx.restore();
     ctx.save();ctx.fillStyle=pos<0?RED:pos>0?BLUE:INK;ctx.beginPath();ctx.arc(mx,my,8,0,TAU);ctx.fill();ctx.restore();
     // 等待时的出力动效：汗珠、蒸汽、绳子颤动
     if(phase==='ask'&&!winner){if(Math.random()<dt*5){const c=crew[Math.floor(Math.random()*4)],hp=hands[c.name].head;sweat.push({x:hp[0]+(Math.random()-.5)*30,y:hp[1]+Math.random()*20,vx:(c.side==='r'?-1:1)*(20+Math.random()*30),vy:-60-Math.random()*40,l:1.1});}
@@ -167,7 +173,7 @@ S.tug=(()=>{const cv=$('#cvTug');let t=0,qi=0,phase='ask',pick=null,pos=0,disp=0
     hudBox(ctx,cx-200,14,400,64,{col:CC,fill:'rgba(3,7,10,.85)',corner:14});glow(ctx,'红队',cx-130,46,{size:26,col:RED,font:HAND,weight:400});glow(ctx,'蓝队',cx+130,46,{size:26,col:BLUE,font:HAND,weight:400});
     glow(ctx,`${TEAM.sc.r} : ${TEAM.sc.b}`,cx,46,{size:30,col:INK,blur:8});
     // 进度：还差几格
-    const lead=pos<0?'r':pos>0?'b':null;txt(ctx,lead?`${tname(lead)}领先 ${Math.abs(pos)} 格 · 再拉 ${WIN-Math.abs(pos)} 格获胜`:'势均力敌 · 先拉 4 格获胜',cx,96,{size:15,weight:700,col:lead==='r'?RED:lead==='b'?BLUE:DIM});
+    const lead=pos<0?'r':pos>0?'b':null;txt(ctx,winner?(winner==='tie'?'比赛结束 · 平局':`比赛结束 · ${tname(winner)}获胜`):lead?`${tname(lead)}领先 ${Math.abs(pos)} 格 · 再拉 ${WIN-Math.abs(pos)} 格获胜`:'势均力敌 · 先拉 4 格获胜',cx,96,{size:15,weight:700,col:lead==='r'?RED:lead==='b'?BLUE:DIM});
     if(winner&&winner!=='tie'){const col=winner==='r'?RED:BLUE;ctx.save();ctx.globalAlpha=.5+.3*Math.sin(t*4);glow(ctx,'WIN',cx+(winner==='r'?-1:1)*w*.3,150,{size:56,col,font:FNUM,blur:24});ctx.restore();}}
   $('#tgReset').onclick=()=>{stampOff($('[data-id="tug"] .stage'));reset();};
   reset();

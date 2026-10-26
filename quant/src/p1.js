@@ -44,8 +44,8 @@ S.cover=(()=>{const cv=$('#cvCover');let t=0;const G={};
 
 /* ================= 2 相对分子质量：分子秤 ================= */
 S.mr=(()=>{const cv=$('#cvMr');let t=0,cur='CO2',pan=[],fly=[],think=false,disp=0,doneT=-1,auto=null,warn='',warnT=0;const G={};
-  const MOLS=['O2','H2O','CO2','C2H5OH','CO(NH2)2','(NH4)2SO4'];
-  const NAME={O2:'氧气',H2O:'水',CO2:'二氧化碳',C2H5OH:'乙醇','CO(NH2)2':'尿素','(NH4)2SO4':'硫酸铵'};
+  const MOLS=['O2','H2O','CO2','CH4','CO(NH2)2','(NH4)2SO4'];// 不放右侧练习里的物质
+  const NAME={O2:'氧气',H2O:'水',CO2:'二氧化碳',CH4:'甲烷','CO(NH2)2':'尿素','(NH4)2SO4':'硫酸铵'};
   const WTS=['H','C','N','O','S'];
   const need=()=>new Map(comp(cur));
   const have=()=>{const m=new Map();pan.forEach(e=>m.set(e,(m.get(e)||0)+1));return m;};
