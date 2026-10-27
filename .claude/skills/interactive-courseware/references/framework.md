@@ -147,3 +147,18 @@
   - 配套图形：`jarIcon`（试剂瓶）、`dropperIcon`（滴瓶）、`dishIcon`（表面皿）、`cupIcon`（小烧杯）、`trayHint`（“拖进烧瓶”之类的提示）。
   - 每个状态都要有提示：能拖的东西画虚线圈，能点的仪器旁写“点我振荡”“点水龙头通水”。
 - **字体内嵌**：`scripts/font_subset.py <源文件...> -o fonts.css` 从 npm 包 `@fontsource/zcool-kuaile`、`@fontsource/noto-sans-sc` 的 latin 与 chinese-simplified 子集里按用字裁剪（需要 `pip install fonttools brotli`；字体包用 `npm pack` 下载后解压到 `FONT_DIR`），三套字形合计约 400 KB。CSS 变量：`--f-hand` 站酷快乐体，`--f-body` 和 `--f-num` 思源黑体。
+
+## 8. 题目卡与隐藏变式（`review4/src/quiz.js`）
+
+复习课的题库统一写成数据，题目卡和变式弹窗由同一个模块生成：
+
+- 题目格式：`{t:'c'|'tf'|'n'|'r', q, o, a, w, unit, dp, tol, pic, pts, v:[3 道变式]}`。`c` 选择、`tf` 判断、`n` 数值（数字键盘；`dp` 规定小数位，位数不对判错并提示）、`r` 比值（等价比判对并提示是否要求最简）。`pic` 放微观示意图，`pts` 覆盖分值（提升题 20）。
+- `qView(box,q,{pts,onJudge})`：一道题；`qPanel(box,list,{src})`：一组题加进度格，返回 `{reset,fill}`（`fill` 供计算器“填入答案”）。
+- `VARS`：答错后 `VARS.arm(题干元素, q, 出处)`，题干出现粉色虚线和“答错了 · 点题目做变式”，点击弹出 3 道变式（不计分）；进度格红格、小结页“错题回顾”也能打开；翻页时弹窗自动关闭；`VARS.disarm` 在“重新开始”时清除。舞台任务（拖卡、分类、排序）传伪题 `{v:QB.xxxTask}` 即可共用。
+- 题库 `qbank.js` 里的构造函数叫 `QC/TF/N/RA`，**不要叫 `C`**（与公共库颜色表重名）。
+
+## 9. 像素角色引擎（`review4/src/pix.js`）
+
+- 角色是代码画的矢量木偶（64×72 画布），再量化到调色板、去掉半透明、加深色外描边，得到像素精灵；按“状态 + 帧号”缓存。状态：idle / attack / hit / jam（卡壳摔倒再爬起）/ win / ko。躺倒姿势在 110×96 的画布上旋转，避免被裁。
+- `pxStage(cv,4)`：每 4 个屏幕像素 = 1 个世界像素，返回低分辨率画布 `g` 和 `flush()`；`pixWorld(320,180)` + `blitWorld` 用于固定世界坐标的对战场景。`pr/pdisc/pring/pbox/ptxt` 是像素画工具，`pixParticles()` 是像素粒子，`sfx8()` 是 8-bit 音效，`drawMicro()` 画 ○ / ● 微观示意图。
+- 浅色主题下：`ptxt` 的默认投影是白色，标题横幅显式传 `sh:'#1f2a44'`；场景底色、气体、玻璃一律用浅色加墨色描边，不要用纯白直接画在白底上。

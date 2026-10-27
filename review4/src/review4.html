@@ -1,0 +1,192 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 第四单元复习" data-min="1">
+  <div class="covx">
+    <div class="covcv"><canvas id="cvCover"></canvas></div>
+    <div class="covtxt">
+      <span class="eyebrow">人教版 · 九年级化学上册 · 单元复习</span>
+      <h1>第四单元<br><em>自然界的水</em></h1>
+      <div class="worlds">
+        <p style="--i:0"><b>1-1</b>水资源及其利用</p>
+        <p style="--i:1"><b>1-2</b>水的组成</p>
+        <p style="--i:2"><b>1-3</b>物质组成的表示</p>
+      </div>
+      <div class="row" style="margin-top:22px"><button class="btn pri big" data-go="next">按下开始 ▶</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 知识网络 -->
+<section class="slide" data-id="map" data-title="单元知识网络" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 0 · 知识地图</p><h2>把知识卡放回地图</h2></div>
+      <div class="tools"><button class="btn sm" id="mpReset">重新开始</button></div></header>
+    <div class="stage mapw" id="mpStage">
+      <div class="mapgrid" id="mpGrid"></div>
+      <div class="cardtray" id="mpTray"></div>
+      <div class="trayctl"><span class="status" id="mpSt">先点卡片，再点空格；点已填的空格可取回。有 4 张是干扰卡。</span><button class="btn pri" id="mpSub">提交</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 水资源 -->
+<section class="slide" data-id="res" data-title="水资源与爱护水资源" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-1 · 水资源</p><h2>地球是个“水球”，可是……</h2></div>
+      <div class="tools"><button class="btn sm" id="rsReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvRes"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="rsNext">下一层</button><button class="btn" id="rsBack">从头看</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="water-outline"></span>判一判 <span class="hint" data-teamlbl>红队答题</span></h3><div id="rsQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 净水工厂 -->
+<section class="slide" data-id="pure" data-title="水的净化" data-min="5">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-1 · 水的净化</p><h2>净水工厂：按顺序装好流水线</h2></div>
+      <div class="tools"><button class="btn sm" id="puReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvPure"></canvas></div>
+        <div class="tasktray"><div class="cardtray sm" id="puTray"></div><div class="row"><button class="btn sm" id="puUndo">退回一块</button><button class="btn pri sm" id="puSub">提交流程</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="filter-outline"></span>净水小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="puQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 电解水 -->
+<section class="slide" data-id="elec" data-title="电解水实验" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-2 · 水的组成</p><h2>电解水：正氧负氢，氢二氧一</h2></div>
+      <div class="tools"><button class="btn sm" id="elReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvElec"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="elPow">接通电源</button><span class="sep"></span><button class="btn" id="elT1" aria-pressed="false">带火星的木条</button><button class="btn" id="elT2" aria-pressed="false">燃着的木条</button><span class="sep"></span><button class="btn" id="elNaCl">提升：加了氯化钠？</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="flash-outline"></span>电解水小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="elQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 氢气档案 -->
+<section class="slide" data-id="h2" data-title="氢气的性质与验纯" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-2 · 氢气</p><h2>氢气档案</h2></div>
+      <div class="tools"><button class="btn sm" id="hyReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvH2"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="hyImp">验纯：不纯的氢气</button><button class="btn" id="hyPure">验纯：较纯的氢气</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="fire"></span>氢气小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="hyQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 7 微观分类站 -->
+<section class="slide" data-id="cls" data-title="物质的分类（微观图）" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-2 · 物质分类</p><h2>微观分类站</h2></div>
+      <div class="tools"><button class="btn sm" id="csReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="clsw"><div class="bins" id="csBins"></div><div class="cardtray micro" id="csTray"></div>
+          <div class="trayctl"><span class="status" id="csSt">○ 和 ● 表示两种不同的原子。先点图，再点分类框。</span><button class="btn pri" id="csSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="shape-outline"></span>分类小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="csQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 符号解码 -->
+<section class="slide" data-id="sym" data-title="化学符号中数字的意义" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-3 · 化学用语</p><h2>符号解码：数字在哪，意义就在哪</h2></div>
+      <div class="tools"><button class="btn sm" id="syReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><div class="symw" id="syBoard"></div></div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="numeric"></span>符号小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="syQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 价类二维图 -->
+<section class="slide" data-id="vc" data-title="“价—类”二维图" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-3 · 化合价</p><h2>氮的“价—类”二维图</h2></div>
+      <div class="tools"><button class="btn sm" id="vcReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvVc"></canvas></div>
+        <div class="tasktray"><div class="cardtray sm" id="vcTray"></div><div class="row"><button class="btn pri sm" id="vcSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="chart-scatter-plot"></span>化合价小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="vcQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 标签计算 -->
+<section class="slide" data-id="lab" data-title="标签计算（含纯度提升）" data-min="4">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 1-3 · 定量计算</p><h2>读标签，算一算</h2></div>
+      <div class="tools"><button class="btn sm" id="lbReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="cvwrap"><canvas id="cvLab"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="lbStep">提升题思路：下一步</button><button class="btn" id="lbHide">盖住思路</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="calculator-variant-outline"></span>钙片计算 <span class="hint" data-teamlbl>红队答题</span></h3><div id="lbQ"></div></div>
+        <div class="panel calc" id="lbCalc"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 11 科学思维诊所 -->
+<section class="slide" data-id="think" data-title="科学思维：比较、归纳、推理" data-min="3">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">关卡 BONUS · 提升</p><h2>思维诊所：这样想对吗？</h2></div>
+      <div class="tools"><button class="btn sm" id="thReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage"><div class="thw" id="thBoard"></div></div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="head-lightbulb-outline"></span>思维小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="thQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 12 竞赛：街机对战 -->
+<section class="slide" data-id="fight" data-title="竞赛：街机对战" data-min="8">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">最终关 · 红蓝对战</p><h2>街机对战：炎刃 VS 澜音</h2></div>
+      <div class="tools"><button class="btn sm" id="fgReset">重新开始</button></div></header>
+    <div class="body q">
+      <div class="stage"><div class="cvwrap"><canvas id="cvFight"></canvas></div></div>
+      <aside class="side"><div class="panel grow"><div class="qcard" id="fgCard"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 13 小结 -->
+<section class="slide" data-id="sum" data-title="小结 · 易错点与错题回顾" data-min="2">
+  <div class="frame">
+    <header class="hd"><div><p class="eyebrow">通关结算</p><h2>易错点清单</h2></div>
+      <div class="tools"></div></header>
+    <div class="body two">
+      <div class="stage">
+        <div class="sumgrid" id="suGrid"></div>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部翻开</button><button class="btn" id="suHide">全部盖住</button></div>
+      </div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div class="score" id="suScore"></div></div>
+        <div class="panel grow"><h3><span data-i="refresh"></span>错题回顾 · 变式完成情况</h3><div class="vlog" id="suLog"></div>
+          <p class="credit" style="margin-top:auto;padding-top:8px">像素角色“炎刃”“澜音”为本课件原创；图标几何：Material Design Icons（Apache 2.0）；字体：站酷快乐体、思源黑体（SIL OFL）。</p></div>
+      </aside>
+    </div>
+  </div>
+</section>
