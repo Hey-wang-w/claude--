@@ -30,26 +30,29 @@ S.vc=(()=>{const cv=$('#cvVc');let t=0,put={},pick=null,done=false;const G={};
   const CATS=['单质','氧化物','其他化合物'],VAL=[-3,0,2,4,5];
   const tray=$('#vcTray');
   function renderTray(){const used=Object.values(put);tray.innerHTML=['NO2','NH3','N2','HNO3','N2O5','NO'].filter(f=>!used.includes(f)).map(f=>`<button class="mcard fm${pick===f?' sel':''}" data-f="${f}">${fm(f)}</button>`).join('')||'<span class="hint">都放好了，点“提交”</span>';
-    $$('.mcard',tray).forEach(b=>b.onclick=()=>{if(done)return;pick=pick===b.dataset.f?null:b.dataset.f;sfx8('select');renderTray();});}
+    $$('.mcard',tray).forEach(b=>{b.onclick=()=>{if(done)return;pick=pick===b.dataset.f?null:b.dataset.f;sfx8('select');renderTray();};
+      DRAG.make(b,{drop:(tg,cx,cy)=>{if(done||tg!==cv||!G.pt)return false;const[x,y]=DRAG.cvPt(cv,cx,cy);const n=PTS.map(p=>p[0]).find(n=>Math.hypot(x-G.pt[n][0],y-G.pt[n][1])<46);if(!n)return false;put[n]=b.dataset.f;pick=null;sfx8('coin');renderTray();return true;}});});}
   const ui=canvasUI(cv,{hots:()=>G.pt?PTS.map(([n])=>({hit:(x,y)=>Math.hypot(x-G.pt[n][0],y-G.pt[n][1])<34,act:()=>{if(done)return;if(put[n]){delete put[n];sfx8('blip');}else if(pick){put[n]=pick;pick=null;sfx8('coin');}renderTray();}})):[]});
   $('#vcSub').onclick=()=>{if(done)return;if(Object.keys(put).length<PTS.length){FX.burst(innerWidth/2,innerHeight/2,6,[CA]);sfx('bad');return;}done=true;const tm=TEAM.cur,n=PTS.filter(([p])=>put[p]===ANS[p]).length;
     if(n===PTS.length){teamAdd(5,tm);sfx8('win');FX.confetti();}else{sfx8('jam');VARS.arm($('[data-id="vc"] .hd h2'),{v:QB.vcTask},'价—类二维图');}G.res={n,tm};teamNext();};
-  function tick(dt){t+=dt;const{ctx,w,h,g,W,H,P,flush}=pxStage(cv,4);
-    const x0=Math.round(W*.16),x1=Math.round(W*.94),y0=Math.round(H*.13),y1=Math.round(H*.66),cw=(x1-x0)/3,vy=v=>y1-(v+4)*(y1-y0)/10;
-    pr(g,x0,y0,1,y1-y0,'#55617f');pr(g,x0,y1,x1-x0,1,'#55617f');
-    for(let v=-3;v<=5;v++){const y=Math.round(vy(v)),on=VAL.includes(v);if(on)for(let x=x0+2;x<x1;x+=4)pr(g,x,y,2,1,'#c9d3e3');pr(g,x0-(on?3:2),y,on?3:2,1,'#55617f');}
-    for(let k=1;k<3;k++)for(let y=y0;y<y1;y+=4)pr(g,Math.round(x0+cw*k),y,1,2,'#c9d3e3');
-    G.pt={};PTS.forEach(([n,c,v])=>{const x=Math.round(x0+cw*(c+.5)+(n==='B'?-10:n==='D'?10:0)),y=Math.round(vy(v)),f=put[n],ok=done&&f===ANS[n],bad=done&&f!==ANS[n];
-      G.pt[n]=[x*P,y*P];pdisc(g,x,y,f?6:4,bad?'#e5484d':ok?'#1f9d6b':f?'#1f9fd6':'#e69500');pdisc(g,x,y,f?4:2,'#ffffff');
-      if(!f&&Math.sin(t*5+x)>0)pring(g,x,y,7,'#e69500');});
-    flush();
-    ptxt(ctx,'化合价',x0*P-10,y0*P-28,{size:16,col:'#55617f',align:'right'});VAL.forEach(v=>ptxt(ctx,v>0?'+'+v:String(v),x0*P-14,vy(v)*P,{size:17,col:'#e69500',align:'right',font:FNUM,weight:700}));
-    CATS.forEach((c,k)=>ptxt(ctx,c,(x0+cw*(k+.5))*P-(k===2?40:0),y1*P+22,{size:18,col:'#1f9fd6'}));ptxt(ctx,'物质类别 →',x1*P,y1*P+20,{size:15,col:'#55617f',align:'right'});
-    PTS.forEach(([n])=>{const[x,y]=G.pt[n],f=put[n];ptxt(ctx,n,x-26,y-22,{size:17,col:'#e69500',font:FNUM,weight:700});
-      if(f)fmDraw(ctx,f,x+32,y-2,22,{align:'left',col:done?(f===ANS[n]?'#1f9d6b':'#e5484d'):'#1f2a44'});
-      if(done&&f!==ANS[n])fmDraw(ctx,ANS[n],x+32,y+24,18,{align:'left',col:'#1f9d6b'});});
-    if(G.res){const{n,tm}=G.res;ptxt(ctx,n===PTS.length?`${tname(tm)}全部放对 +5`:`放对 ${n} / 6，不加分；绿色是正确答案`,w/2,h*.05,{size:20,col:n===PTS.length?'#1f9d6b':'#e5484d'});}
-    else ptxt(ctx,pick?`把 ${pick.replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d])} 放到哪个点？`:'先选下面的化学式，再点图上的点',w/2,h*.05,{size:18,col:'#55617f',font:FNUM,weight:700,sh:null});}
+  function tick(dt){t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    const x0=w*.14,x1=w*.95,y0=96,y1=h-190,cw=(x1-x0)/3,vy=v=>y1-(v+4)*(y1-y0)/10;
+    // 网格与坐标轴
+    ctx.save();ctx.fillStyle='rgba(255,255,255,.85)';rr(ctx,x0,y0-20,x1-x0,y1-y0+20,10);ctx.fill();
+    ctx.strokeStyle='#dbe3ee';ctx.lineWidth=1.5;ctx.setLineDash([6,6]);VAL.forEach(v=>{ctx.beginPath();ctx.moveTo(x0,vy(v));ctx.lineTo(x1,vy(v));ctx.stroke();});for(let k=1;k<3;k++){ctx.beginPath();ctx.moveTo(x0+cw*k,y0-20);ctx.lineTo(x0+cw*k,y1);ctx.stroke();}ctx.setLineDash([]);
+    ctx.strokeStyle=INK;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x0,y0-36);ctx.lineTo(x0,y1);ctx.lineTo(x1+10,y1);ctx.stroke();
+    ctx.fillStyle=INK;ctx.beginPath();ctx.moveTo(x0,y0-44);ctx.lineTo(x0-7,y0-30);ctx.lineTo(x0+7,y0-30);ctx.fill();ctx.beginPath();ctx.moveTo(x1+18,y1);ctx.lineTo(x1+4,y1-7);ctx.lineTo(x1+4,y1+7);ctx.fill();
+    for(let v=-3;v<=5;v++){ctx.beginPath();ctx.moveTo(x0-(VAL.includes(v)?8:4),vy(v));ctx.lineTo(x0,vy(v));ctx.stroke();}ctx.restore();
+    txt(ctx,'化合价',x0-12,y0-44,{size:16,col:DIM,weight:700,align:'right'});VAL.forEach(v=>txt(ctx,v>0?'+'+v:String(v),x0-16,vy(v),{size:18,weight:700,align:'right'}));
+    CATS.forEach((c,k)=>pill(ctx,c,x0+cw*(k+.5),y1+30,{size:16,fill:['#dff1fb','#e6f7ef','#e9e3ff'][k]}));txt(ctx,'物质类别',x1+14,y1-18,{size:15,col:DIM,weight:700,align:'right'});
+    G.pt={};PTS.forEach(([n,c,v])=>{const x=x0+cw*(c+.5)+(n==='B'?-46:n==='D'?40:n==='C'?-4:0),y=vy(v),f=put[n],ok=done&&f===ANS[n],bad=done&&f!==ANS[n];G.pt[n]=[x,y];
+      if(!f){const k=(t*1.4+x*.01)%1;ctx.save();ctx.globalAlpha=1-k;ctx.strokeStyle='#ffb000';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,12+k*16,0,TAU);ctx.stroke();ctx.restore();}
+      ctx.save();ctx.fillStyle=bad?'#e5484d':ok?'#1f9d6b':f?'#1f9fd6':'#ffd23f';ctx.strokeStyle=INK;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,f?13:11,0,TAU);ctx.fill();ctx.stroke();ctx.restore();
+      txt(ctx,n,x,y+1,{size:14,weight:900,col:f||!done?INK:'#fff'});
+      if(f){sticker(ctx,x+20,y-20,92,40,{r:10,sh:3,fill:done?(ok?'#e6f7ef':'#fdeaea'):'#ffffff'});fmDraw(ctx,f,x+66,y,22,{col:done?(ok?'#1f9d6b':'#e5484d'):INK});}
+      if(done&&f!==ANS[n])fmDraw(ctx,ANS[n],x+66,y+38,18,{col:'#1f9d6b'});});
+    if(G.res){const{n,tm}=G.res;hand(ctx,n===PTS.length?`${tname(tm)}全部放对 +5`:`放对 ${n} / 6，不加分；绿色是正确答案`,w/2,32,{size:22,col:n===PTS.length?OKC:BADC});}
+    else hand(ctx,pick?'点图上的点放进去':'把化学式卡片拖到图上的点（或先点卡片、再点点）',w/2,32,{size:21});}
   const qp=qPanel($('#vcQ'),QB.vc,{src:'化合价'});
   $('#vcReset').onclick=()=>{VARS.disarm($('[data-id="vc"] .hd h2'));put={};pick=null;done=false;G.res=null;renderTray();qp.reset();};
   renderTray();
@@ -62,21 +65,24 @@ S.vc=(()=>{const cv=$('#cvVc');let t=0,put={},pick=null,done=false;const G={};
 /* ================= 10 标签计算：钙片（每片 2.5 g，含钙 0.8 g）+ 计算器 ================= */
 S.lab=(()=>{const cv=$('#cvLab');let t=0,step=0,stT=0;
   $('#lbStep').onclick=()=>{if(step<4){step++;stT=0;sfx8('blip');}};$('#lbHide').onclick=()=>{step=0;sfx8('select');};
-  function tick(dt){t+=dt;stT+=dt;const{ctx,w,h,g,W,H,P,flush}=pxStage(cv,4);
-    // 药盒（像素）
-    const bx=Math.round(W*.06),by=Math.round(H*.12),bw=Math.round(W*.42),bh=Math.round(H*.62);
-    pbox(g,bx,by,bw,bh,'#ffffff','#1f2a44');pr(g,bx+3,by+3,bw-6,10,'#ff6fa8');pr(g,bx+3,by+13,bw-6,2,'#e69500');
-    for(let k=0;k<5;k++){const px=bx+8+k*((bw-16)/5),py=by+bh-16+Math.round(Math.sin(t*3+k)*1);pdisc(g,px+5,py,5,'#1f2a44');pdisc(g,px+5,py,4,'#ffffff');pr(g,px+2,py,7,1,'#c9d3e3');}
-    flush();
-    const lx=(bx+6)*P,ly=(by+22)*P;ptxt(ctx,'钙片',(bx+bw/2)*P,(by+8)*P,{size:26,col:'#ffffff',sh:'#1f2a44'});
-    [['【主要成分】','碳酸钙（CaCO₃）'],['【规格】','每片质量 2.5 g'],['【含量】','每片含钙 0.8 g'],['【用法】','每日 1 片，嚼服']].forEach(([k,v],i)=>{ptxt(ctx,k+v,lx,ly+8+i*46,{size:20,col:'#1f2a44',align:'left',font:FNUM,weight:700,sh:null});});
-    ptxt(ctx,'钙元素只来自碳酸钙',(bx+bw/2)*P,ly+8+4*46,{size:16,col:'#8a95ad',font:FNUM,weight:700,sh:null});
+  function tablet(ctx,x,y,r,k){ctx.save();ctx.fillStyle='rgba(31,42,68,.15)';ctx.beginPath();ctx.ellipse(x+3,y+r*.55,r,r*.45,0,0,TAU);ctx.fill();
+    const g=ctx.createRadialGradient(x-r*.3,y-r*.4,r*.1,x,y,r);g.addColorStop(0,'#ffffff');g.addColorStop(1,'#dfe5ee');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,r,r*.62,0,0,TAU);ctx.fill();ctx.strokeStyle=INK;ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle='#b9c3d6';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-r*.6,y);ctx.lineTo(x+r*.6,y);ctx.stroke();ctx.restore();}
+  function tick(dt){t+=dt;stT+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
+    // 药盒标签
+    const bx=30,by=36,bw=w*.46,bh=h-230;sticker(ctx,bx,by,bw,bh,{r:16,sh:6});ctx.save();rr(ctx,bx,by,bw,bh,16);ctx.clip();ctx.fillStyle='#ff6fa8';ctx.fillRect(bx,by,bw,64);ctx.fillStyle='#ffd23f';ctx.fillRect(bx,by+64,bw,6);ctx.restore();
+    ctx.strokeStyle=INK;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(bx,by+70);ctx.lineTo(bx+bw,by+70);ctx.stroke();
+    hand(ctx,'钙  片',bx+bw/2,by+34,{size:30,col:'#ffffff'});
+    [['主要成分','碳酸钙（CaCO₃）'],['规格','每片质量 2.5 g'],['含量','每片含钙 0.8 g'],['用法','每日 1 片，嚼服']].forEach(([k,v],i)=>{const y=by+108+i*46;
+      pill(ctx,k,bx+70,y,{size:14,fill:'#fff6d6'});txt(ctx,v,bx+128,y,{size:20,weight:700,align:'left'});});
+    txt(ctx,'（钙元素只来自碳酸钙）',bx+bw/2,by+108+4*46-6,{size:15,col:DIM,weight:700});
+    for(let k=0;k<4;k++)tablet(ctx,bx+bw*.2+k*bw*.2,by+bh-48+Math.sin(t*2+k)*2,26,k);
     // 提升题思路：点一步出一步
-    const rx=w*.56,ry=h*.12;ptxt(ctx,'提升：钙片中碳酸钙的质量分数',rx,ry,{size:20,col:'#e69500',align:'left'});
-    const SP=['① 每片含钙 0.8 g',`② ${'CaCO₃'} 中钙的质量分数：40 ÷ 100 × 100% = 40%`,'③ 碳酸钙质量 = 0.8 g ÷ 40% = 2 g','④ 质量分数 = 2 g ÷ 2.5 g × 100% = 80%'];
-    SP.forEach((s,i)=>{const y=ry+56+i*72;if(i<step){ctx.save();ctx.globalAlpha=i===step-1?Math.min(1,stT*3):1;wrapTxt(ctx,s,rx,y,w*.4,26,{size:19,col:i===3?'#1f9d6b':'#1f2a44'});ctx.restore();}
-      else{ctx.save();ctx.fillStyle='#eef3fa';rr(ctx,rx,y-18,w*.4,38,10);ctx.fill();ctx.setLineDash([6,5]);ctx.strokeStyle='#8a95ad';ctx.lineWidth=2;ctx.stroke();ctx.restore();ptxt(ctx,`第 ${i+1} 步  ？`,rx+w*.2,y+1,{size:18,col:'#8a95ad',font:FNUM,weight:700,sh:null});}});
-    if(step===0)ptxt(ctx,'先自己算，再点“下一步”看思路',rx,ry+56+4*72,{size:15,col:'#55617f',align:'left',font:FNUM,weight:700,sh:null});}
+    const rx=w*.54,rw=w*.43;hand(ctx,'提升：钙片中碳酸钙的质量分数',rx,58,{size:22,col:'#ff6fa8',align:'left'});
+    const SP=['① 每片含钙 0.8 g','② CaCO₃ 中钙的质量分数：40 ÷ 100 × 100% = 40%','③ 碳酸钙的质量 = 0.8 g ÷ 40% = 2 g','④ 质量分数 = 2 g ÷ 2.5 g × 100% = 80%'];
+    SP.forEach((s,i)=>{const y=110+i*84;ctx.save();if(i<step){ctx.globalAlpha=i===step-1?Math.min(1,stT*3):1;sticker(ctx,rx,y-28,rw,62,{r:12,sh:3,fill:i===3?'#e6f7ef':'#ffffff'});wrapTxt(ctx,s,rx+16,y+3,rw-32,26,{size:18,col:i===3?'#1f9d6b':INK});}
+      else{ctx.fillStyle='#eef3fa';rr(ctx,rx,y-28,rw,62,12);ctx.fill();ctx.setLineDash([7,6]);ctx.strokeStyle=FAINT;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);txt(ctx,`第 ${i+1} 步  ？`,rx+rw/2,y+3,{size:18,col:FAINT,weight:700});}ctx.restore();});
+    if(step===0)txt(ctx,'先自己算，再点“提升题思路：下一步”看思路',rx+rw/2,110+4*84-10,{size:15,col:DIM,weight:700});}
   const qp=qPanel($('#lbQ'),QB.lab,{src:'标签计算'});
   const calc=calcPad($('#lbCalc'),{onFill:v=>{if(!qp.fill(v)){return false;}}});
   $('#lbReset').onclick=()=>{step=0;qp.reset();calc.reset();};

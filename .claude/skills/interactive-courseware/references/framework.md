@@ -157,8 +157,21 @@
 - `VARS`：答错后 `VARS.arm(题干元素, q, 出处)`，题干出现粉色虚线和“答错了 · 点题目做变式”，点击弹出 3 道变式（不计分）；进度格红格、小结页“错题回顾”也能打开；翻页时弹窗自动关闭；`VARS.disarm` 在“重新开始”时清除。舞台任务（拖卡、分类、排序）传伪题 `{v:QB.xxxTask}` 即可共用。
 - 题库 `qbank.js` 里的构造函数叫 `QC/TF/N/RA`，**不要叫 `C`**（与公共库颜色表重名）。
 
-## 9. 像素角色引擎（`review4/src/pix.js`）
+## 9. 像素游戏角色：LPC 素材生成器流程（`review4/src/hero.js`、`sprites/`）
 
-- 角色是代码画的矢量木偶（64×72 画布），再量化到调色板、去掉半透明、加深色外描边，得到像素精灵；按“状态 + 帧号”缓存。状态：idle / attack / hit / jam（卡壳摔倒再爬起）/ win / ko。躺倒姿势在 110×96 的画布上旋转，避免被裁。
-- `pxStage(cv,4)`：每 4 个屏幕像素 = 1 个世界像素，返回低分辨率画布 `g` 和 `flush()`；`pixWorld(320,180)` + `blitWorld` 用于固定世界坐标的对战场景。`pr/pdisc/pring/pbox/ptxt` 是像素画工具，`pixParticles()` 是像素粒子，`sfx8()` 是 8-bit 音效，`drawMicro()` 画 ○ / ● 微观示意图。
-- 浅色主题下：`ptxt` 的默认投影是白色，标题横幅显式传 `sh:'#1f2a44'`；场景底色、气体、玻璃一律用浅色加墨色描边，不要用纯白直接画在白底上。
+老师要“精致好看、动作多”的游戏角色时，不要自己画木偶（第四单元复习第一版被评“太简陋”）。用 **Universal LPC Spritesheet Character Generator**（GitHub：LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator，素材 CC-BY-SA 3.0 / OGA-BY 3.0 / GPL 3.0，必须署名）：
+
+1. `git clone --depth 1 --filter=blob:none` 克隆（约 400 MB 素材），`npm ci --ignore-scripts`，`npx vite --port 5179 --strictPort` 后台运行（用 run_in_background，不要用 `timeout` 包着）。
+2. 角色用网址 hash 描述，例如 `sex=male&body=Body_Color_light&head=Human_Male_light&expression=Neutral_light&hair=Spiked2_red&clothes=Longsleeve_2_red&armour=Leather_brown&legs=Pants_charcoal&shoes=Basic_Boots_brown&cape=Solid_red&weapon=Arming_Sword_steel&belt=Leather_Belt_brown`（名称取 `sheet_definitions/*.json` 的 `name`，空格换下划线，再接颜色）。颜色要在该材质的调色板里（头发没有 sky，用 blue）。用 Playwright 打开页面，读“Current Selections”核对每件都解析成功。
+3. `scripts/lpc_sprites/export_lpc.js "<hash>" out.zip` 点“ZIP: Split by animation”导出各动作表（每行一个朝向：0 上、1 左、2 下、3 右；hurt 只有一行，是正面倒地）。
+4. **衣服和武器要选动作齐全的**：长袍只有施法 / 走路 / 受伤，其他动作会“光着身子”；单手剑 Arming Sword 有待机、战斗待机和三种挥砍（128 px 帧），简易法杖有施法和突刺。导出后先拼一张预览图逐行看。
+5. `scripts/lpc_sprites/make_atlas.py` 只保留需要的朝向和动作，裁成一张图集（约 90 KB）+ JSON（每个动作的 y、帧尺寸、帧数、脚底锚点：64 px 帧 (32,62)，128 px 帧 (64,94)）；构建时 base64 内嵌。
+6. 运行时 `drawHeroFrame(ctx,kind,anim,frame,x,y,scale)` 以脚底为锚点画帧，整数倍放大、关闭平滑；受击闪白用 `source-atop` 染色的图集副本。
+
+对战（`review4/src/p4.js`）：世界画布 256×144，整体放大约 3 倍；每名角色 3 种普通招式轮流使出（火：月牙斩 / 地面火轮 / 三连火球；水：水弹 / 地面冰棱 / 激流光束），提升题放必杀（流星火雨、巨浪），在动作的出手帧生成特效，特效命中时扣血；答错 = 起手 3 帧 → 抖动冒烟“卡壳！” → 倒地动画 → 躺 0.7 秒 → 倒放爬起。像素小工具 `pr/pdisc/pring/pixParticles/sfx8` 在 `pix.js`。提升题在两队回合之间平均分配。
+
+## 10. 拖放与矢量绘图（`assets/drag.js`、`assets/vec-draw.js`）
+
+- `DRAG.make(el,{drop(target,cx,cy)})`：指针移动超过 7 px 才算拖动（否则仍是点击），生成跟随指针的影子卡片（按 `#app` 的缩放换算），指针下方的 `[data-drop]` 元素高亮；落在画布上时 target 就是画布，用 `DRAG.cvPt(cv,cx,cy)` 换算画布坐标再判断落在哪个点 / 哪个水箱。拖动后吞掉随后的 click。
+- 画布里的小工具（木条、试管）用 `canvasUI` 的 `tools` + `onDrop`，按钮和拖放走同一个判定函数。
+- `vec-draw.js`：`sticker`（贴纸卡片）、`pill`（圆角标签）、`testTube`（圆底、卷边、高光，可倒置）、`beaker`、`lamp`/`flame`、`ball`（带高光的实心小球）、`drawMicro`（○ 浅色球 / ● 深色球微观图）、`grain`/`bacterium`/`pigmentMol`/`odorMol`（杂质）、`stream`（流动水柱）。

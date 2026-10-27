@@ -31,7 +31,7 @@ button{font:inherit;color:inherit}
 #deck.shaking{animation:quake .4s}
 @keyframes quake{20%{transform:translate(-7px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,3px)}}
 canvas{touch-action:none}
-.cvwrap canvas,.covcv canvas,.mc canvas{image-rendering:pixelated}
+#cvFight{image-rendering:pixelated}
 
 /* ---------- 页面骨架 ---------- */
 .slide{position:absolute;inset:0;overflow:hidden;padding:30px 56px 96px;
@@ -273,12 +273,14 @@ p{margin:0}
 /* ---------- 11 思维诊所 ---------- */
 .thw{position:absolute;inset:0;padding:22px}
 .thgrid{height:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:20px}
-.thc{position:relative;border:0;padding:0;background:transparent;cursor:pointer;perspective:900px;color:var(--ink)}
-.thc .f,.thc .b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;border:var(--bd);border-radius:18px;box-shadow:4px 4px 0 var(--ink);transition:transform .5s cubic-bezier(.3,1.3,.5,1);backface-visibility:hidden}
+.thc{position:relative;border:0;padding:0;background:transparent;cursor:pointer;color:var(--ink)}
+.thc .f,.thc .b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px 26px;border:var(--bd);border-radius:18px;box-shadow:4px 4px 0 var(--ink)}
 .thc .f{background:#fff}.thc:nth-child(1) .f{background:#ffe0d6}.thc:nth-child(2) .f{background:#d6f5ef}.thc:nth-child(3) .f{background:#e9e3ff}.thc:nth-child(4) .f{background:#dff1fb}
-.thc .b{background:#fffdf3;transform:rotateY(180deg)}
-.thc.on .f{transform:rotateY(180deg)}.thc.on .b{transform:none}
-.thc b{font:400 42px var(--f-hand);color:var(--ink)}.thc span{font-size:19px;font-weight:700;line-height:1.5;text-align:center}.thc i{font-style:normal;color:var(--dim);font-size:14px;font-weight:700}
+.thc .b{background:#fffdf3;display:none}
+.thc.on .f{display:none}.thc.on .b{display:flex;animation:flipIn .32s ease-out}
+.thc:not(.on) .f{animation:flipIn .32s ease-out}
+@keyframes flipIn{from{transform:scaleX(.05)}to{transform:none}}
+.thc b{font:400 42px var(--f-hand);color:var(--ink)}.thc span{font-size:20px;font-weight:700;line-height:1.55;text-align:center}.thc i{font-style:normal;color:var(--dim);font-size:14px;font-weight:700}
 /* ---------- 12 对战 ---------- */
 .qcard{display:flex;flex-direction:column;gap:12px;height:100%}
 .qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -303,3 +305,11 @@ p{margin:0}
 .fres span.ok{background:#e6f7ef;color:var(--okc)}.fres span.no{background:#fdeaea;color:var(--badc)}
 .fres span.r b{color:var(--coral)}.fres span.b b{color:var(--sky)}
 .mc .fixl{position:absolute;left:0;right:0;bottom:0;background:var(--badc);color:#fff;font:700 13px/1.6 var(--f-body);font-style:normal}
+.dragghost{position:absolute;z-index:70;pointer-events:none;margin:0!important;transform:rotate(-3deg) scale(1.06)!important;box-shadow:6px 8px 0 rgba(31,42,68,.35)!important;opacity:.95}
+.dragsrc{opacity:.35}
+[data-drop].dropon,.slot.dropon,.bin.dropon{outline:4px solid var(--sun);outline-offset:2px;background:#fffbe6}
+.mcard,.mc{cursor:grab}
+.atm{display:inline-block;width:15px;height:15px;border-radius:50%;border:1.6px solid var(--ink);vertical-align:-2px}.atm.a{background:radial-gradient(circle at 35% 30%,#fff,#e3e7ee)}.atm.b{background:radial-gradient(circle at 35% 30%,#8ea3c8,#3b4f7a)}
+.kkeys.gone{display:none}
+.qst{font-size:16px;line-height:1.55}
+.side>.panel{flex-shrink:0}.side>.panel.grow{flex-shrink:1}

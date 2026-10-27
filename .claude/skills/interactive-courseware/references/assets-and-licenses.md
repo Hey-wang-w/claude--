@@ -49,3 +49,10 @@
 
 - 小结页底部（或目录弹窗）加一行小字写明素材来源，README 里也写一份。
 - CC0 不强制署名，但写上更规范；CC BY 必须署名。
+
+## LPC 像素角色素材（第四单元复习对战用）
+
+- 来源：GitHub `LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator`（GitHub 可访问；OpenGameArt 被拦截也不影响，素材都在仓库里）。
+- 授权：CC-BY-SA 3.0 / OGA-BY 3.0 / GPL 3.0（逐件不同），**必须署名**：导出时一并保存 `credits.txt`，放进 `src/sprites/lpc/*/CREDITS.txt`，课件小结页和 README 写明来源与授权。
+- 动作：spellcast、thrust、walk、slash、shoot、hurt（正面倒地）、idle、combat_idle、jump、run、emote、1h 挥砍等；武器只在它支持的动作里出现，选装备前先看 `sheet_definitions` 的 animations。
+- 流程见 `framework.md` 第 9 节与 `scripts/lpc_sprites/`。

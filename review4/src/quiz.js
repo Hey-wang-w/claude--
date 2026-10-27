@@ -30,6 +30,7 @@ function qView(box,q,{scored=true,pts=5,head='',onJudge}={}){let pick=null,val='
     done=true;const{ok,msg}=judgeQ(q,v),tm=TEAM.cur;
     if(q.t==='c'||q.t==='tf')$$('.opt',box).forEach(b=>{const bv=q.t==='tf'?b.dataset.v==='1':+b.dataset.v;b.disabled=true;if(bv===q.a)b.classList.add('right');else if(bv===v)b.classList.add('wrong');});
     if(scr){scr.classList.add(ok?'right':'wrong');$('.cur',scr)?.remove();}
+    $('.kkeys',box)?.classList.add('gone');// 判分后收起键盘，给解析腾出位置
     $('[data-a="sub"]',box).disabled=true;
     if(scored){if(ok){teamAdd(pts,tm);sfx('ok');setSt(st,'ok',`<b>${tname(tm)}答对 +${pts}</b>　${msg}${q.w}`);}else{sfx('bad');setSt(st,'bad',`<b>${tname(tm)}答错，不加分</b>　${msg}正确答案：<b>${ansText(q)}</b>。${q.w}`);}teamNext();}
     else{sfx(ok?'ok':'bad');setSt(st,ok?'ok':'bad',`<b>${ok?'巩固成功！':'还没掌握'}</b>　${msg}${ok?'':`正确答案：<b>${ansText(q)}</b>。`}${q.w}`);}
