@@ -154,6 +154,7 @@
 
 - 题目格式：`{t:'c'|'tf'|'n'|'r', q, o, a, w, unit, dp, tol, pic, pts, v:[3 道变式]}`。`c` 选择、`tf` 判断、`n` 数值（数字键盘；`dp` 规定小数位，位数不对判错并提示）、`r` 比值（等价比判对并提示是否要求最简）。`pic` 放微观示意图，`pts` 覆盖分值（提升题 20）。
 - `qView(box,q,{pts,onJudge})`：一道题；`qPanel(box,list,{src})`：一组题加进度格，返回 `{reset,fill}`（`fill` 供计算器“填入答案”）。
+- **变式随时可开**（第一单元复习起）：`qView` 在题干右上角放常驻“变式 3”按钮（`.vbtn`，`vsrc` 指出处），答错后加 `.hot` 变红闪动；竞赛题传 `vbtn:'after'`，判分后才出现。弹窗底部圆点是按钮，可跳到任意一道。拖放任务用 `varBtn(提交按钮, 变式数组, 出处)` 在“提交”旁加“变式练习”按钮（`review1/src/p1.js`）。
 - `VARS`：答错后 `VARS.arm(题干元素, q, 出处)`，题干出现粉色虚线和“答错了 · 点题目做变式”，点击弹出 3 道变式（不计分）；进度格红格、小结页“错题回顾”也能打开；翻页时弹窗自动关闭；`VARS.disarm` 在“重新开始”时清除。舞台任务（拖卡、分类、排序）传伪题 `{v:QB.xxxTask}` 即可共用。
 - 题库 `qbank.js` 里的构造函数叫 `QC/TF/N/RA`，**不要叫 `C`**（与公共库颜色表重名）。
 
@@ -176,3 +177,13 @@
 - 画布里的小工具（木条、试管）用 `canvasUI` 的 `tools` + `onDrop`，按钮和拖放走同一个判定函数。
 - 化学 / 符号表达式：`EQ(左,条件,右)` 生成 `<span class="eqarr"><small>条件</small></span>`，箭头由 CSS 画（`::before` 横线 + `::after` 三角），条件小字 `bottom:74%` 居中在箭头上方（见 `review4/src/review4.css`）。
 - `vec-draw.js`：`wrapLines`（按宽度拆行，文本框高度随行数自适应）、`paintStatic`（只画一次的画布，窗口缩放后自动重画）、`sticker`（贴纸卡片）、`pill`（圆角标签）、`testTube`（圆底、卷边、高光，可倒置）、`beaker`、`lamp`/`flame`、`ball`（带高光的实心小球）、`drawMicro`（○ 浅色球 / ● 深色球微观图）、`grain`/`bacterium`/`pigmentMol`/`odorMol`（杂质）、`stream`（流动水柱）。
+
+## 11. 画布虚拟实验的通用件（`review1/src/p2.js`、`assets/apparatus.js`）
+
+- `scene(w,h,1000,600,70)`：把 1000×600 的场景坐标等比缩放进画布（底部留 70 px 给工具栏），返回 `{k,ox,oy,toS,toC}`；场景里按真实比例摆仪器（例如试管直径 1.8 cm = 40 px）。
+- `resultCard(ctx,x,y,w,标题,[[对错,文字],…])`：操作结束后右上角的结果卡，逐条 ✓ / ✗，文字自动换行、卡片高度自适应。
+- `caption(ctx,文字,x,y,指向x,指向y)`：手写说明 + 虚线引线；初始状态用它标出“可以点的地方”和当前做法（例如“瓶塞：正放”）。
+- `dragHints(ctx,ui,G,{工具id:[x,y,半径,说明]},t)`：拖动时画虚线放置目标和跟手的影子（`canvasUI` 返回的 `ui.draw`）。**必须调用**，否则拖动时画面上什么都不动。
+- `tubeClip(ctx,…)`：倾斜试管里的液面按重力方向画（先裁成试管形状，再填水平液面）。
+- `AP`（`assets/apparatus.js`）：试管、烧杯、蒸发皿、燃烧匙（照教材实物）、烧瓶、锥形瓶、量筒、集气瓶、漏斗、胶头滴管、细口瓶 / 广口瓶 / 瓶塞、试管架、试管夹（长柄 + 短柄 + 钢丝弹簧，`holder(ctx,x,y,u,ang,tubeR)`）、镊子、药匙、火柴、蜡烛与三层火焰；`gripHand / openHand`（2D 手，只在必须时用，见 SKILL.md 第 2 节）。
+- 课本标志 / 插图：`scripts/extract_pdf_figure.py` 把 PDF 页按 600 dpi 渲染、按非白像素自动切图、可把菱形外设为透明，输出 base64 的 JS 常量（`review1/src/signs.js`）。

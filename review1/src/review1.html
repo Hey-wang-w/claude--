@@ -1,0 +1,207 @@
+<!-- 1 封面 -->
+<section class="slide" data-id="cover" data-title="封面 · 第一单元复习" data-min="1">
+  <div class="covx">
+    <div class="covtxt">
+      <span class="eyebrow">人教版 · 九年级化学上册 · 单元复习</span>
+      <div class="bigno">01</div>
+      <h1>走进<em>化学世界</em></h1>
+      <div class="halls">
+        <p style="--i:0"><b>展厅 一</b>化学使世界变得更加绚丽多彩</p>
+        <p style="--i:1"><b>展厅 二</b>化学实验与科学探究</p>
+      </div>
+      <div class="row" style="margin-top:20px"><button class="btn pri big" data-go="next">开始参观 →</button></div>
+    </div>
+    <div class="covcv"><canvas id="cvCover"></canvas></div>
+  </div>
+</section>
+
+<!-- 2 导览图 -->
+<section class="slide" data-id="map" data-title="单元导览图" data-min="2">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">02</span><div><p class="eyebrow">展厅导览</p><h2>把知识卡放回导览图</h2></div></div>
+      <div class="tools"><button class="btn sm" id="mpReset">重新开始</button></div></header>
+    <div class="stage mapw" data-cap="图 02 · 单元知识导览">
+      <div class="mapgrid" id="mpGrid"></div>
+      <div class="cardtray" id="mpTray"></div>
+      <div class="trayctl"><span class="status" id="mpSt">把卡片拖进空格（或先点卡片、再点空格）；点已填的空格可取回。有 3 张是干扰卡。</span><button class="btn pri" id="mpSub">提交</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 变化分拣 -->
+<section class="slide" data-id="change" data-title="物理变化与化学变化" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">03</span><div><p class="eyebrow">展厅一 · 物质的变化</p><h2>变化分拣台：有没有生成新物质？</h2></div></div>
+      <div class="tools"><button class="btn sm" id="chReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 03 · 变化分拣">
+        <div class="sortw"><div class="bins n2" id="chBins"></div><div class="cardtray" id="chTray"></div>
+          <div class="trayctl"><span class="status" id="chSt">把变化卡片拖进展柜（或先点卡片、再点展柜）。判断依据：有没有生成新物质。</span><button class="btn pri" id="chSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="swap-horizontal"></span>变化小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="chQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 4 性质与变化 -->
+<section class="slide" data-id="prop" data-title="性质与变化的辨析" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">04</span><div><p class="eyebrow">展厅一 · 物质的性质</p><h2>“能燃烧”和“燃烧了”一样吗？</h2></div></div>
+      <div class="tools"><button class="btn sm" id="prReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 04 · 性质与变化">
+        <div class="sortw"><div class="bins n4" id="prBins"></div><div class="cardtray" id="prTray"></div>
+          <div class="trayctl"><span class="status" id="prSt">把句子拖进四个展柜。提示：描述“能、会、易、可以”多是性质；“正在、已经”发生的是变化。</span><button class="btn pri" id="prSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="tag-text-outline"></span>性质与用途 <span class="hint" data-teamlbl>红队答题</span></h3><div id="prQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 仪器博物馆 -->
+<section class="slide" data-id="museum" data-title="常见仪器" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">05</span><div><p class="eyebrow">展厅二 · 常见仪器</p><h2>仪器博物馆：能不能加热？</h2></div></div>
+      <div class="tools"><button class="btn sm" id="muReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 05 · 仪器分区陈列">
+        <div class="sortw"><div class="bins n3" id="muBins"></div><div class="cardtray ex" id="muTray"></div>
+          <div class="trayctl"><span class="status" id="muSt">把展品拖进对应的展区；点展品可以看它的展签。</span><button class="btn pri" id="muSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="flask-outline"></span>仪器小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="muQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 6 实验室安全 -->
+<section class="slide" data-id="safety" data-title="实验室安全" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">06</span><div><p class="eyebrow">展厅二 · 实验室安全</p><h2>认标志，会处理意外</h2></div></div>
+      <div class="tools"><button class="btn sm" id="sfReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 06 · 安全须知">
+        <div class="safew"><h5>一 · 危险化学品标志（教材图 1-11）</h5><div class="signs" id="sfSigns"></div><h5>二 · 意外事故处理</h5><div class="accs" id="sfAccs"></div><div class="cardtray sm" id="sfTray"></div>
+          <div class="trayctl"><span class="status" id="sfSt">把名称拖到标志下面，把处理方法拖到对应的意外事故旁。</span><button class="btn pri" id="sfSub">提交</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="shield-alert-outline"></span>安全小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="sfQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 7 药品取用 -->
+<section class="slide" data-id="take" data-title="药品的取用" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">07</span><div><p class="eyebrow">展厅二 · 基本操作</p><h2>药品的取用</h2></div></div>
+      <div class="tools"><button class="btn sm" id="tkReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 07 · 取用药品">
+        <div class="cvwrap"><canvas id="cvTake"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="tkM0" aria-pressed="true">倾倒液体</button><button class="btn" id="tkM1">取用块状固体</button><button class="btn" id="tkM2">滴加液体</button><span class="sep"></span><button class="btn pri" id="tkGo">开始操作</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="hand-back-left-outline"></span>取用小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="tkQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 8 量筒读数 -->
+<section class="slide" data-id="cyl" data-title="量筒的读数" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">08</span><div><p class="eyebrow">展厅二 · 基本操作</p><h2>量筒读数：视线放在哪？</h2></div></div>
+      <div class="tools"><button class="btn sm" id="cyReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 08 · 量筒读数">
+        <div class="cvwrap"><canvas id="cvCyl"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="cyM0" aria-pressed="true">读数</button><button class="btn" id="cyM1">量取 30 mL</button><span class="sep"></span><button class="btn" id="cyUp">仰视</button><button class="btn" id="cyLv">平视</button><button class="btn" id="cyDn">俯视</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="eye"></span>读数小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="cyQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 9 酒精灯与加热 -->
+<section class="slide" data-id="lamp" data-title="酒精灯与物质的加热" data-min="4">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">09</span><div><p class="eyebrow">展厅二 · 基本操作</p><h2>酒精灯与给液体加热</h2></div></div>
+      <div class="tools"><button class="btn sm" id="lpReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 09 · 加热">
+        <div class="cvwrap"><canvas id="cvLamp"></canvas></div>
+        <div class="ctlbar" id="lpBar"></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="fire"></span>加热小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="lpQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 10 气密性 -->
+<section class="slide" data-id="air" data-title="检查装置的气密性" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">10</span><div><p class="eyebrow">展厅二 · 基本操作</p><h2>检查装置的气密性</h2></div></div>
+      <div class="tools"><button class="btn sm" id="arReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 10 · 气密性检查">
+        <div class="cvwrap"><canvas id="cvAir"></canvas></div>
+        <div class="ctlbar"><button class="btn pri" id="arHold">手握试管</button><button class="btn" id="arLet">松开手</button><span class="sep"></span><button class="btn" id="arLeak" aria-pressed="false">换成漏气的装置</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="water-outline"></span>气密性小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="arQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 11 操作诊所 -->
+<section class="slide" data-id="clinic" data-title="实验操作诊所" data-min="3">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">11</span><div><p class="eyebrow">展厅二 · 操作正误</p><h2>操作诊所：哪些做法有问题？</h2></div></div>
+      <div class="tools"><button class="btn sm" id="clReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 11 · 操作诊所">
+        <div class="clinw"><div class="clin" id="clGrid"></div>
+          <div class="trayctl"><span class="status" id="clSt">点出有错误的操作（再点取消），选好后提交。</span><button class="btn pri" id="clSub">提交诊断</button></div></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="clipboard-check-outline"></span>规范小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="clQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 12 蜡烛探究 -->
+<section class="slide" data-id="candle" data-title="对蜡烛及其燃烧的探究" data-min="4">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">12</span><div><p class="eyebrow">展厅二 · 科学探究</p><h2>蜡烛燃烧的探究</h2></div></div>
+      <div class="tools"><button class="btn sm" id="cnReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 12 · 蜡烛及其燃烧">
+        <div class="cvwrap"><canvas id="cvCandle"></canvas></div>
+        <div class="ctlbar"><button class="btn" id="cnWater">切一块放入水中</button><button class="btn" id="cnMatch">火柴梗放入火焰</button><button class="btn" id="cnDry">罩干冷烧杯</button><button class="btn" id="cnLime">罩石灰水烧杯</button><button class="btn" id="cnOut">吹灭蜡烛</button></div>
+      </div>
+      <aside class="side mid"><div class="panel"><h3><span data-i="candle"></span>探究小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="cnQ"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 13 实验室寻宝 -->
+<section class="slide" data-id="hunt" data-title="竞赛：实验室寻宝" data-min="8">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">13</span><div><p class="eyebrow">特别展 · 红蓝对抗</p><h2>实验室寻宝</h2></div></div>
+      <div class="tools"><button class="btn sm" id="htReset">重新开始</button></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 13 · 实验室平面图"><div class="cvwrap"><canvas id="cvHunt"></canvas></div></div>
+      <aside class="side"><div class="panel grow"><div class="qcard" id="htCard"></div></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 14 小结 -->
+<section class="slide" data-id="sum" data-title="小结：易错点清单" data-min="2">
+  <div class="frame">
+    <header class="hd"><div class="ttl"><span class="pno">14</span><div><p class="eyebrow">出口 · 参观小结</p><h2>易错点清单</h2></div></div></header>
+    <div class="body two">
+      <div class="stage" data-cap="图 14 · 易错点"><div class="sumgrid" id="suGrid"></div>
+        <div class="ctlbar"><button class="btn pri" id="suAll">全部翻开</button><button class="btn" id="suHide">全部盖住</button></div></div>
+      <aside class="side">
+        <div class="panel"><h3><span data-i="trophy"></span>本节成绩</h3><div class="score" id="suScore"></div></div>
+        <div class="panel grow"><h3><span data-i="refresh"></span>错题回顾 · 变式完成情况</h3><div class="vlog" id="suLog"></div>
+          <p class="credit">图标几何：Material Design Icons（Apache 2.0）；字体：站酷快乐体、思源黑体（SIL OFL）；危险化学品标志取自教材图 1-11（GB 190—2009）；仪器为代码绘制。</p></div>
+      </aside>
+    </div>
+  </div>
+</section>
