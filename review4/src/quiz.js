@@ -22,7 +22,7 @@ function qView(box,q,{scored=true,pts=5,head='',onJudge}={}){let pick=null,val='
      :`<div class="kscreen"><span>&nbsp;</span><span class="cur"></span>${q.unit?`<span class="unit">${q.unit}</span>`:''}</div><div class="kkeys w7">${keyset.map(k=>`<button data-k="${k}" class="${/[⌫C∶%]/.test(k)?'fn':''}">${k==='⌫'?'退格':k==='C'?'清空':k}</button>`).join('')}</div>`}
     <div class="row qrowbtn"><button class="btn pri sm" data-a="sub">提交</button></div><div class="status qst">${scored?`答对 +${pts}`:'变式练习不计分'}</div></div>`;
   const st=$('.qst',box),stem=$('.qstem',box),scr=$('.kscreen',box);
-  if(q.pic){const cv=$('.qpic',box);requestAnimationFrame(()=>{const{ctx,w,h}=fitS(cv);q.pic(ctx,w,h);});}
+  if(q.pic)paintStatic($('.qpic',box),q.pic);
   $$('.opt',box).forEach(b=>b.onclick=()=>{if(done)return;pick=q.t==='tf'?b.dataset.v==='1':+b.dataset.v;$$('.opt',box).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sfx('click');});
   const show=()=>{if(scr)scr.firstChild.textContent=val||' ';};
   $$('.kkeys button',box).forEach(b=>b.onclick=()=>{if(done)return;const k=b.dataset.k;if(k==='⌫')val=val.slice(0,-1);else if(k==='C')val='';else if(k==='%'){if(!val.endsWith('%'))val+='%';}else if(val.length<12&&!val.endsWith('%'))val+=k;sfx('tick');show();});

@@ -165,7 +165,7 @@
 2. 角色用网址 hash 描述，例如 `sex=male&body=Body_Color_light&head=Human_Male_light&expression=Neutral_light&hair=Spiked2_red&clothes=Longsleeve_2_red&armour=Leather_brown&legs=Pants_charcoal&shoes=Basic_Boots_brown&cape=Solid_red&weapon=Arming_Sword_steel&belt=Leather_Belt_brown`（名称取 `sheet_definitions/*.json` 的 `name`，空格换下划线，再接颜色）。颜色要在该材质的调色板里（头发没有 sky，用 blue）。用 Playwright 打开页面，读“Current Selections”核对每件都解析成功。
 3. `scripts/lpc_sprites/export_lpc.js "<hash>" out.zip` 点“ZIP: Split by animation”导出各动作表（每行一个朝向：0 上、1 左、2 下、3 右；hurt 只有一行，是正面倒地）。
 4. **衣服和武器要选动作齐全的**：长袍只有施法 / 走路 / 受伤，其他动作会“光着身子”；单手剑 Arming Sword 有待机、战斗待机和三种挥砍（128 px 帧），简易法杖有施法和突刺。导出后先拼一张预览图逐行看。
-5. `scripts/lpc_sprites/make_atlas.py` 只保留需要的朝向和动作，裁成一张图集（约 90 KB）+ JSON（每个动作的 y、帧尺寸、帧数、脚底锚点：64 px 帧 (32,62)，128 px 帧 (64,94)）；构建时 base64 内嵌。
+5. `scripts/lpc_sprites/make_atlas.py` 只保留需要的朝向和动作，裁成一张图集（约 90 KB）+ JSON（每个动作的 y、帧尺寸、帧数、脚底锚点：64 px 帧 (32,63)，128 px 帧 (64,95)）；构建时 base64 内嵌。
 6. 运行时 `drawHeroFrame(ctx,kind,anim,frame,x,y,scale)` 以脚底为锚点画帧，整数倍放大、关闭平滑；受击闪白用 `source-atop` 染色的图集副本。
 
 对战（`review4/src/p4.js`）：世界画布 256×144，整体放大约 3 倍；每名角色 3 种普通招式轮流使出（火：月牙斩 / 地面火轮 / 三连火球；水：水弹 / 地面冰棱 / 激流光束），提升题放必杀（流星火雨、巨浪），在动作的出手帧生成特效，特效命中时扣血；答错 = 起手 3 帧 → 抖动冒烟“卡壳！” → 倒地动画 → 躺 0.7 秒 → 倒放爬起。像素小工具 `pr/pdisc/pring/pixParticles/sfx8` 在 `pix.js`。提升题在两队回合之间平均分配。

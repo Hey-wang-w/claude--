@@ -19,7 +19,7 @@ for hero,name,f,s,r in SPEC:
 W=max(st[2].size[0] for st in strips);Ht=sum(st[2].size[1] for st in strips)
 at=Image.new('RGBA',(W,Ht));y=0
 for hero,name,row,s,n in strips:
-  at.paste(row,(0,y));meta.setdefault(hero,{})[name]={'y':y,'s':s,'n':n,'ax':s//2,'ay':62 if s==64 else 94};y+=s
+  at.paste(row,(0,y));meta.setdefault(hero,{})[name]={'y':y,'s':s,'n':n,'ax':s//2,'ay':63 if s==64 else 95};y+=s
 at.save(f'{H}/heroes.png',optimize=True)
 json.dump(meta,open(f'{H}/heroes.json','w'),separators=(',',':'))
 print(at.size,os.path.getsize(f'{H}/heroes.png'),{h:{k:v['n'] for k,v in m.items()} for h,m in meta.items()})

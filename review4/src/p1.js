@@ -9,7 +9,7 @@ S.cover=(()=>{const cv=$('#cvCover');let t=0,drops=[];
     sticker(ctx,w*.06,gy,w*.88,28,{r:14,fill:'#ffd23f',sh:6});ctx.fillStyle='rgba(255,255,255,.55)';rr(ctx,w*.08,gy+5,w*.84,5,3);ctx.fill();
     const s=Math.max(3,Math.floor(Math.min(w/150,h/140)));
     [['fire',w*.28],['water',w*.72]].forEach(([k,x])=>{ctx.fillStyle='rgba(31,42,68,.18)';ctx.beginPath();ctx.ellipse(x,gy+1,15*s,3.2*s,0,0,TAU);ctx.fill();});
-    drawHeroIdle(ctx,'fire',t,w*.28,gy+2*s,s);drawHeroIdle(ctx,'water',t+.4,w*.72,gy+2*s,s);
+    drawHeroIdle(ctx,'fire',t,w*.28,gy,s);drawHeroIdle(ctx,'water',t+.4,w*.72,gy,s);
     // VS
     const k=1+.06*Math.sin(t*5);ctx.save();ctx.translate(w*.5,gy-h*.22);ctx.scale(k,k);ctx.rotate(-.08);ctx.font=`900 ${Math.round(h*.13)}px ${FNUM}`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.lineJoin='round';ctx.lineWidth=12;ctx.strokeStyle=INK;ctx.strokeText('VS',6,6);ctx.fillStyle=INK;ctx.fillText('VS',6,6);ctx.strokeText('VS',0,0);ctx.fillStyle='#ff6fa8';ctx.fillText('VS',0,0);ctx.restore();

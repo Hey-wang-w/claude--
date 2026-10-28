@@ -78,3 +78,10 @@ const microPic=(spec,seed=1)=>(ctx,w,h)=>{const s=Math.min(h-8,w*.5);drawMicro(c
 /* 水流：沿折线画，带流动的高光虚线 */
 function stream(ctx,pts,col,w,t){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
   ctx.setLineDash([6,14]);ctx.lineDashOffset=-t*80;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=Math.max(1,w*.35);ctx.stroke();ctx.restore();}
+/* 静态小画布（微观图卡片、题目配图）：只画一次的画布按“版面尺寸 × 当前缩放 × 设备像素比（至少 2 倍）”绘制，
+   窗口大小变化（如进入全屏）后自动重画——否则先在小窗口里画好的图放大后会发虚，要点一下才清晰。 */
+const STATIC=new Set();
+function paintStatic(cv,fn){cv._paint=fn;STATIC.add(cv);const w=cv.offsetWidth,h=cv.offsetHeight;if(!w||!h){requestAnimationFrame(()=>paintStatic(cv,fn));return;}
+  const app=$('#app'),k=(app.getBoundingClientRect().width/app.offsetWidth)||1,dpr=Math.max(2,(window.devicePixelRatio||1)*k);
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);fn(ctx,w,h);}
+addEventListener('resize',()=>{clearTimeout(paintStatic._t);paintStatic._t=setTimeout(()=>{STATIC.forEach(cv=>{if(!cv.isConnected){STATIC.delete(cv);return;}paintStatic(cv,cv._paint);});},150);});

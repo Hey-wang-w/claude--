@@ -89,15 +89,18 @@ function wrapTxt(ctx,s,x,y,maxW,lh,{size=16,col=INK,font=FNUM,weight=700}={}){ct
 
 /* ================= 6 氢气档案：属性卡 + 验纯演示 ================= */
 S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
-  // 两支收集好氢气的试管（管口向下），拖到酒精灯火焰上验纯；按钮会自动演示
+  // 两支收集好氢气的试管（管口斜向下），拖到酒精灯火焰旁验纯；按钮会自动演示
   const home=k=>G.home?G.home[k]:[0,0];
   const TUBES=()=>G.home&&!demo?[0,1].map(k=>({id:k,x:home(k)[0],y:home(k)[1],r:60,draw:(c,x,y)=>tubeAt(c,x,y,k)})):[];
-  function tubeAt(c,x,y,k){testTube(c,x,y+70,150,34,Math.PI,{gas:'rgba(235,245,255,.75)'});// 管口朝下：(x,y+70) 是管口
-    c.save();c.fillStyle='#ffd9bb';c.strokeStyle=INK;c.lineWidth=1.6;rr(c,x-14,y+66,28,14,7);c.fill();c.stroke();c.restore();// 拇指堵住管口
-    pill(c,k?'B：较纯':'A：不纯',x,y-102,{size:14,fill:k?'#e6f7ef':'#fdeaea'});}
+  // 验纯的试管：管口斜向下（与竖直方向约成 45°），拇指堵住管口；(x,y) 是试管中点，管口在左下方
+  const TA=Math.PI*1.25,TL=150,TD=[Math.sin(Math.PI*.25),-Math.cos(Math.PI*.25)];// TD：从管口指向管底的方向（右上）
+  const mouthOf=(x,y)=>[x-TD[0]*TL/2,y-TD[1]*TL/2];
+  function tubeAt(c,x,y,k,thumb=true){const[mx,my]=mouthOf(x,y);testTube(c,mx,my,TL,34,TA,{gas:'rgba(235,245,255,.75)'});
+    if(thumb){c.save();c.translate(mx,my);c.rotate(TA);c.fillStyle='#ffd9bb';c.strokeStyle=INK;c.lineWidth=1.6;rr(c,-16,-12,32,15,7);c.fill();c.stroke();c.restore();}// 拇指堵住管口
+    pill(c,k?'B：较纯':'A：不纯',x+TD[0]*TL/2+6,y+TD[1]*TL/2-26,{size:14,fill:k?'#e6f7ef':'#fdeaea'});}
   function start(pure){if(demo)return;demo={pure,t:0,snd:false,from:home(pure?1:0)};sfx8('blip');}
   $('#hyImp').onclick=()=>start(false);$('#hyPure').onclick=()=>start(true);
-  const ui=canvasUI(cv,{tools:TUBES,onDrop:(id,x,y)=>{if(!G.flame)return false;const[fx,fy]=G.flame;if(Math.abs(x-fx)<90&&y>fy-260&&y<fy+40){demo={pure:id===1,t:.6,snd:false,from:[x,y]};return true;}return false;}});
+  const ui=canvasUI(cv,{tools:TUBES,onDrop:(id,x,y)=>{if(!G.flame)return false;const[fx,fy]=G.flame;if(Math.abs(x-(fx+61))<120&&y>fy-240&&y<fy+40){demo={pure:id===1,t:.6,snd:false,from:[x,y]};return true;}return false;}});
   function tick(dt){t+=dt;if(demo)demo.t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
     // 左：氢气档案卡
     const cx0=26,cw=w*.4,ch=h-120;sticker(ctx,cx0,24,cw,ch,{r:18,sh:6});hand(ctx,'氢气 H₂ 档案',cx0+cw/2,62,{size:26});
@@ -108,18 +111,18 @@ S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
     props.forEach(([k,v],i)=>{const y=212+i*(ch-210)/5;ctx.strokeStyle='#e3e9f2';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx0+24,y-16);ctx.lineTo(cx0+cw-24,y-16);ctx.stroke();
       txt(ctx,k,cx0+28,y+4,{size:15,col:DIM,weight:700,align:'left'});txt(ctx,v,cx0+28,y+30,{size:18,weight:700,align:'left'});});
     // 右：验纯演示区
-    const ax=w*.46,aw=w-ax-20,lx=ax+aw*.36,ly=h-128;G.flame=[lx,ly-106*.95];G.home=[[ax+aw*.72,ly-300],[ax+aw*.9,ly-300]];
+    const ax=w*.46,aw=w-ax-20,lx=ax+aw*.36,ly=h-128;G.flame=[lx,ly-106*.95];G.home=[[ax+aw*.54,ly-290],[ax+aw*.8,ly-290]];
     hand(ctx,'点燃前一定要验纯',ax+aw/2,46,{size:26,col:'#ff6fa8'});
-    let msg='把试管拖到火焰上方（管口向下）',mc=DIM;if(demo&&demo.t>1)msg=demo.pure?'“噗”的一声，声音很小 → 氢气较纯':'发出尖锐爆鸣声 → 氢气不纯，不能点燃！',mc=demo&&demo.t>1?(demo.pure?OKC:BADC):DIM;
+    let msg='把试管拖到火焰旁（管口斜向下），移开拇指点火',mc=DIM;if(demo&&demo.t>1)msg=demo.pure?'“噗”的一声，声音很小 → 氢气较纯':'发出尖锐爆鸣声 → 氢气不纯，不能点燃！',mc=demo&&demo.t>1?(demo.pure?OKC:BADC):DIM;
     txt(ctx,msg,ax+aw/2,88,{size:18,weight:700,col:mc});
     lamp(ctx,lx,ly,.95,true,t);txt(ctx,'酒精灯',lx+92,ly-24,{size:15,col:DIM,weight:700});
-    if(demo){const q=ease(Math.min(1,demo.t/.6)),tx=lerp(demo.from[0],lx,q),ty=lerp(demo.from[1],ly-250,q);
-      if(demo.t>1&&!demo.snd){demo.snd=true;if(demo.pure){sfx('pop');for(let k=0;k<10;k++)sp.push({x:lx,y:ly-170,vx:(Math.random()-.5)*80,vy:-40-Math.random()*60,life:1,c:'#9fd8ff',r:4});}
-        else{sfx8('hit');sfx('boom');shake();for(let k=0;k<40;k++){const a=Math.random()*TAU,v=80+Math.random()*220;sp.push({x:lx,y:ly-170,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,c:['#ffd23f','#ff9a1f','#ff7a5c','#ffffff'][k%4],r:3+Math.random()*4});}}}
-      if(!demo.pure&&demo.t>1&&demo.t<1.5){const k=(demo.t-1)/.5;ctx.save();ctx.globalAlpha=1-k;const g=ctx.createRadialGradient(lx,ly-170,4,lx,ly-170,40+160*k);g.addColorStop(0,'rgba(255,240,180,.95)');g.addColorStop(.5,'rgba(255,160,60,.6)');g.addColorStop(1,'rgba(255,120,60,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(lx,ly-170,40+160*k,0,TAU);ctx.fill();ctx.restore();}
-      if(demo.pure&&demo.t>1&&demo.t<1.6){ctx.save();ctx.globalAlpha=1-(demo.t-1)/.6;const g=ctx.createRadialGradient(lx,ly-176,2,lx,ly-176,26);g.addColorStop(0,'rgba(170,205,255,.95)');g.addColorStop(1,'rgba(120,170,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(lx,ly-176,26,0,TAU);ctx.fill();ctx.restore();}
-      tubeAt(ctx,tx,ty,demo.pure?1:0);
-      if(demo.t>1&&demo.t<2.2)pill(ctx,demo.pure?'噗':'砰！',lx+120,ly-250,{size:demo.pure?22:34,fill:demo.pure?'#dff1fb':'#ffe0d6',col:demo.pure?'#1f9fd6':'#e5484d'});
+    if(demo){const q=ease(Math.min(1,demo.t/.6)),tx=lerp(demo.from[0],lx+61,q),ty=lerp(demo.from[1],ly-228,q),PX=lx+8,PY=ly-175;// 管口停在火焰上方
+      if(demo.t>1&&!demo.snd){demo.snd=true;if(demo.pure){sfx('pop');for(let k=0;k<10;k++)sp.push({x:PX,y:PY,vx:(Math.random()-.5)*80,vy:-40-Math.random()*60,life:1,c:'#9fd8ff',r:4});}
+        else{sfx8('hit');sfx('boom');shake();for(let k=0;k<40;k++){const a=Math.random()*TAU,v=80+Math.random()*220;sp.push({x:PX,y:PY,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,c:['#ffd23f','#ff9a1f','#ff7a5c','#ffffff'][k%4],r:3+Math.random()*4});}}}
+      if(!demo.pure&&demo.t>1&&demo.t<1.5){const k=(demo.t-1)/.5;ctx.save();ctx.globalAlpha=1-k;const g=ctx.createRadialGradient(PX,PY,4,PX,PY,40+160*k);g.addColorStop(0,'rgba(255,240,180,.95)');g.addColorStop(.5,'rgba(255,160,60,.6)');g.addColorStop(1,'rgba(255,120,60,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(PX,PY,40+160*k,0,TAU);ctx.fill();ctx.restore();}
+      if(demo.pure&&demo.t>1&&demo.t<1.6){ctx.save();ctx.globalAlpha=1-(demo.t-1)/.6;const g=ctx.createRadialGradient(PX,PY,2,PX,PY,26);g.addColorStop(0,'rgba(170,205,255,.95)');g.addColorStop(1,'rgba(120,170,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(PX,PY,26,0,TAU);ctx.fill();ctx.restore();}
+      tubeAt(ctx,tx,ty,demo.pure?1:0,demo.t<.85);
+      if(demo.t>1&&demo.t<2.2)pill(ctx,demo.pure?'噗':'砰！',lx-120,ly-230,{size:demo.pure?22:34,fill:demo.pure?'#dff1fb':'#ffe0d6',col:demo.pure?'#1f9fd6':'#e5484d'});
       if(demo.t>4)demo=null;}
     for(let i=sp.length-1;i>=0;i--){const p=sp[i];p.life-=dt*1.3;if(p.life<=0){sp.splice(i,1);continue;}p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;ctx.save();ctx.globalAlpha=p.life;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life+1,0,TAU);ctx.fill();ctx.restore();}
     ui.draw(ctx);}
@@ -132,7 +135,7 @@ S.cls=(()=>{const LEG='<i class="atm a"></i> 和 <i class="atm b"></i> 表示两
   const BINS=['单质','化合物','混合物'];let put=CARDS.map(()=>-1),pick=-1,done=false;const st=$('#csSt'),bins=$('#csBins'),tray=$('#csTray');
   function render(){bins.innerHTML=BINS.map((b,k)=>`<div class="bin" data-b="${k}"><h4>${b}</h4><div class="bslots">${CARDS.map((c,i)=>put[i]===k?`<button class="mc in${done?(c[1]===k?' ok':' no'):''}" data-i="${i}"><canvas></canvas>${done&&c[1]!==k?`<em class="fixl">应为${BINS[c[1]]}</em>`:''}</button>`:'').join('')}</div></div>`).join('');
     tray.innerHTML=CARDS.map((c,i)=>put[i]<0?`<button class="mc${pick===i?' sel':''}" data-i="${i}"><canvas></canvas></button>`:'').join('')||'<span class="hint">都分好了，点“提交”</span>';
-    $$('.mc',$('[data-id="cls"]')).forEach(b=>{const i=+b.dataset.i,c=b.querySelector('canvas');requestAnimationFrame(()=>{const{ctx,w,h}=fitS(c);drawMicro(ctx,4,4,w-8,h-8,CARDS[i][0],i+3,{frame:false});});
+    $$('.mc',$('[data-id="cls"]')).forEach(b=>{const i=+b.dataset.i,c=b.querySelector('canvas');paintStatic(c,(ctx,w,h)=>drawMicro(ctx,4,4,w-8,h-8,CARDS[i][0],i+3,{frame:false}));
       b.onclick=e=>{e.stopPropagation();if(done)return;if(put[i]>=0){put[i]=-1;sfx8('blip');}else{pick=pick===i?-1:i;sfx8('select');}render();};
       DRAG.make(b,{drop:tg=>{if(done||!tg.classList.contains('bin'))return false;put[i]=+tg.dataset.b;pick=-1;sfx8('coin');render();return true;}});});
     $$('.bin',bins).forEach(b=>b.dataset.drop='1');$$('.bin',bins).forEach(b=>b.onclick=()=>{if(done||pick<0)return;put[pick]=+b.dataset.b;pick=-1;sfx8('coin');render();});}
