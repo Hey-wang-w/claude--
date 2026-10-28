@@ -67,38 +67,45 @@ S.lamp=(()=>{const cv=$('#cvLamp'),bar=$('#lpBar'),box=$('#lpFind');let t=0,mode
     $$('[data-m]',bar).forEach(b=>b.onclick=()=>{if(A)return;mode=+b.dataset.m;reset();buildBar();sfx('click');});
     $('[data-go]',bar).onclick=()=>start(randErr());$('[data-ok]',bar).onclick=()=>start(noErr(),{ok:true});}
   function reset(){A=null;E=null;phase='idle';H.res=null;panel.reset();stampOff(cv.parentNode.parentNode);}
-  const LS=1.3,LX=400,LBY=540,WICK=[LX,LBY-107*LS],CAPP=[250,LBY],MATCHP=[790,LBY],LAMP2=[620,LBY],CLOTH=[110,LBY];
+  // 桌面布局：湿抹布、灯帽在左，主灯居中，桌上起火的位置在主灯右侧，另一盏灯、火柴盒在最右，盖火时互不重叠
+  const LS=1.3,LX=330,LBY=540,WICK=[LX,LBY-107*LS],CAPP=[185,LBY],MATCHP=[880,LBY],LAMP2=[740,LBY],CLOTH=[65,LBY];
   function capShape(ctx,x,y){ctx.save();ctx.translate(x,y);ctx.scale(LS,LS);ctx.beginPath();ctx.moveTo(-20,0);ctx.lineTo(-17,-38);ctx.quadraticCurveTo(0,-50,17,-38);ctx.lineTo(20,0);ctx.closePath();ctx.fillStyle='rgba(210,230,240,.6)';ctx.fill();ctx.strokeStyle=GL_S;ctx.lineWidth=2;ctx.stroke();ctx.restore();}
   function matchbox(ctx,x,y){ctx.save();ctx.fillStyle='#c9965a';ctx.strokeStyle=INK;ctx.lineWidth=1.4;ctx.fillRect(x-44,y-22,88,22);ctx.strokeRect(x-44,y-22,88,22);ctx.fillStyle='#6b4f2a';ctx.fillRect(x-44,y-22,88,5);ctx.restore();AP.match(ctx,x-34,y-30,1,-.08);hand(ctx,'火柴',x,y+24,{size:15,col:DIM});}
   function clothAt(ctx,x,y,w=120){ctx.save();ctx.fillStyle='rgba(112,140,150,.92)';ctx.strokeStyle='#4d6168';ctx.lineWidth=1.2;rr(ctx,x-w/2,y-16,w,16,4);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(x-w/2+8,y-8);ctx.lineTo(x+w/2-8,y-8);ctx.stroke();ctx.restore();}
   /* 酒精灯的使用：取下灯帽 → 点燃（火柴 / 用燃着的灯引燃）→ 燃烧 → 熄灭（灯帽盖灭 / 用嘴吹灭）；演示中不出文字 */
   function lampScene(ctx,k){const lx=LX,by=LBY,wick=WICK,e=E||noErr(),kk=A?k:phase!=='idle'?1:0;
     ctx.fillStyle='#e9e1d0';ctx.fillRect(0,by,1000,8);
-    const lit0=e.light?.24:.26,outT=e.out?.7:.74;
-    // 灯帽：.00–.08 取下放到桌上；熄灭时盖回（吹灭的情况在灯内起火后才盖）
-    const capBack=e.out?[.84,.94]:[.64,.74];let cap=null;
-    if(kk<.02||kk>=capBack[1])cap='on';else if(kk<.08){const c=seg(kk,.02,.08);cap=[lerp(lx,CAPP[0],c),lerp(by-90*LS,by,c)-Math.sin(c*Math.PI)*70];}
-    else if(kk<capBack[0])cap=[CAPP[0],by];else{const c=seg(kk,capBack[0],capBack[1]);cap=[lerp(CAPP[0],lx,c),lerp(by,by-90*LS,c)-Math.sin(c*Math.PI)*70];}
-    // 桌上的火（引燃时酒精洒出）+ 湿抹布
-    const fireOn=e.light&&kk>.26&&kk<.52,clothAnim=e.light?seg(kk,.42,.52):0,firePos=[540,by];
-    if(fireOn||(e.light&&kk>.26&&kk<.54)){const f=Math.min(seg(kk,.26,.36),1-clothAnim);ctx.fillStyle='rgba(150,200,235,.35)';ctx.beginPath();ctx.ellipse(firePos[0],by+2,90,7,0,0,TAU);ctx.fill();for(let i=0;i<6;i++)flame(ctx,firePos[0]-75+i*30,by+2,(.35+.25*Math.sin(i*1.7))*f,t+i);}
-    if(e.light&&kk>.42){const c=clothAnim;ctx.save();ctx.translate(lerp(CLOTH[0],firePos[0],c),by-8-Math.sin(c*Math.PI)*150);ctx.fillStyle='rgba(112,140,150,.92)';ctx.strokeStyle='#4d6168';const w=lerp(60,105,c);rr(ctx,-w,0,2*w,12,4);ctx.fill();ctx.stroke();ctx.restore();}
-    else clothAt(ctx,CLOTH[0],by);
+    // 时间线：取灯帽（单独一步）.00–.12 → 停顿 → 点燃 .16–.36 → 燃烧 → 熄灭 .64–
+    const lit0=e.light?.3:.3,outT=e.out?.72:.74,capBack=e.out?[.86,.96]:[.64,.74];
+    let cap=null;const capTop=[lx,by-90*LS];
+    const path=(a,b,c)=>{// 灯帽：先竖直提起 40 px，再平移，最后放下
+      const up=seg(c,0,.25),mv=seg(c,.25,.8),dn=seg(c,.8,1);
+      return c<.25?[a[0],a[1]-40*up]:c<.8?[lerp(a[0],b[0],mv),lerp(a[1]-40,b[1]-40,mv)]:[b[0],lerp(b[1]-40,b[1],dn)];};
+    if(kk<.01||kk>=capBack[1])cap='on';
+    else if(kk<.12)cap=path(capTop,[CAPP[0],by],(kk-.01)/.11);
+    else if(kk<capBack[0])cap=[CAPP[0],by];
+    else cap=path([CAPP[0],by],capTop,(kk-capBack[0])/(capBack[1]-capBack[0]));
+    // 桌上的火（用燃着的灯引燃时酒精洒出）与湿抹布
+    const firePos=[500,by],fireA=e.light?Math.min(seg(kk,.3,.38),1-seg(kk,.46,.54)):0;
+    if(fireA>0){ctx.fillStyle='rgba(150,200,235,.35)';ctx.beginPath();ctx.ellipse(firePos[0],by+2,75,6,0,0,TAU);ctx.fill();for(let i=0;i<5;i++)flame(ctx,firePos[0]-60+i*30,by+2,(.32+.22*Math.sin(i*1.7))*fireA,t+i);}
+    if(e.light&&kk>.44){const c=seg(kk,.44,.54);ctx.save();ctx.translate(lerp(CLOTH[0],firePos[0],c),by-8-Math.sin(c*Math.PI)*150);ctx.fillStyle='rgba(112,140,150,.92)';ctx.strokeStyle='#4d6168';const w=lerp(45,82,c);rr(ctx,-w,0,2*w,12,4);ctx.fill();ctx.stroke();ctx.restore();}
+    else clothAt(ctx,CLOTH[0],by,90);
     // 主灯与火焰
     lamp(ctx,lx,by,LS,false,t,cap==='on');
     const inner=e.out&&kk>outT&&kk<capBack[1];
     if(inner){ctx.save();ctx.globalCompositeOperation='multiply';const g=ctx.createRadialGradient(lx,by-44,4,lx,by-44,78);g.addColorStop(0,'rgba(255,140,40,.95)');g.addColorStop(1,'rgba(255,140,40,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(lx,by-44,78,0,TAU);ctx.fill();ctx.restore();flame(ctx,lx-12,by-18,.4,t*1.3);flame(ctx,lx+16,by-16,.34,t*1.1+2);}
-    const litNow=kk>lit0&&kk<outT;if(litNow)flame(ctx,wick[0],wick[1],LS*(e.out&&kk>.64?1-seg(kk,.64,outT)*.7:1),t);
+    if(kk>lit0&&kk<outT)flame(ctx,wick[0],wick[1],LS*(e.out&&kk>.64?1-seg(kk,.64,outT)*.7:1),t);
     if(cap&&cap!=='on')capShape(ctx,cap[0],cap[1]);
-    // 点燃
+    // 点燃：火柴头对准灯芯
     matchbox(ctx,MATCHP[0],MATCHP[1]);
-    if(!e.light&&kk>.08&&kk<.34){const c=kk<.28?seg(kk,.1,.25):1-seg(kk,.28,.34);AP.match(ctx,lerp(MATCHP[0]+20,wick[0]+10,c),lerp(MATCHP[1]-40,wick[1]-8,c),1.3,Math.PI*.9,kk>.12,t);}
-    if(e.light&&kk>.08&&kk<.4){const c=kk<.3?seg(kk,.08,.18):1-seg(kk,.3,.4),tl=kk<.3?seg(kk,.16,.24):1-seg(kk,.3,.36);ctx.save();ctx.translate(lerp(LAMP2[0],520,c),by-lerp(0,90,tl));ctx.rotate(-tl*1.1);lamp(ctx,0,0,.85,true,t);ctx.restore();
-      if(kk>.2&&kk<.3){for(let i=0;i<6;i++){const p=((t*1.6+i/6)%1);drop(ctx,lerp(478,520+i*12,p),lerp(by-130,by,p),3.6,'rgba(150,200,235,.9)');}}}
+    if(!e.light&&kk>.16&&kk<.4){const c=kk<.32?seg(kk,.17,.29):1-seg(kk,.33,.4),hx=lerp(MATCHP[0]-20,wick[0]+6,c),hy=lerp(MATCHP[1]-30,wick[1]-4,c);AP.matchAt(ctx,hx,hy,1.3,Math.PI-.35,true,t);}
+    // 用燃着的灯引燃：另一盏灯移过来、倾斜，酒精洒出
+    if(e.light&&kk>.16&&kk<.44){const c=kk<.36?seg(kk,.16,.25):1-seg(kk,.36,.44),tl=kk<.36?seg(kk,.23,.3):1-seg(kk,.34,.4);ctx.save();ctx.translate(lerp(LAMP2[0],470,c),by-lerp(0,95,tl));ctx.rotate(-tl*1.1);lamp(ctx,0,0,.85,true,t);ctx.restore();
+      if(kk>.27&&kk<.36){for(let i=0;i<6;i++){const p=((t*1.6+i/6)%1);drop(ctx,lerp(430,470+i*10,p),lerp(by-130,by,p),3.6,'rgba(150,200,235,.9)');}}}
     else lamp(ctx,LAMP2[0],by,.7,true,t);
-    // 吹灭
-    if(e.out&&kk>.64&&kk<outT+.02){ctx.strokeStyle=CC;ctx.lineWidth=2.4;for(let i=0;i<4;i++){const p=(t*2+i/4)%1;ctx.globalAlpha=1-p;ctx.beginPath();ctx.moveTo(700-p*200,wick[1]-40+i*12);ctx.quadraticCurveTo(680-p*200,wick[1]-50+i*12,660-p*200,wick[1]-40+i*12);ctx.stroke();}ctx.globalAlpha=1;}
-    if(panel.judged)markE(ctx,[['light',firePos[0],by-10,105],['out',lx,by-70,90]]);}
+    // 用嘴吹
+    if(e.out&&kk>.64&&kk<outT+.02){ctx.strokeStyle=CC;ctx.lineWidth=2.4;for(let i=0;i<4;i++){const p=(t*2+i/4)%1;ctx.globalAlpha=1-p;ctx.beginPath();ctx.moveTo(620-p*200,wick[1]-40+i*12);ctx.quadraticCurveTo(600-p*200,wick[1]-50+i*12,580-p*200,wick[1]-40+i*12);ctx.stroke();}ctx.globalAlpha=1;}
+    if(panel.judged)markE(ctx,[['light',firePos[0],by-10,95],['out',lx,by-70,90]]);}
   function markE(ctx,list){list.forEach(([k,x,y,r])=>{if(!E||!E[k])return;ctx.save();ctx.strokeStyle=BADC;ctx.lineWidth=3;ctx.setLineDash([9,6]);ctx.beginPath();ctx.ellipse(x,y,r,r*.8,0,0,TAU);ctx.stroke();ctx.restore();});}
   /* 给液体加热：试管 45°，试管夹夹在距管口约 1/3 处 */
   function heatScene(ctx,k){const lx=330,by=540,wick=[lx,by-107],r=18,Lt=230,s2=Math.SQRT1_2;

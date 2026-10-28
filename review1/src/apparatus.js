@@ -115,6 +115,8 @@ const AP={
     if(burnt){ctx.fillStyle='#2b2724';ctx.fillRect(70*s-burnt*30*s,-2.5*s,burnt*30*s,5*s);}
     else{ctx.fillStyle='#b5432a';ctx.beginPath();ctx.ellipse(72*s,0,6*s,4.5*s,0,0,TAU);ctx.fill();}
     if(lit){ctx.rotate(-ang);flame(ctx,Math.cos(ang)*74*s,Math.sin(ang)*74*s,.3*s,t);}ctx.restore();},
+  /* 按火柴头的位置画火柴：(hx,hy) 为火柴头，ang 为火柴从柄指向火柴头的方向（点火时火柴头朝向灯芯 / 白烟） */
+  matchAt(ctx,hx,hy,s=1,ang=Math.PI,lit=true,t=0){const L=72*s;AP.match(ctx,hx-Math.cos(ang)*L,hy-Math.sin(ang)*L,s,ang,lit,t);},
   /* 蜡烛（h 为蜡烛身高度） */
   candle(ctx,x,y,s=1,{h=110,lit=true,t=0,smoke=0}={}){ctx.save();const w=26*s,top=y-h*s;const g=ctx.createLinearGradient(x-w/2,0,x+w/2,0);g.addColorStop(0,'#efe6d4');g.addColorStop(.45,'#fffaf0');g.addColorStop(1,'#d8ccb4');
     ctx.fillStyle=g;ctx.strokeStyle=INK;ctx.lineWidth=1.4;rr(ctx,x-w/2,top,w,h*s,3*s);ctx.fill();ctx.stroke();

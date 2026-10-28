@@ -55,7 +55,9 @@ S.clinic=(()=>{const grid=$('#clGrid'),st=$('#clSt'),VB=varBtn($('#clSub'),QB.cl
     ['block','把块状固体直接投入直立的试管',1,'固体砸破试管底；应先横放，再慢慢竖立。'],['smell','闻气体的气味：用手在瓶口轻轻扇动',0,'正确：使极少量气体飘进鼻孔。'],['rack','洗净的试管倒放在试管架上',0,'正确：便于晾干，防止落灰。']];
   const pics={drop:(ctx,w,h)=>{ctx.fillStyle='#e9e1d0';ctx.fillRect(0,h-16,w,6);const y=h-26,x0=w*.16;ctx.save();ctx.translate(x0,y);ctx.rotate(Math.PI/2);AP.dropper(ctx,0,0,1.55,0);ctx.restore();
       ctx.fillStyle=SOL;rr(ctx,x0+70,y-3,38,6,3);ctx.fill();drop(ctx,x0+122,y-1,3,SOL);caption(ctx,'残液流向胶帽',w*.62,h*.3,x0+110,y-4,{col:CM,size:14});},
-    fill:(ctx,w,h)=>{lamp(ctx,w*.38,h-8,.62,true,.4);ctx.save();ctx.translate(w*.66,h*.3);ctx.rotate(-2.2);AP.bottle(ctx,0,82,.75,{stopper:'off',lv:.5,label:false});ctx.restore();ctx.strokeStyle=SOL;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(w*.6,h*.34);ctx.quadraticCurveTo(w*.5,h*.4,w*.42,h-8-62*.62);ctx.stroke();},
+    fill:(ctx,w,h)=>{const lx=w*.36,ly=h-8,neck=[lx+3,ly-94*.62],P=[w*.58,h*.3];lamp(ctx,lx,ly,.62,true,.4);// 烧杯盛酒精，倾斜着往燃着的灯里倒
+      ctx.strokeStyle='rgba(185,215,235,.95)';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(P[0],P[1]+2);ctx.quadraticCurveTo(P[0]-8,neck[1]-30,neck[0]+8,neck[1]-4);ctx.stroke();
+      ctx.save();ctx.translate(P[0],P[1]);ctx.rotate(-1.95);AP.beaker(ctx,26,62,.56,{lv:0});ctx.restore();ctx.save();ctx.translate(P[0],P[1]);ctx.rotate(-1.95);ctx.fillStyle='rgba(185,215,235,.85)';ctx.beginPath();ctx.moveTo(0,4);ctx.lineTo(0,22);ctx.lineTo(16,20);ctx.closePath();ctx.fill();ctx.restore();hand(ctx,'酒精',P[0]+64,P[1]+22,{size:14,col:DIM});},
     heat:(ctx,w,h)=>{lamp(ctx,w*.42,h-8,.55,true,.2);const bx=w*.42,byy=h-8-107*.55-30;ctx.save();ctx.translate(bx-Math.SQRT1_2*150,byy-Math.SQRT1_2*150);testTube(ctx,0,0,150,24,-Math.PI/4);ctx.restore();ctx.save();tubeClip(ctx,bx-Math.SQRT1_2*150,byy-Math.SQRT1_2*150,150,24,-Math.PI/4);ctx.fillStyle=SOL;ctx.fillRect(0,byy-70,w,200);ctx.restore();testTube(ctx,bx-Math.SQRT1_2*150,byy-Math.SQRT1_2*150,150,24,-Math.PI/4,{col:'rgba(0,0,0,0)'});},
     block:(ctx,w,h)=>{testTube(ctx,w*.45,h*.22,h*.7,30,0);grain(ctx,w*.45,h*.42,8,4,'#8f8c86');ctx.strokeStyle=CM;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w*.45,h*.5);ctx.lineTo(w*.45,h*.7);ctx.stroke();ctx.beginPath();ctx.moveTo(w*.45-5,h*.65);ctx.lineTo(w*.45,h*.72);ctx.lineTo(w*.45+5,h*.65);ctx.stroke();AP.tweezers(ctx,w*.47,h*.12,.55,.6,.35);},
     smell:(ctx,w,h)=>{const mx=w*.28,my=h-8-96*.9;AP.bottle(ctx,mx,h-8,.9,{stopper:'off',lv:.5,label:false});ctx.strokeStyle=CC;ctx.lineWidth=1.8;
@@ -78,10 +80,22 @@ S.candle=(()=>{const cv=$('#cvCandle');let t=0,G=null,A=null,lit=true,rec={},wax
   const ROWS=[['water','切一块石蜡放入水中','石蜡浮在水面上，不溶解'],['match','火柴梗平放入火焰约 1 s','接触外焰的部分最先变黑'],['dry','火焰上方罩干冷烧杯','烧杯内壁出现水雾'],['lime','罩内壁涂澄清石灰水的烧杯','石灰水变浑浊'],['out','吹灭蜡烛，点燃白烟','冒出白烟；白烟被点燃，蜡烛重新燃烧']];
   function run(k){if(A)return;if((k==='match'||k==='dry'||k==='lime'||k==='out')&&!lit)return;A={k,t0:t,dur:{water:2.2,match:3,dry:3.2,lime:3.2,out:4.6}[k]};sfx('whoosh');}
   function finish(k){rec[k]=1;if(k==='water')wax=1;if(k==='match')stick=1;if(k==='dry')mist=1;if(k==='lime')lime=1;sfx('ok');A=null;}
-  function invBeaker(ctx,x,yTop,{film=0,fog=0}={}){ctx.save();ctx.translate(x,yTop);ctx.rotate(Math.PI);beaker(ctx,0,0,110,130,{});
-    if(film>0){ctx.save();beakerPath(ctx,0,0,110,130);ctx.clip();ctx.strokeStyle=`rgba(255,255,255,${.85*film})`;ctx.lineWidth=10;beakerPath(ctx,0,0,110,130);ctx.stroke();ctx.fillStyle=`rgba(240,240,236,${.55*film})`;ctx.fillRect(-55,-130,110,130);ctx.restore();}
+  /* 倒扣的烧杯：fog 水雾；lime=true 时内壁涂着澄清石灰水（透明薄层），turb 为变浑浊的程度（乳白色、带白色颗粒） */
+  function invBeaker(ctx,x,yTop,{fog=0,lime=false,turb=0}={}){ctx.save();ctx.translate(x,yTop);ctx.rotate(Math.PI);beaker(ctx,0,0,110,130,{});
+    if(lime){ctx.save();beakerPath(ctx,0,0,110,130);ctx.clip();
+      ctx.strokeStyle=`rgba(150,200,235,${.45*(1-turb)})`;ctx.lineWidth=14;beakerPath(ctx,0,0,110,130);ctx.stroke();// 澄清石灰水薄层
+      if(turb>0){const gm=ctx.createLinearGradient(0,-130,0,0);gm.addColorStop(0,`rgba(232,234,236,${.75*turb})`);gm.addColorStop(1,`rgba(218,221,224,${.92*turb})`);ctx.fillStyle=gm;beakerPath(ctx,0,0,110,130);ctx.fill();// 整个内壁蒙上一层乳白
+        ctx.strokeStyle=`rgba(250,250,250,${turb})`;ctx.lineWidth=26;beakerPath(ctx,0,0,110,130);ctx.stroke();
+        ctx.strokeStyle=`rgba(150,156,163,${.8*turb})`;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-46,-118);ctx.lineTo(-46,-6);ctx.lineTo(46,-6);ctx.lineTo(46,-118);ctx.stroke();
+        const R=rng(9);ctx.fillStyle=`rgba(170,176,182,${.9*turb})`;for(let i=0;i<70;i++){const sd=R();let xx,yy;if(sd<.36){xx=-54+R()*9;yy=-128+R()*122;}else if(sd<.72){xx=45+R()*9;yy=-128+R()*122;}else{xx=-50+R()*100;yy=-8+R()*7;}ctx.beginPath();ctx.arc(xx,yy,1+R()*1.6,0,TAU);ctx.fill();}}
+      ctx.restore();}
     if(fog>0){const R=rng(3);ctx.fillStyle=`rgba(255,255,255,${.8*fog})`;for(let i=0;i<60;i++){const xx=-50+R()*100,yy=-125+R()*110;if(Math.abs(xx)>40||yy>-118){ctx.beginPath();ctx.arc(xx,yy,1+R()*2,0,TAU);ctx.fill();}}}
     ctx.restore();}
+  /* 白烟：从灯芯升起的几缕烟丝，越往上越散、越淡 */
+  function smokeWisp(ctx,x,y,a,t){if(a<=0)return;ctx.save();ctx.lineCap='round';
+    for(let j=0;j<4;j++){let px=x,py=y;for(let i=1;i<=24;i++){const h=i/24,nx=x+Math.sin(h*5+t*2.2+j*1.7)*(4+h*26)+(j-1.5)*h*10,ny=y-h*160;
+        ctx.strokeStyle=`rgba(140,140,140,${a*.42*(1-h)})`;ctx.lineWidth=4+h*7;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(nx,ny);ctx.stroke();
+        ctx.strokeStyle=`rgba(255,255,255,${a*.7*(1-h)})`;ctx.lineWidth=2+h*4;ctx.stroke();px=nx;py=ny;}}ctx.restore();}
   function draw(){const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);G=scene(w,h,1000,600,70);const k=A?Math.min(1,(t-A.t0)/A.dur):0;ctx.save();ctx.translate(G.ox,G.oy);ctx.scale(G.k,G.k);
     ctx.fillStyle='#e9e1d0';ctx.fillRect(0,CB,620,8);
     // 水槽（烧杯）+ 石蜡
@@ -91,18 +105,18 @@ S.candle=(()=>{const cv=$('#cvCandle');let t=0,G=null,A=null,lit=true,rec={},wax
     hand(ctx,'水',110,CB-30,{size:15,col:CC});if(!wax&&!(A&&A.k==='water')){ctx.fillStyle='#f6f1e2';ctx.strokeStyle=INK;ctx.lineWidth=1;rr(ctx,96,293,28,14,2);ctx.fill();ctx.stroke();hand(ctx,'石蜡块',110,272,{size:14,col:DIM});}
     // 蜡烛
     const outK=A&&A.k==='out'?k:0,blown=outK>.15&&outK<.72,relit=outK>=.72;const showLit=lit&&!blown;
-    AP.candle(ctx,CX,CB,CS,{h:CH,lit:showLit,t,smoke:blown?clamp((outK-.15)*4,0,1):0});
+    AP.candle(ctx,CX,CB,CS,{h:CH,lit:showLit,t,smoke:0});smokeWisp(ctx,CX,FT-4,blown?Math.min(1,(outK-.15)*4):0,t);
     if(A&&A.k==='out'){if(outK<.2){ctx.strokeStyle=CC;ctx.lineWidth=2.2;for(let i=0;i<3;i++){const p=(t*2+i/3)%1;ctx.globalAlpha=1-p;ctx.beginPath();ctx.moveTo(470-p*90,FT-30+i*12);ctx.quadraticCurveTo(450-p*90,FT-40+i*12,430-p*90,FT-30+i*12);ctx.stroke();}ctx.globalAlpha=1;}
-      if(outK>.4&&outK<.75){const p=seg(outK,.4,.62);AP.match(ctx,lerp(520,CX+6,p),lerp(FT-150,FT-90,p),1.1,Math.PI*.85,true,t);}
-      if(outK>.6&&outK<.74){const p=seg(outK,.6,.72);flame(ctx,CX,lerp(FT-90,FT,p),.25,t);}}
+      if(outK>.4&&outK<.78){const p=outK<.72?seg(outK,.4,.6):1-seg(outK,.72,.78);AP.matchAt(ctx,lerp(560,CX+8,p),lerp(FT-150,FT-70,p),1.1,Math.PI-.45,true,t);}// 火柴头伸进白烟
+      if(outK>.6&&outK<.72){const p=seg(outK,.6,.7);flame(ctx,CX,lerp(FT-70,FT,p),.25,t);}}// 火焰顺着白烟落到灯芯
     // 火柴梗
     if(A&&A.k==='match'){const p=seg(k,0,.25),q2=seg(k,.7,.9);const y=FT-44,x=lerp(560,CX-50,p)+q2*230;ctx.fillStyle='#e7c38d';ctx.strokeStyle='#8a6a43';ctx.lineWidth=1;ctx.fillRect(x,y-3,100,6);ctx.strokeRect(x,y-3,100,6);
       if(k>.3){const c=seg(k,.3,.65);ctx.fillStyle=`rgba(40,30,25,${.85*c})`;ctx.fillRect(CX-26-x+x,y-3,13,6);ctx.fillRect(CX+13,y-3,13,6);ctx.fillStyle=`rgba(40,30,25,${.3*c})`;ctx.fillRect(CX-13,y-3,26,6);}}
     if(stick&&!(A&&A.k==='match')){ctx.save();ctx.translate(560,150);ctx.fillStyle='#e7c38d';ctx.strokeStyle='#8a6a43';ctx.lineWidth=1;ctx.fillRect(-60,-6,120,12);ctx.strokeRect(-60,-6,120,12);ctx.fillStyle='rgba(40,30,25,.88)';ctx.fillRect(-36,-6,16,12);ctx.fillRect(20,-6,16,12);ctx.fillStyle='rgba(40,30,25,.3)';ctx.fillRect(-20,-6,40,12);
       caption(ctx,'外焰处',-28,-34,-28,-8,{col:CM,size:14});caption(ctx,'焰心处',0,34,0,8,{col:CC,size:14});caption(ctx,'外焰处',28,-34,28,-8,{col:CM,size:14});ctx.restore();}
     // 烧杯
-    if(A&&(A.k==='dry'||A.k==='lime')){const p=seg(k,0,.25),q2=seg(k,.8,1),y=lerp(120,FT-70,p)-q2*100,x=lerp(520,CX,p);const e=seg(k,.3,.75);invBeaker(ctx,x,y-130,A.k==='dry'?{fog:e}:{film:e});}
-    else{if(mist)invBeaker(ctx,448,250,{fog:1});if(lime)invBeaker(ctx,568,250,{film:1});if(mist)hand(ctx,'干冷烧杯',448,272,{size:14,col:DIM});if(lime)hand(ctx,'石灰水烧杯',568,272,{size:14,col:DIM});}
+    if(A&&(A.k==='dry'||A.k==='lime')){const p=seg(k,0,.25),q2=seg(k,.8,1),y=lerp(120,FT-70,p)-q2*100,x=lerp(520,CX,p);const e=seg(k,.3,.75);invBeaker(ctx,x,y-130,A.k==='dry'?{fog:e}:{lime:true,turb:e});}
+    else{if(mist)invBeaker(ctx,140,46,{fog:1});if(lime)invBeaker(ctx,268,46,{lime:true,turb:1});if(mist)hand(ctx,'干冷烧杯：水雾',140,196,{size:14,col:DIM});if(lime)hand(ctx,'石灰水：浑浊',268,196,{size:14,col:DIM});}
     // 记录表
     const X=640,Y=40,W=340;ctx.fillStyle='#fffdf8';ctx.strokeStyle=INK;ctx.lineWidth=1.5;let yy=Y+44;const lines=ROWS.map(r=>({r,ls:rec[r[0]]?wrapLines(ctx,r[2],W-24,'600 15px '+FNUM):['??']}));
     const Ht=44+lines.reduce((a,l)=>a+30+l.ls.length*21+8,0);ctx.fillRect(X,Y,W,Ht);ctx.strokeRect(X,Y,W,Ht);ctx.fillStyle=INK;ctx.fillRect(X,Y,W,4);hand(ctx,'探究记录',X+14,Y+24,{size:20,align:'left'});
