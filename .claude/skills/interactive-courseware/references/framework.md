@@ -187,3 +187,4 @@
 - `tubeClip(ctx,…)`：倾斜试管里的液面按重力方向画（先裁成试管形状，再填水平液面）。
 - `AP`（`assets/apparatus.js`）：试管、烧杯、蒸发皿、燃烧匙（照教材实物）、烧瓶、锥形瓶、量筒、集气瓶、漏斗、胶头滴管、细口瓶 / 广口瓶 / 瓶塞、试管架、试管夹（长柄 + 短柄 + 钢丝弹簧，`holder(ctx,x,y,u,ang,tubeR)`）、镊子、药匙、火柴、蜡烛与三层火焰；`gripHand / openHand`（2D 手，只在必须时用，见 SKILL.md 第 2 节）。
 - 课本标志 / 插图：`scripts/extract_pdf_figure.py` 把 PDF 页按 600 dpi 渲染、按非白像素自动切图、可把菱形外设为透明，输出 base64 的 JS 常量（`review1/src/signs.js`）。
+- `errPanel(box,{aspects,getE,onReplay})`（`review1/src/p2.js`）：“自动演示 + 找错误”的检查面板。`aspects` 是检查项 `[{k,lab,bad,why}]`（只写检查的方面，如“瓶塞的放法”，不写对错），`getE()` 返回本次演示的错误 `{k:true/false}`；学生多选后提交，全部找对 +5；判分后每项显示对错和后果，`panel.judged` 为真时画布上用红色虚线圈出错误位置。演示用 `A={t0,dur,ok,replay}` 驱动，同一个绘制函数按进度 k 画完整时间线，k=1 时停在结果画面。

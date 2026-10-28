@@ -96,7 +96,8 @@
     <div class="body two">
       <div class="stage" data-cap="图 07 · 取用药品">
         <div class="cvwrap"><canvas id="cvTake"></canvas></div>
-        <div class="ctlbar"><button class="btn" id="tkM0" aria-pressed="true">倾倒液体</button><button class="btn" id="tkM1">取用块状固体</button><button class="btn" id="tkM2">滴加液体</button><span class="sep"></span><button class="btn pri" id="tkGo">开始操作</button></div>
+        <div class="ctlbar"><button class="btn" id="tkM0" aria-pressed="true">倾倒液体</button><button class="btn" id="tkM1">取用块状固体</button><button class="btn" id="tkM2">滴加液体</button><span class="sep"></span><button class="btn pri" id="tkGo">播放演示</button><button class="btn" id="tkOk">看正确操作</button></div>
+        <div class="findw" id="tkFind" hidden></div>
       </div>
       <aside class="side mid"><div class="panel"><h3><span data-i="hand-back-left-outline"></span>取用小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="tkQ"></div></div></aside>
     </div>
@@ -127,6 +128,7 @@
       <div class="stage" data-cap="图 09 · 加热">
         <div class="cvwrap"><canvas id="cvLamp"></canvas></div>
         <div class="ctlbar" id="lpBar"></div>
+        <div class="findw" id="lpFind" hidden></div>
       </div>
       <aside class="side mid"><div class="panel"><h3><span data-i="fire"></span>加热小测 <span class="hint" data-teamlbl>红队答题</span></h3><div id="lpQ"></div></div></aside>
     </div>

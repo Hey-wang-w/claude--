@@ -103,8 +103,13 @@ const AP={
       ctx.strokeStyle='rgba(60,66,74,.55)';for(let i=0;i<6;i++){const yy=-(.48+i*.035)*L,xx=sg*(3.4+open*3)*s;ctx.beginPath();ctx.moveTo(xx-sg*1.6*s,yy);ctx.lineTo(xx+sg*1.6*s,yy);ctx.stroke();}};
     leg(-1);leg(1);ctx.fillStyle='#8b939c';rr(ctx,-6*s,-L-3*s,12*s,6*s,3*s);ctx.fill();ctx.strokeStyle='#4b525b';ctx.stroke();ctx.restore();},
   /* 药匙 */
-  spatula(ctx,x,y,s=1,ang=0){ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.fillStyle='#9aa0a8';ctx.strokeStyle=INK;ctx.lineWidth=1.2;rr(ctx,-2.5*s,-80*s,5*s,70*s,2);ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.ellipse(0,-6*s,7*s,10*s,0,0,TAU);ctx.fill();ctx.stroke();ctx.restore();},
+  /* 药匙（不锈钢，照实物）：扁平长柄，两端各有一个匙，一大一小；(x,y) 为大匙的匙尖，ang=0 时柄朝上 */
+  spatula(ctx,x,y,s=1,ang=0){ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.lineJoin='round';
+    const g=ctx.createLinearGradient(-6*s,0,6*s,0);g.addColorStop(0,'#9aa2ab');g.addColorStop(.5,'#e6e9ec');g.addColorStop(1,'#8b939c');
+    ctx.fillStyle=g;ctx.strokeStyle='#4b525b';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(-2.4*s,-16*s);ctx.lineTo(-2*s,-84*s);ctx.lineTo(2*s,-84*s);ctx.lineTo(2.4*s,-16*s);ctx.closePath();ctx.fill();ctx.stroke();// 柄
+    ctx.beginPath();ctx.ellipse(0,-7*s,7*s,10*s,0,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(60,66,74,.25)';ctx.beginPath();ctx.ellipse(0,-6*s,4.5*s,7*s,0,0,TAU);ctx.fill();// 大匙
+    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,-89*s,4*s,6*s,0,0,TAU);ctx.fill();ctx.stroke();ctx.restore();},// 小匙
   /* 火柴（ang 为倾角；lit 时头部有火焰） */
   match(ctx,x,y,s=1,ang=0,lit=false,t=0,burnt=0){ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.fillStyle='#e7c38d';ctx.strokeStyle='#8a6a43';ctx.lineWidth=1;rr(ctx,0,-2.5*s,70*s,5*s,1.5);ctx.fill();ctx.stroke();
     if(burnt){ctx.fillStyle='#2b2724';ctx.fillRect(70*s-burnt*30*s,-2.5*s,burnt*30*s,5*s);}

@@ -318,3 +318,14 @@ p{margin:0}
 .vbtn.hot,.vbtn2.hot{background:var(--rust);border-color:var(--rust);color:#fff;animation:vpulse 1.3s ease-in-out infinite}
 @keyframes vpulse{50%{box-shadow:0 0 0 6px rgba(181,67,42,.22)}}
 .vbtn2{border-color:var(--gold);color:#8a6514;white-space:nowrap}
+
+/* 药品取用：演示后的“找错误”检查项 */
+.findw{position:absolute;right:22px;top:34px;width:300px;z-index:9;background:var(--panel);border:var(--bd);box-shadow:var(--lift);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.findw[hidden]{display:none}
+.findw h5{margin:0;font:400 20px var(--f-hand)}
+.fopts{display:flex;flex-direction:column;gap:6px}
+.fopt{text-align:left;border:1.5px solid var(--line);background:#fff;padding:7px 10px;font:600 15px var(--f-body);cursor:pointer;color:var(--ink)}
+.fopt b{font-weight:700}.fopt em{display:block;font:500 13px/1.45 var(--f-body);font-style:normal;margin-top:3px}
+.fopt.sel{border-color:var(--ink);background:#efe6d3;box-shadow:inset 4px 0 0 var(--rust)}
+.fopt.ok{border-color:var(--okc);background:#e5eee1}.fopt.no{border-color:var(--badc);background:#f6e1db}
+.findw .row{gap:8px}.findw .status{font-size:13px;padding:6px 10px}
