@@ -1,8 +1,9 @@
 /* ================= 13 竞赛：实验室寻宝（答对挖格子：萌宠加分，垃圾惩罚） =================
    答对 +10（提升题 +20，并多挖 1 格）；红队先答，两队交替，提升题两队各两道。
    20 个格子随机藏着：萌宠（小猫、小狗 +5，仓鼠、兔子 +8，企鹅 +10，稀有熊猫 +20，超稀有招财金猫 +30 = 普通的 6 倍）；
-   垃圾（便便：本队 −10；臭袜子：扔给对方，对方 −5；香蕉皮：滑倒，本队下一次挖宝跳过）。 */
-S.hunt=(()=>{const cv=$('#cvHunt'),card=$('#htCard');let t=0,G=null,qi=0,phase='ask',digs=0,digger='r',tiles=[],ended=false,pets={r:[],b:[]},skip={r:false,b:false},flash=null;
+   垃圾（便便：本队 −10；臭袜子：扔给对方，对方 −5；香蕉皮：滑倒，本队下一次挖宝跳过）。挖到任何垃圾都立即结算，提升题剩下的一格作废。 */
+S.hunt=(()=>{const cv=$('#cvHunt'),card=$('#htCard');let t=0,G=null,qi=0,phase='ask',digs=0,digger='r',tiles=[],ended=false,pets={r:[],b:[]},skip={r:false,b:false},flash=null,stopMsg='';
+  const lose=(tm,v)=>{const b=TEAM.sc[tm];teamAdd(-v,tm);return b-TEAM.sc[tm];};// 分数最低扣到 0，提示里显示实际扣掉的分
   const COLS=5,ROWS=4;
   const PET={cat:['小猫',5,'#f2b36b'],dog:['小狗',5,'#c98d5b'],hamster:['仓鼠',8,'#f3c58f'],rabbit:['兔子',8,'#f6f1ea'],penguin:['企鹅',10,'#2f3a4a'],panda:['熊猫',20,'#ffffff'],gold:['招财金猫',30,'#f2c230']};
   const TRASH={poop:['便便','本队 −10'],sock:['臭袜子','对方 −5'],banana:['香蕉皮','下次跳过']};
@@ -71,7 +72,7 @@ S.hunt=(()=>{const cv=$('#cvHunt'),card=$('#htCard');let t=0,G=null,qi=0,phase='
       txt(ctx,`${tname(tm)}的萌宠`,x0+12,by+16,{size:13,weight:800,col:tm==='r'?RED:BLUE,align:'left'});const n=pets[tm].length,step=Math.min(38,(ww-30)/Math.max(1,n));pets[tm].forEach((k,i)=>drawPet(ctx,k,x0+28+i*step,by+48,15));
       if(!n)txt(ctx,'还没有',x0+ww/2,by+44,{size:14,col:FAINT});if(skip[tm])txt(ctx,'踩了香蕉皮：下次挖宝跳过',x0+ww-10,by+16,{size:12,weight:800,col:BADC,align:'right'});});
     {const x0=20+cw3+3,ww=cw3-6;ctx.fillStyle='#fbf7ee';ctx.strokeStyle='rgba(28,26,23,.3)';ctx.lineWidth=1;ctx.fillRect(x0,by,ww,74);ctx.strokeRect(x0,by,ww,74);
-      txt(ctx,'萌宠 +5～+30（熊猫 +20、招财金猫 +30）',x0+ww/2,by+20,{size:12,weight:700});txt(ctx,'便便 本队 −10　臭袜子 对方 −5',x0+ww/2,by+40,{size:12,weight:700,col:BADC});txt(ctx,'香蕉皮 下次挖宝跳过',x0+ww/2,by+58,{size:12,weight:700,col:BADC});}
+      txt(ctx,'萌宠 +5～+30（熊猫 +20、招财金猫 +30）',x0+ww/2,by+20,{size:12,weight:700});txt(ctx,'便便 本队 −10　臭袜子 对方 −5',x0+ww/2,by+40,{size:12,weight:700,col:BADC});txt(ctx,'香蕉皮 下次跳过　·　挖到垃圾立即停挖',x0+ww/2,by+58,{size:12,weight:700,col:BADC});}
     if(flash&&t-flash.t0<1.8){const a=1-(t-flash.t0)/1.8;ctx.save();ctx.globalAlpha=a;hand(ctx,flash.s,w/2,h/2-(1-a)*40,{size:38,col:flash.c});ctx.restore();}
     if(ended){ctx.fillStyle='rgba(243,238,228,.92)';ctx.fillRect(0,0,w,h);const r=TEAM.sc.r,b=TEAM.sc.b;hand(ctx,'寻宝结束',w/2,h*.26,{size:46});
       hand(ctx,r===b?'两队平分秋色！':`${r>b?'红队':'蓝队'}获胜！`,w/2,h*.4,{size:40,col:r===b?CA:r>b?RED:BLUE});txt(ctx,`红队 ${r}　·　蓝队 ${b}`,w/2,h*.52,{size:24,weight:800});
@@ -79,16 +80,17 @@ S.hunt=(()=>{const cv=$('#cvHunt'),card=$('#htCard');let t=0,G=null,qi=0,phase='
   function dig(i){const tl=tiles[i];if(phase!=='dig'||tl.open)return;tl.open=1;tl.t0=t;tl.by=digger;digs--;
     const c=i%COLS,r=(i/COLS)|0,rc=cv.getBoundingClientRect(),k=rc.width/cv.offsetWidth||1;const px=rc.left+(G.x0+(c+.5)*G.cw)*k,py=rc.top+(G.y0+(r+.5)*G.ch)*k;const other=digger==='r'?'b':'r';
     if(PET[tl.k]){const[nm,pt]=PET[tl.k];teamAdd(pt,digger);pets[digger].push(tl.k);const rare=pt>=20;FX.burst(px,py,rare?60:28,rare?[CA,'#ffe27a','#fff2b0']:[CA,'#f7a8a8']);if(rare)FX.confetti();sfx('win');flash={s:`${nm} +${pt}${rare?'！':''}`,c:rare?'#b5432a':CA,t0:t};}
-    else if(tl.k==='poop'){teamAdd(-10,digger);sfx('bad');shake();flash={s:`${tname(digger)}踩到便便 −10`,c:BADC,t0:t};}
-    else if(tl.k==='sock'){teamAdd(-5,other);sfx('zap');flash={s:`臭袜子扔给${tname(other)}：−5`,c:BADC,t0:t};}
-    else{sfx('bad');flash={s:`${tname(digger)}踩到香蕉皮，滑倒了！`,c:BADC,t0:t};if(digs>0)digs=0;else skip[digger]=true;}
+    else if(tl.k==='poop'){const d=lose(digger,10);sfx('bad');shake();flash={s:`${tname(digger)}踩到便便 ${d?'−'+d:''}`,c:BADC,t0:t};stopMsg=`${tname(digger)}踩到便便，${d?`扣 ${d} 分`:'已经 0 分不再扣'}，本次挖宝结束`;}
+    else if(tl.k==='sock'){const d=lose(other,5);sfx('zap');flash={s:`臭袜子扔给${tname(other)}${d?'：−'+d:''}`,c:BADC,t0:t};stopMsg=`挖到臭袜子，扔给${tname(other)}${d?`扣 ${d} 分`:'（已经 0 分不再扣）'}，本次挖宝结束`;}
+    else{sfx('bad');flash={s:`${tname(digger)}踩到香蕉皮，滑倒了！`,c:BADC,t0:t};skip[digger]=true;stopMsg=`${tname(digger)}踩到香蕉皮滑倒，本次挖宝结束，下次答对也不能挖`;}
+    if(!PET[tl.k])digs=0;// 挖到垃圾立即结算，提升题剩下的一格作废
     if(tiles.every(x=>x.open))digs=0;if(digs<=0){phase='ready';}panel();}
   function panel(){if(ended)return;const q=QB.hunt[qi];
     if(phase==='dig'){$('.digtip',card)?.remove();const d=document.createElement('div');d.className='digtip';d.textContent=`${tname(digger)}答对！在平面图上点 ${digs} 个格子挖宝`;card.appendChild(d);$('#htNext')&&($('#htNext').disabled=true);return;}
-    if(phase==='ready'){$('.digtip',card)?.remove();const nb=$('#htNext');nb.disabled=false;nb.textContent=qi<QB.hunt.length-1?'下一题':'看结果';nb.onclick=()=>{qi++;sfx('whoosh');ask();};}}
-  function ask(){if(qi>=QB.hunt.length){end();return;}const q=QB.hunt[qi],tm=TEAM.cur,pts=q.pts||10;phase='ask';
+    if(phase==='ready'){$('.digtip',card)?.remove();if(stopMsg){const d=document.createElement('div');d.className='digtip bad';d.textContent=stopMsg;card.appendChild(d);}const nb=$('#htNext');nb.disabled=false;nb.textContent=qi<QB.hunt.length-1?'下一题':'看结果';nb.onclick=()=>{qi++;sfx('whoosh');ask();};}}
+  function ask(){stopMsg='';if(qi>=QB.hunt.length){end();return;}const q=QB.hunt[qi],tm=TEAM.cur,pts=q.pts||10;phase='ask';
     card.innerHTML=`<div class="qmeta"><span class="teamTag ${tm}">${tname(tm)}</span><b>第 ${qi+1} / ${QB.hunt.length} 题</b>${pts===20?'<span class="tag">提升 · 挖 2 格</span>':''}</div><div class="qhost"></div><div class="row"><button class="btn" id="htNext" disabled>${qi<QB.hunt.length-1?'下一题':'看结果'}</button></div>`;
-    qView($('.qhost',card),Object.assign({},q,{q:q.q.replace('【提升】','')}),{pts,vbtn:'after',vsrc:`寻宝第 ${qi+1} 题`,onJudge:ok=>{if(ok&&tiles.some(x=>!x.open)){if(skip[tm]){skip[tm]=false;phase='ready';flash={s:`${tname(tm)}上次踩了香蕉皮，这次不能挖宝`,c:BADC,t0:t};}else{digs=pts===20?2:1;digger=tm;phase='dig';panel();}}else phase='ready';
+    qView($('.qhost',card),Object.assign({},q,{q:q.q.replace('【提升】','')}),{pts,vbtn:'after',vsrc:`寻宝第 ${qi+1} 题`,onJudge:ok=>{if(ok&&tiles.some(x=>!x.open)){if(skip[tm]){skip[tm]=false;phase='ready';flash={s:`${tname(tm)}上次踩了香蕉皮，这次不能挖宝`,c:BADC,t0:t};stopMsg=`${tname(tm)}上次踩了香蕉皮：这次答对加分，但不能挖宝`;}else{digs=pts===20?2:1;digger=tm;phase='dig';panel();}}else phase='ready';
         if(phase==='ready')panel();}});}
   function end(){ended=true;phase='end';sfx('win');FX.confetti();const r=TEAM.sc.r,b=TEAM.sc.b;
     card.innerHTML=`<div class="qmeta"><b>寻宝结束</b></div><p class="qtext">${r===b?'两队平分秋色！':(r>b?'红队':'蓝队')+'获胜！'}</p><p>红队 <b class="cm">${r}</b> 分，蓝队 <b style="color:var(--blue)">${b}</b> 分。</p><p class="hint">答错的题可以点题号回顾，或到小结页的“错题回顾”里做变式。</p>`;}

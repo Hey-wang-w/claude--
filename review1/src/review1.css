@@ -329,3 +329,4 @@ p{margin:0}
 .fopt.sel{border-color:var(--ink);background:#efe6d3;box-shadow:inset 4px 0 0 var(--rust)}
 .fopt.ok{border-color:var(--okc);background:#e5eee1}.fopt.no{border-color:var(--badc);background:#f6e1db}
 .findw .row{gap:8px}.findw .status{font-size:13px;padding:6px 10px}
+.digtip.bad{background:var(--bad,#b5432a)}
