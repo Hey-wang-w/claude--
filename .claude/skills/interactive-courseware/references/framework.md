@@ -174,4 +174,5 @@
 
 - `DRAG.make(el,{drop(target,cx,cy)})`：指针移动超过 7 px 才算拖动（否则仍是点击），生成跟随指针的影子卡片（按 `#app` 的缩放换算），指针下方的 `[data-drop]` 元素高亮；落在画布上时 target 就是画布，用 `DRAG.cvPt(cv,cx,cy)` 换算画布坐标再判断落在哪个点 / 哪个水箱。拖动后吞掉随后的 click。
 - 画布里的小工具（木条、试管）用 `canvasUI` 的 `tools` + `onDrop`，按钮和拖放走同一个判定函数。
-- `vec-draw.js`：`sticker`（贴纸卡片）、`pill`（圆角标签）、`testTube`（圆底、卷边、高光，可倒置）、`beaker`、`lamp`/`flame`、`ball`（带高光的实心小球）、`drawMicro`（○ 浅色球 / ● 深色球微观图）、`grain`/`bacterium`/`pigmentMol`/`odorMol`（杂质）、`stream`（流动水柱）。
+- 化学 / 符号表达式：`EQ(左,条件,右)` 生成 `<span class="eqarr"><small>条件</small></span>`，箭头由 CSS 画（`::before` 横线 + `::after` 三角），条件小字 `bottom:74%` 居中在箭头上方（见 `review4/src/review4.css`）。
+- `vec-draw.js`：`wrapLines`（按宽度拆行，文本框高度随行数自适应）、`paintStatic`（只画一次的画布，窗口缩放后自动重画）、`sticker`（贴纸卡片）、`pill`（圆角标签）、`testTube`（圆底、卷边、高光，可倒置）、`beaker`、`lamp`/`flame`、`ball`（带高光的实心小球）、`drawMicro`（○ 浅色球 / ● 深色球微观图）、`grain`/`bacterium`/`pigmentMol`/`odorMol`（杂质）、`stream`（流动水柱）。

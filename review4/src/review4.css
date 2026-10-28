@@ -287,7 +287,10 @@ p{margin:0}
 .qtext{font-size:20px;line-height:1.6;font-weight:500}
 .teamTag{display:inline-flex;align-items:center;gap:6px;padding:2px 12px;font-weight:700;border:2px solid var(--ink);border-radius:999px;font-size:14px;color:var(--ink)}
 .teamTag.r{background:#ffe0d6}.teamTag.b{background:#dff1fb}
-.eqarr{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:-.1em;margin:0 3px}.eqarr small{font-size:.62em;color:var(--dim)}
+.eqarr{position:relative;display:inline-block;width:2.8em;height:1em;margin:0 .35em;vertical-align:-.12em}
+.eqarr::before{content:"";position:absolute;left:0;right:.3em;top:.5em;height:2px;margin-top:-1px;background:currentColor;border-radius:1px}
+.eqarr::after{content:"";position:absolute;right:0;top:.5em;transform:translateY(-50%);border-left:.45em solid currentColor;border-top:.24em solid transparent;border-bottom:.24em solid transparent}
+.eqarr small{position:absolute;left:50%;bottom:74%;transform:translateX(-50%);font-size:.58em;line-height:1;white-space:nowrap;color:var(--dim);font-weight:700}
 /* ---------- 13 小结 ---------- */
 .sumgrid{position:absolute;inset:0;padding:22px 22px 88px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .scol{border:var(--bd);background:#fff;border-radius:16px;box-shadow:3px 3px 0 var(--ink);border-top:10px solid var(--tc);padding:12px 14px;display:flex;flex-direction:column;gap:10px}

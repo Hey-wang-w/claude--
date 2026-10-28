@@ -88,7 +88,7 @@ function wrapTxt(ctx,s,x,y,maxW,lh,{size=16,col=INK,font=FNUM,weight=700}={}){ct
   let line='',yy=y;for(const ch of s){if(ctx.measureText(line+ch).width>maxW){ctx.fillText(line,x,yy);line=ch;yy+=lh;}else line+=ch;}ctx.fillText(line,x,yy);ctx.restore();return yy;}
 
 /* ================= 6 氢气档案：属性卡 + 验纯演示 ================= */
-S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
+S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[],shown=new Set();// shown：档案卡上已翻开的性质（先显示 ??，避免直接看到小测答案）
   // 两支收集好氢气的试管（管口斜向下），拖到酒精灯火焰旁验纯；按钮会自动演示
   const home=k=>G.home?G.home[k]:[0,0];
   const TUBES=()=>G.home&&!demo?[0,1].map(k=>({id:k,x:home(k)[0],y:home(k)[1],r:60,draw:(c,x,y)=>tubeAt(c,x,y,k)})):[];
@@ -100,7 +100,7 @@ S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
     pill(c,k?'B：较纯':'A：不纯',x+TD[0]*TL/2+6,y+TD[1]*TL/2-26,{size:14,fill:k?'#e6f7ef':'#fdeaea'});}
   function start(pure){if(demo)return;demo={pure,t:0,snd:false,from:home(pure?1:0)};sfx8('blip');}
   $('#hyImp').onclick=()=>start(false);$('#hyPure').onclick=()=>start(true);
-  const ui=canvasUI(cv,{tools:TUBES,onDrop:(id,x,y)=>{if(!G.flame)return false;const[fx,fy]=G.flame;if(Math.abs(x-(fx+61))<120&&y>fy-240&&y<fy+40){demo={pure:id===1,t:.6,snd:false,from:[x,y]};return true;}return false;}});
+  const ui=canvasUI(cv,{hots:()=>G.rows?G.rows.map((r,i)=>({hit:(x,y)=>x>r[0]&&x<r[2]&&y>r[1]&&y<r[3],act:()=>{if(!shown.has(i)){shown.add(i);sfx8('coin');}}})):[],tools:TUBES,onDrop:(id,x,y)=>{if(!G.flame)return false;const[fx,fy]=G.flame;if(Math.abs(x-(fx+61))<120&&y>fy-240&&y<fy+40){demo={pure:id===1,t:.6,snd:false,from:[x,y]};return true;}return false;}});
   function tick(dt){t+=dt;if(demo)demo.t+=dt;const{ctx,w,h}=fitS(cv);ctx.clearRect(0,0,w,h);
     // 左：氢气档案卡
     const cx0=26,cw=w*.4,ch=h-120;sticker(ctx,cx0,24,cw,ch,{r:18,sh:6});hand(ctx,'氢气 H₂ 档案',cx0+cw/2,62,{size:26});
@@ -108,8 +108,8 @@ S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
     ctx.fillStyle=INK;[[-20,-2],[20,-2]].forEach(([dx,dy])=>{ctx.beginPath();ctx.ellipse(mx+dx,my+dy,3.4,5,0,0,TAU);ctx.fill();});ctx.strokeStyle=INK;ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(mx,my+8,8,.15*Math.PI,.85*Math.PI);ctx.stroke();
     ctx.fillStyle='rgba(255,111,168,.45)';ctx.beginPath();ctx.ellipse(mx-34,my+10,7,4,0,0,TAU);ctx.ellipse(mx+34,my+10,7,4,0,0,TAU);ctx.fill();
     const props=[['密度','最小的气体'],['溶解性','难溶于水'],['颜色、气味','无色、无味'],['可燃性','燃烧产生淡蓝色火焰，生成水'],['收集方法','排水法；向下排空气法']];
-    props.forEach(([k,v],i)=>{const y=212+i*(ch-210)/5;ctx.strokeStyle='#e3e9f2';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx0+24,y-16);ctx.lineTo(cx0+cw-24,y-16);ctx.stroke();
-      txt(ctx,k,cx0+28,y+4,{size:15,col:DIM,weight:700,align:'left'});txt(ctx,v,cx0+28,y+30,{size:18,weight:700,align:'left'});});
+    G.rows=[];props.forEach(([k,v],i)=>{const y=212+i*(ch-210)/5;ctx.strokeStyle='#e3e9f2';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx0+24,y-16);ctx.lineTo(cx0+cw-24,y-16);ctx.stroke();G.rows.push([cx0+20,y-14,cx0+cw-20,y+46]);
+      txt(ctx,k,cx0+28,y+4,{size:15,col:DIM,weight:700,align:'left'});if(shown.has(i))txt(ctx,v,cx0+28,y+30,{size:18,weight:700,align:'left'});else pill(ctx,'?? 点击翻开',cx0+86,y+30,{size:14,fill:'#fff6d6',col:DIM});});
     // 右：验纯演示区
     const ax=w*.46,aw=w-ax-20,lx=ax+aw*.36,ly=h-128;G.flame=[lx,ly-106*.95];G.home=[[ax+aw*.54,ly-290],[ax+aw*.8,ly-290]];
     hand(ctx,'点燃前一定要验纯',ax+aw/2,46,{size:26,col:'#ff6fa8'});
@@ -127,7 +127,7 @@ S.h2=(()=>{const cv=$('#cvH2');let t=0,demo=null;const G={},sp=[];
     for(let i=sp.length-1;i>=0;i--){const p=sp[i];p.life-=dt*1.3;if(p.life<=0){sp.splice(i,1);continue;}p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;ctx.save();ctx.globalAlpha=p.life;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life+1,0,TAU);ctx.fill();ctx.restore();}
     ui.draw(ctx);}
   const qp=qPanel($('#hyQ'),QB.h2,{src:'氢气'});
-  $('#hyReset').onclick=()=>{demo=null;sp.length=0;qp.reset();};
+  $('#hyReset').onclick=()=>{demo=null;sp.length=0;shown.clear();qp.reset();};
   return{tick};})();
 
 /* ================= 7 微观分类站：微观图放进 单质 / 化合物 / 混合物 ================= */

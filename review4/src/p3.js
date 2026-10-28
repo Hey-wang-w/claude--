@@ -79,10 +79,12 @@ S.lab=(()=>{const cv=$('#cvLab');let t=0,step=0,stT=0;
     for(let k=0;k<4;k++)tablet(ctx,bx+bw*.2+k*bw*.2,by+bh-48+Math.sin(t*2+k)*2,26,k);
     // 提升题思路：点一步出一步
     const rx=w*.54,rw=w*.43;hand(ctx,'提升：钙片中碳酸钙的质量分数',rx,58,{size:22,col:'#ff6fa8',align:'left'});
-    const SP=['① 每片含钙 0.8 g','② CaCO₃ 中钙的质量分数：40 ÷ 100 × 100% = 40%','③ 碳酸钙的质量 = 0.8 g ÷ 40% = 2 g','④ 质量分数 = 2 g ÷ 2.5 g × 100% = 80%'];
-    SP.forEach((s,i)=>{const y=110+i*84;ctx.save();if(i<step){ctx.globalAlpha=i===step-1?Math.min(1,stT*3):1;sticker(ctx,rx,y-28,rw,62,{r:12,sh:3,fill:i===3?'#e6f7ef':'#ffffff'});wrapTxt(ctx,s,rx+16,y+3,rw-32,26,{size:18,col:i===3?'#1f9d6b':INK});}
-      else{ctx.fillStyle='#eef3fa';rr(ctx,rx,y-28,rw,62,12);ctx.fill();ctx.setLineDash([7,6]);ctx.strokeStyle=FAINT;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);txt(ctx,`第 ${i+1} 步  ？`,rx+rw/2,y+3,{size:18,col:FAINT,weight:700});}ctx.restore();});
-    if(step===0)txt(ctx,'先自己算，再点“提升题思路：下一步”看思路',rx+rw/2,110+4*84-10,{size:15,col:DIM,weight:700});}
+    const SP=['① 找已知：每片钙片的质量、每片含钙的质量','② 由化学式求 CaCO₃ 中钙元素的质量分数 = Ca 的相对原子质量 ÷ CaCO₃ 的相对分子质量 × 100%','③ 碳酸钙的质量 = 钙元素的质量 ÷ 钙元素的质量分数','④ 碳酸钙的质量分数 = 碳酸钙的质量 ÷ 每片钙片的质量 × 100%'];
+    let y=86;SP.forEach((s,i)=>{const lines=wrapLines(ctx,s,rw-36,`700 18px ${FNUM}`),bh=Math.max(58,lines.length*26+28);ctx.save();
+      if(i<step){ctx.globalAlpha=i===step-1?Math.min(1,stT*3):1;sticker(ctx,rx,y,rw,bh,{r:12,sh:3,fill:i===3?'#e6f7ef':'#ffffff'});lines.forEach((ln,j)=>txt(ctx,ln,rx+18,y+bh/2+(j-(lines.length-1)/2)*26,{size:18,weight:700,align:'left',col:i===3?'#1f9d6b':INK}));}
+      else{ctx.fillStyle='#eef3fa';rr(ctx,rx,y,rw,bh,12);ctx.fill();ctx.setLineDash([7,6]);ctx.strokeStyle=FAINT;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);txt(ctx,`第 ${i+1} 步  ？`,rx+rw/2,y+bh/2,{size:18,col:FAINT,weight:700});}
+      ctx.restore();y+=bh+16;});
+    if(step===0)txt(ctx,'先自己算，再点“提升题思路：下一步”看思路',rx+rw/2,y+14,{size:15,col:DIM,weight:700});}
   const qp=qPanel($('#lbQ'),QB.lab,{src:'标签计算'});
   const calc=calcPad($('#lbCalc'),{onFill:v=>{if(!qp.fill(v)){return false;}}});
   $('#lbReset').onclick=()=>{step=0;qp.reset();calc.reset();};
@@ -97,8 +99,9 @@ S.lab=(()=>{const cv=$('#cvLab');let t=0,step=0,stT=0;
 
 /* ================= 11 思维诊所：四种思维方法与常见陷阱（翻卡） ================= */
 S.think=(()=>{const box=$('#thBoard');
-  const CARDS=[['比较','找相同点和不同点','水和过氧化氢组成元素相同，化学性质却不同 → 分子构成不同'],['归纳','从多个事实中找规律','H₂O、CO₂、MgO 都由两种元素组成且含氧 → 氧化物'],
-    ['分析','把整体拆成部分来研究','净水：分析杂质成分 → 找性质差异 → 选分离方法'],['推理','由已知推出结论（要找反例检验）','含氧元素的化合物都是氧化物？✗ 反例：KMnO₄']];
+  // 翻开后的例子不能和右侧小测重复（小测考的是 KMnO₄ 反例、水与过氧化氢等）
+  const CARDS=[['比较','找相同点和不同点','蒸馏水和自来水都是无色透明的液体；自来水含可溶性杂质 → 混合物，蒸馏水 → 纯净物'],['归纳','从多个事实中找规律','H₂O、CO₂、MgO 都由两种元素组成且含氧 → 氧化物'],
+    ['分析','把整体拆成部分来研究','电解水：分析生成物 H₂、O₂ 所含元素 → 推出水由氢、氧两种元素组成'],['推理','由已知推出结论（要找反例检验）','离子是带电的粒子 → 带电的粒子都是离子？✗ 反例：电子、质子']];
   function render(){box.innerHTML=`<div class="thgrid">${CARDS.map(([n,d,e],i)=>`<button class="thc" data-i="${i}"><div class="f"><b>${n}</b><span>${d}</span><i>点我翻开例子</i></div><div class="b"><b>${n}</b><span>${e}</span></div></button>`).join('')}</div>`;
     $$('.thc',box).forEach(b=>b.onclick=()=>{b.classList.toggle('on');sfx8('blip');});}
   const qp=qPanel($('#thQ'),QB.think,{src:'科学思维'});

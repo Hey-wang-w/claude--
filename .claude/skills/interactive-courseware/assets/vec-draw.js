@@ -85,3 +85,5 @@ function paintStatic(cv,fn){cv._paint=fn;STATIC.add(cv);const w=cv.offsetWidth,h
   const app=$('#app'),k=(app.getBoundingClientRect().width/app.offsetWidth)||1,dpr=Math.max(2,(window.devicePixelRatio||1)*k);
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);fn(ctx,w,h);}
 addEventListener('resize',()=>{clearTimeout(paintStatic._t);paintStatic._t=setTimeout(()=>{STATIC.forEach(cv=>{if(!cv.isConnected){STATIC.delete(cv);return;}paintStatic(cv,cv._paint);});},150);});
+/* 按宽度把文字拆成多行（文本框高度随行数自适应用） */
+function wrapLines(ctx,s,maxW,font){ctx.save();ctx.font=font;const out=[];let line='';for(const ch of s){if(line&&ctx.measureText(line+ch).width>maxW){out.push(line);line=ch;}else line+=ch;}if(line)out.push(line);ctx.restore();return out;}
